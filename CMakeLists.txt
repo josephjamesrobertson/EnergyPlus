@@ -211,6 +211,7 @@ include(cmake/179DReporting.cmake)
 
 if( BUILD_TESTING )
   ADD_SUBDIRECTORY(testfiles)
+  ADD_SUBDIRECTORY(testfiles/10xSuite)
   ADD_SUBDIRECTORY(tst/EnergyPlus/unit)
 
   option( BUILD_PERFORMANCE_TESTS "Build performance testing targets" OFF )
