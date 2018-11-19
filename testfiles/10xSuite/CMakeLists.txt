@@ -17,6 +17,8 @@ ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_RefBldgSuperMarketNew2004_Chicago.idf 
 ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_RefBldgWarehouseNew2004_Chicago.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
 ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_VetBuilding.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
 ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_100_zones_with_HVAC_London_Db.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
-ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_Radiant_heating.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
+ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_radiant_heating.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
+ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_multiple_AHUs.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
+ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_large_250_zones.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
 
 
