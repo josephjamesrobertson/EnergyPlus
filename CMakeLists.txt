@@ -1,3 +1,10 @@
+# Use ccache if available, has to be before "project()"
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+  # Support both Unix Makefiles and Ninja
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+endif()
+
 Project(EnergyPlus)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
@@ -279,7 +286,7 @@ if (BUILD_DOCS)
     # and if it doesn't, clearly state why it fails
     message( FATAL_ERROR "Expected to find xelatex at: ${XELATEX} ; check your LaTeX installation")
   endif()
-  set(TEX_INTERACTION "batchmode" CACHE STRING "Choose the interaction mode for TeX." FORCE)
+  set(TEX_INTERACTION "batchmode" CACHE STRING "Choose the interaction mode for TeX.")
   set_property(CACHE TEX_INTERACTION PROPERTY STRINGS "nonstopmode" "batchmode")
 endif()
 
@@ -299,4 +306,14 @@ mark_as_advanced(KIVA_STATIC_LIB)
 mark_as_advanced(KIVA_TESTING)
 mark_as_advanced(RE2_BUILD_TESTING)
 mark_as_advanced(USEPCRE)
+mark_as_advanced(CCACHE_PROGRAM)
+mark_as_advanced(CMAKE_BUILD_TYPE)
+mark_as_advanced(CMAKE_VERSION_BUILD)
+mark_as_advanced(ENABLE_REGRESSION_TESTING)
+mark_as_advanced(TEST_ANNUAL_SIMULATION)
+mark_as_advanced(gtest_build_samples)
+mark_as_advanced(gtest_build_tests)
+mark_as_advanced(gtest_disable_pthreads)
+mark_as_advanced(gtest_force_shared_crt)
+mark_as_advanced(gtest_hide_internal_symbols)
 
