@@ -57,3 +57,5 @@ ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_large_705_zones_radiant_heating.idf EP
 ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_large_83_zones_ASHRAE_HQ.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
 ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_large_95_zones_multiple_AHUs.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
 ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_large_9_zone_solar_shading_external.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
+ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_large_6_zones_residential.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
+ADD_SIMULATION_TEST(IDF_FILE 10xSuite/10x_large_7_zones_residential.idf EPW_FILE USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw)
