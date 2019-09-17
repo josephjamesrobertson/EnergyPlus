@@ -40731,3 +40731,6 @@
     0,                       !- Cost
     ServicePeriod;           !- Start of Costs
 
+
+  PerformancePrecisionTradeoffs,
+    No;    !- Use Coil Direct Solutions

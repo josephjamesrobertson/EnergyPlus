@@ -4809,3 +4809,6 @@
   Output:Meter:MeterFileOnly,DistrictCooling:Facility,runperiod;
 
   Output:Surfaces:List,Details;
+
+  PerformancePrecisionTradeoffs,
+    No;    !- Use Coil Direct Solutions

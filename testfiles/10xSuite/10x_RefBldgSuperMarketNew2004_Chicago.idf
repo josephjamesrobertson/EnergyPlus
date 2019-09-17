@@ -6402,3 +6402,6 @@
     ,                        !- Nuclear High Level Emission Factor Schedule Name
     0;                       !- Nuclear Low Level Emission Factor {m3/MJ}
 
+
+  PerformancePrecisionTradeoffs,
+    No;    !- Use Coil Direct Solutions

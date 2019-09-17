@@ -20396,6 +20396,7 @@ BuildingSurface:Detailed,
 
 Foundation:Kiva,
    Finished Basement Foundation 1,   !- Name
+   ,                                 !- Initial Indoor Air Temperature
    ,                                 !- Interior Horizontal Insulation Material Name
    ,                                 !- Interior Horizontal Insulation Depth {m}
    ,                                 !- Interior Horizontal Insulation Width {m}
@@ -20447,6 +20448,7 @@ SurfaceProperty:ExposedFoundationPerimeter,
 
 Foundation:Kiva,
    Unfinished Basement Foundation 2,   !- Name
+   ,                                   !- Initial Indoor Air Temperature
    ,                                   !- Interior Horizontal Insulation Material Name
    ,                                   !- Interior Horizontal Insulation Depth {m}
    ,                                   !- Interior Horizontal Insulation Width {m}
@@ -20542,6 +20544,7 @@ BuildingSurface:Detailed,
 
 Foundation:Kiva,
    Garage Slab Foundation 4,   !- Name
+   ,                           !- Initial Indoor Air Temperature
    ,                           !- Interior Horizontal Insulation Material Name
    ,                           !- Interior Horizontal Insulation Depth {m}
    ,                           !- Interior Horizontal Insulation Width {m}
@@ -24606,3 +24609,6 @@ Output:Meter,
 Output:Meter,
    PV:Electricity_1,   !- Name
    Hourly;             !- Reporting Frequency
+
+  PerformancePrecisionTradeoffs,
+    No;    !- Use Coil Direct Solutions
