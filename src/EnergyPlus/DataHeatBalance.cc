@@ -503,6 +503,7 @@ namespace DataHeatBalance {
     // LOGICAL ::  CondFDVariableProperties = .FALSE. ! if true, then variable conductivity or enthalpy in Cond FD.
 
     int ZoneAirSolutionAlgo(Use3rdOrder);      // ThirdOrderBackwardDifference, AnalyticalSolution, and EulerMethod
+    bool OverrideZoneAirSolutionAlgo(false);   // Do not override the zone air solution algorithm in PerformancePrecisionTradeoffs
     Real64 BuildingRotationAppendixG(0.0);     // Building Rotation for Appendix G
     Real64 ZoneTotalExfiltrationHeatLoss(0.0); // Building total heat emission through zone exfiltration;
     Real64 ZoneTotalExhaustHeatLoss(0.0);      // Building total heat emission through zone air exhaust;

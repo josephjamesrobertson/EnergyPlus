@@ -1140,6 +1140,12 @@ namespace HeatBalanceManager {
             ZoneAirSolutionAlgo = Use3rdOrder;
             AlphaName(1) = "ThirdOrderBackwardDifference";
         }
+        if (DataHeatBalance::OverrideZoneAirSolutionAlgo) {
+            ZoneAirSolutionAlgo = UseEulerMethod;
+            AlphaName(1) = "EulerMethod";
+            ShowWarningError("Due to PerformancePrecisionTradeoffs the ZoneAirHeatBalanceAlgorithm has been changed to EulerMethod.");
+        }
+
 
         // Write Solution Algorithm to the initialization output file for User Verification
         ObjexxFCL::gio::write(OutputFileInits, Format_726);
