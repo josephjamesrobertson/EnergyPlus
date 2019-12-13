@@ -143,7 +143,9 @@ namespace ZoneTempPredictorCorrector {
     // Zone temperature history - used only for oscillation test
     extern Array2D<Real64> ZoneTempHist;
     extern Array1D<Real64> ZoneTempOscillate;
+    extern Array1D<Real64> ZoneTempOscillateDuringOccupancy;
     extern Real64 AnyZoneTempOscillate;
+    extern Real64 AnyZoneTempOscillateDuringOccupancy;
 
     // SUBROUTINE SPECIFICATIONS:
 
