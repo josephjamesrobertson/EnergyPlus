@@ -303,6 +303,11 @@ namespace DataGlobals {
     extern void (*fProgressPtr)(int const);
     extern void (*fMessagePtr)(std::string const &);
 
+    extern double timer;
+    extern double timer_1;
+    extern double timer_2;
+    extern double timer_3;
+
     // Clears the global data in DataGlobals.
     // Needed for unit tests, should not be normally called.
     void clear_state();

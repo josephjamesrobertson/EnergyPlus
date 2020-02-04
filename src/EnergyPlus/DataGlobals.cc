@@ -262,6 +262,10 @@ namespace DataGlobals {
     bool AnyBasementsInModel(false);     // true if there are any basements in the input file
     // Performance tradeoff globals
     bool DoCoilDirectSolutions(false);       //true if use coil direction solutions
+    double timer(0.0);
+    double timer_1(0.0);
+    double timer_2(0.0);
+    double timer_3(0.0);
 
     int Progress(0); // current progress (0-100)
     void (*fProgressPtr)(int const);
@@ -362,6 +366,10 @@ namespace DataGlobals {
         AnyBasementsInModel = false;
         DoCoilDirectSolutions = false;
         Progress = 0;
+        timer = 0.0;
+        timer_1 = 0.0;
+        timer_2 = 0.0;
+        timer_3 = 0.0;
         eso_stream = nullptr;
         mtr_stream = nullptr;
         err_stream = nullptr;

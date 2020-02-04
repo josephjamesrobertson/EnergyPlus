@@ -476,6 +476,11 @@ int RunEnergyPlus(std::string const & filepath)
         ReportOrphanFluids();
         ReportOrphanSchedules();
 
+        std::cout << "Plant equip loop: " << DataGlobals::timer << "\n";
+        std::cout << "Solver loop: " << DataGlobals::timer_1 << "\n";
+        std::cout << "Inner: " << DataGlobals::timer_2 << "\n";
+        std::cout << "branch: " << DataGlobals::timer_3 << "\n";
+
         if (runReadVars) {
             std::string readVarsPath = exeDirectory + "ReadVarsESO" + exeExtension;
             bool FileExists;
