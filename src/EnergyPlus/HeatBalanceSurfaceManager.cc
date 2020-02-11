@@ -182,6 +182,9 @@ namespace HeatBalanceSurfaceManager {
     using namespace SingleLayerOptics;
     using namespace MultiLayerOptics;
 
+    Real64 MaxAllowedDelTemp(0.002);       // Convergence criteria for inside surface temperatures
+    Real64 IterDampConst(5.0);             // Damping constant for inside surface temperature iterations
+
     // Data
     // MODULE PARAMETER DEFINITIONS:
     static std::string const BlankString;
@@ -5818,9 +5821,9 @@ namespace HeatBalanceSurfaceManager {
         using DataSizing::CurOverallSimDay;
 
         Real64 const Sigma(5.6697e-08);              // Stefan-Boltzmann constant
-        Real64 const IterDampConst(5.0);             // Damping constant for inside surface temperature iterations
+       //Real64 IterDampConst(5.0);             // Damping constant for inside surface temperature iterations
         int const ItersReevalConvCoeff(30);          // Number of iterations between inside convection coefficient reevaluations
-        Real64 const MaxAllowedDelTemp(0.002);       // Convergence criteria for inside surface temperatures
+       // Real64 MaxAllowedDelTemp(0.002);       // Convergence criteria for inside surface temperatures
         int const MaxIterations(500);                // Maximum number of iterations allowed for inside surface temps
         int const IterationsForCondFDRelaxChange(5); // number of iterations for inside temps that triggers a change
         Real64 const SmallNumber(0.0001);            // avoid numerical junk causing problems?

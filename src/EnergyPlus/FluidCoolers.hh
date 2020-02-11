@@ -63,6 +63,7 @@ namespace FluidCoolers {
     // MODULE PARAMETER DEFINITIONS:
     extern std::string const cFluidCooler_SingleSpeed;
     extern std::string const cFluidCooler_TwoSpeed;
+    extern Real64 Acc; // Accuracy of result
 
     enum class PerfInputMethod
     {

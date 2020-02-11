@@ -118,7 +118,6 @@ namespace ConductionTransferFunctionCalc {
     // perpendicular to the main direction of heat transfer.  This is only used
     // when a two-dimensional solution has been requested for a construction
     // with a heat source/sink.
-
     // DERIVED TYPE DEFINITIONS
     // na
 
@@ -1811,7 +1810,7 @@ namespace ConductionTransferFunctionCalc {
         // SUBROUTINE ARGUMENT DEFINITIONS:
 
         // SUBROUTINE PARAMETER DEFINITIONS:
-        Real64 const ConvrgLim(1.0e-13); // Convergence limit (ratio) for cutting off the calculation of further
+ //       Real64 const ConvrgLim(1.0e-13); // Convergence limit (ratio) for cutting off the calculation of further
         // CTFs.  This value was found to give suitable accuracy in IBLAST.
 
         // INTERFACE BLOCK SPECIFICATIONS

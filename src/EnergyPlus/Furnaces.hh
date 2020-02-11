@@ -99,6 +99,7 @@ namespace Furnaces {
     extern Real64 CompOffFlowRatio;             // fan flow ratio when coil off
     extern Real64 FanSpeedRatio;                // ratio of air flow ratio passed to fan object
     extern Real64 CoolHeatPLRRat;               // ratio of cooling to heating PLR, used for cycling fan RH control
+    extern Real64 ErrTolerance;
     extern bool HeatingLoad;
     extern bool CoolingLoad;
     extern bool EconomizerFlag;             // holds air loop economizer status

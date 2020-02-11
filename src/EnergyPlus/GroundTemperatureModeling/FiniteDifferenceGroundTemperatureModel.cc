@@ -74,7 +74,7 @@ int simDay = 0;
 int numIterYears = 0;
 int const maxYearsToIterate = 10;
 Real64 finalTempConvergenceCriteria = 0.05;
-Real64 iterationTempConvergenceCriteria = 0.00001;
+extern Real64 iterationTempConvergenceCriteria = 0.00001;
 
 //******************************************************************************
 

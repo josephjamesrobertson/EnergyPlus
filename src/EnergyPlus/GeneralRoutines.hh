@@ -58,6 +58,8 @@
 
 namespace EnergyPlus {
 
+extern  Real64 BBIterLimit;
+
 void ControlCompOutput(std::string const &CompName,               // the component Name
                        std::string const &CompType,               // Type of component
                        int &CompNum,                              // Index of component in component array

@@ -68,6 +68,8 @@ namespace HeatBalanceSurfaceManager {
     // Data
     // MODULE PARAMETER DEFINITIONS:
     // na
+    extern Real64 IterDampConst;
+    extern Real64 MaxAllowedDelTemp;
 
     // DERIVED TYPE DEFINITIONS:
     // na
@@ -89,6 +91,7 @@ namespace HeatBalanceSurfaceManager {
     // Reporting routines for module
 
     // Functions
+
     void clear_state();
 
     void ManageSurfaceHeatBalance();

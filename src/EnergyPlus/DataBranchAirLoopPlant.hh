@@ -64,7 +64,7 @@ namespace DataBranchAirLoopPlant {
     // Data
     // MODULE PARAMETER DEFINITIONS:
     // Parameters for tolerance
-    extern Real64 const MassFlowTolerance; // minimum significant mass flow rate (kg/s)
+    extern Real64 MassFlowTolerance; // minimum significant mass flow rate (kg/s)
 
     // Pressure Curve Type: None, pressure, or generic curve (if generic it will be a postive value which is the curve manager index)
     extern int const PressureCurve_Error;

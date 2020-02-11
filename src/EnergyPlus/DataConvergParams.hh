@@ -71,17 +71,17 @@ namespace DataConvergParams {
     // to represent educated guesses at what the tolerances for individual physical
     // parameters should be.
     extern Real64 const HVACEnthalpyToler;               // Tolerance for enthalpy comparisons (in kJ/kgK)
-    extern Real64 const HVACFlowRateToler;               // Tolerance for mass flow rate convergence (in kg/s) [~20 CFM]
-    extern Real64 const HVACFlowRateSlopeToler;          // Slope tolerance for mass flow, kg/s/iteration
-    extern Real64 const HVACFlowRateOscillationToler;    // tolerance for detecting duplicate flow rate in stack
-    extern Real64 const HVACHumRatToler;                 // Tolerance for humidity ratio comparisons (kg water/kg dryair)
-    extern Real64 const HVACHumRatSlopeToler;            // Slope tolerance for humidity ratio, kg water/kg-dryair/iteration
-    extern Real64 const HVACHumRatOscillationToler;      // tolerance for detecting duplicate humidity ratio in stack
+    extern Real64 HVACFlowRateToler;               // Tolerance for mass flow rate convergence (in kg/s) [~20 CFM]
+    extern Real64 HVACFlowRateSlopeToler;          // Slope tolerance for mass flow, kg/s/iteration
+    extern Real64 HVACFlowRateOscillationToler;    // tolerance for detecting duplicate flow rate in stack
+    extern Real64 HVACHumRatToler;                 // Tolerance for humidity ratio comparisons (kg water/kg dryair)
+    extern Real64 HVACHumRatSlopeToler;            // Slope tolerance for humidity ratio, kg water/kg-dryair/iteration
+    extern Real64 HVACHumRatOscillationToler;      // tolerance for detecting duplicate humidity ratio in stack
     extern Real64 const HVACQualityToler;                // Tolerance for fluid quality comparisons (dimensionless)
     extern Real64 const HVACPressToler;                  // Tolerance for pressure comparisons (in Pascals)
-    extern Real64 const HVACTemperatureToler;            // Tolerance for temperature comparisons (in degrees C or K)
-    extern Real64 const HVACTemperatureSlopeToler;       // Slope tolerance for Temperature, Deg C/iteration
-    extern Real64 const HVACTemperatureOscillationToler; // tolerance for detecting duplicate temps in stack
+    extern Real64 HVACTemperatureToler;            // Tolerance for temperature comparisons (in degrees C or K)
+    extern Real64 HVACTemperatureSlopeToler;       // Slope tolerance for Temperature, Deg C/iteration
+    extern Real64 HVACTemperatureOscillationToler; // tolerance for detecting duplicate temps in stack
     extern Real64 const HVACEnergyToler;                 // Tolerance for Energy comparisons (in Watts W)
     // to be consistent, should be 20.d0 (BG Aug 2012)
 
@@ -89,23 +89,23 @@ namespace DataConvergParams {
     // Only used to scale the answer for a more intuitive answer for comparison
 
     extern Real64 const PlantEnthalpyToler;    // Tolerance for enthalpy comparisons (in kJ/kgK)
-    extern Real64 const PlantFlowRateToler;    // Tolerance for mass flow rate convergence (in kg/s) [~2 CFM]
+    extern Real64 PlantFlowRateToler;    // Tolerance for mass flow rate convergence (in kg/s) [~2 CFM]
     extern Real64 const PlantLowFlowRateToler; // // Tolerance for low flow rate used for determining when
     // plant pumps can be shut down
-    extern Real64 const PlantFlowRateOscillationToler;
-    extern Real64 const PlantFlowRateSlopeToler; // Slope tolerance for mass flow, kg/s/iteration
+    extern Real64 PlantFlowRateOscillationToler;
+    extern Real64 PlantFlowRateSlopeToler; // Slope tolerance for mass flow, kg/s/iteration
 
     extern Real64 const PlantPressToler;                  // Tolerance for pressure comparisons (in Pascals)
-    extern Real64 const PlantTemperatureToler;            // Tolerance for temperature comparisons (in degrees C or K)
-    extern Real64 const PlantTemperatureSlopeToler;       // Slope tolerance for Temperature, Deg C/iteration
-    extern Real64 const PlantTemperatureOscillationToler; // tolerance for detecting duplicate temps in stack
+    extern Real64 PlantTemperatureToler;            // Tolerance for temperature comparisons (in degrees C or K)
+    extern Real64 PlantTemperatureSlopeToler;       // Slope tolerance for Temperature, Deg C/iteration
+    extern Real64 PlantTemperatureOscillationToler; // tolerance for detecting duplicate temps in stack
 
     extern Real64 const PlantEnergyToler; // Tolerance for Energy comparisons (in Watts W)
 
     extern Real64 const PlantCpApprox; // Approximate Cp used in Interface manager for
     // Energy Tolerance Calculation, used to scale the answer
     // for a more intuitive answer for comparison
-    extern Real64 const PlantFlowFlowRateToler; // Tolerance for mass flow rate convergence (in kg/s)
+    extern Real64 PlantFlowFlowRateToler; // Tolerance for mass flow rate convergence (in kg/s)
 
     extern int const ConvergLogStackDepth;
     extern Array1D<Real64> const ConvergLogStackARR;

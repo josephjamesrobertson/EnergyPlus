@@ -86,7 +86,6 @@ namespace DataGlobals {
     extern int const ksHVACSizeDesignDay;       // a regular design day run during HVAC Sizing Simulation
     extern int const ksHVACSizeRunPeriodDesign; // a weather period design day run during HVAC Sizing Simulation
     extern int const ksReadAllWeatherData;      // a weather period for reading all weather data prior to the simulation
-
     extern Real64 const MaxEXPArg; // maximum exponent in EXP() function
     extern Real64 const Pi;        // Pi 3.1415926535897932384626435
     extern Real64 const PiOvr2;    // Pi/2
@@ -222,6 +221,7 @@ namespace DataGlobals {
     extern bool EndHourFlag;                         // True at the end of each hour (last time step of hour)
     extern int PreviousHour;                         // Previous Hour Index
     extern int HourOfDay;                            // Counter for hours in a simulation day
+    extern Real64 ConvrgLim;                         //Convergence limit (ratio) for CTF
     extern Real64 WeightPreviousHour;                // Weighting of value for previous hour
     extern Real64 WeightNow;                         // Weighting of value for current hour
     extern int NumOfDayInEnvrn;                      // Number of days in the simulation for a particular environment

@@ -205,7 +205,7 @@ namespace Furnaces {
     int const DehumidControl_None(0);
     int const DehumidControl_Multimode(1);
     int const DehumidControl_CoolReheat(2);
-
+    Real64 ErrTolerance(0.001); // convergence limit for hotwater coil
     static std::string const fluidNameSteam("STEAM");
     bool GetFurnaceInputFlag(true); // Logical to allow "GetInput" only once per simulation
 
@@ -9525,7 +9525,7 @@ namespace Furnaces {
         // SUBROUTINE ARGUMENT DEFINITIONS:
 
         // SUBROUTINE PARAMETER DEFINITIONS:
-        Real64 const ErrTolerance(0.001); // convergence limit for hotwater coil
+//        Real64 ErrTolerance(0.001); // convergence limit for hotwater coil
         int const SolveMaxIter(50);
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:

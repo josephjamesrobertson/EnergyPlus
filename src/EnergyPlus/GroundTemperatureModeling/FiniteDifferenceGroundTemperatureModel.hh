@@ -61,6 +61,7 @@
 #include <GroundTemperatureModeling/BaseGroundTemperatureModel.hh>
 
 namespace EnergyPlus {
+    extern Real64 iterationTempConvergenceCriteria;
 
 // Derived class for Finite-Difference Model
 class FiniteDiffGroundTempsModel : public BaseGroundTempsModel

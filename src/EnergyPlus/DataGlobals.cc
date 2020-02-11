@@ -108,7 +108,6 @@ namespace DataGlobals {
     int const ksHVACSizeDesignDay(4);       // a regular design day run during HVAC Sizing Simulation
     int const ksHVACSizeRunPeriodDesign(5); // a weather period design day run during HVAC Sizing Simulation
     int const ksReadAllWeatherData(6);      // a weather period for reading all weather data prior to the simulation
-
     Real64 const MaxEXPArg(709.78);       // maximum exponent in EXP() function
     Real64 const Pi(3.14159265358979324); // Pi 3.1415926535897932384626435
     Real64 const PiOvr2(Pi / 2.0);        // Pi/2
@@ -191,6 +190,7 @@ namespace DataGlobals {
     int NumOfTimeStepInHour(0);        // Number of time steps in each hour of the simulation
     int NumOfZones(0);                 // Total number of Zones for simulation
     int TimeStep(0);                   // Counter for time steps (fractional hours)
+    Real64 ConvrgLim(1.0e-13);       //Convergence limit (ratio) for CTF
     Real64 TimeStepZone(0.0);          // Zone time step in fractional hours
     bool WarmupFlag(false);            // True during the warmup portion of a simulation
     int OutputFileStandard(0);         // Unit number for the standard output file (hourly data only)

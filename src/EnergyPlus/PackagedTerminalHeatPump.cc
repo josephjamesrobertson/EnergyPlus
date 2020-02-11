@@ -182,7 +182,7 @@ namespace PackagedTerminalHeatPump {
 
     // MODULE VARIABLE DECLARATIONS:
     Array1D_bool CheckEquipName;
-
+    Real64 ErrTolerance(0.001); // convergence limit for hotwater coil
     Real64 SupHeaterLoad(0.0);     // load to be met by supplemental heater [W]
     int NumPTHP(0);                // total number of PTHP's
     int NumPTAC(0);                // total number of PTAC's
@@ -5767,7 +5767,7 @@ namespace PackagedTerminalHeatPump {
         // SUBROUTINE ARGUMENT DEFINITIONS:
 
         // SUBROUTINE PARAMETER DEFINITIONS:
-        Real64 const ErrTolerance(0.001); // convergence limit for hotwater coil
+       // Real64 ErrTolerance(0.001); // convergence limit for hotwater coil
         int const SolveMaxIter(50);
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:

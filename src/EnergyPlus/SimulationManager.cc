@@ -69,6 +69,7 @@ extern "C" {
 #include <CostEstimateManager.hh>
 #include <CurveManager.hh>
 #include <DataAirLoop.hh>
+#include <DataBranchAirLoopPlant.hh>
 #include <DataBranchNodeConnections.hh>
 #include <DataContaminantBalance.hh>
 #include <DataConvergParams.hh>
@@ -102,7 +103,9 @@ extern "C" {
 #include <ExteriorEnergyUse.hh>
 #include <ExternalInterface.hh>
 #include <FaultsManager.hh>
+#include <FluidCoolers.hh>
 #include <FluidProperties.hh>
+#include <Furnaces.hh>
 #include <General.hh>
 #include <GeneralRoutines.hh>
 #include <HVACControllers.hh>
@@ -119,6 +122,7 @@ extern "C" {
 #include <OutputReportPredefined.hh>
 #include <OutputReportTabular.hh>
 #include <OutputReports.hh>
+#include <PackagedTerminalHeatPump.hh>
 #include <Plant/PlantManager.hh>
 #include <PlantPipingSystemsManager.hh>
 #include <PollutionModule.hh>
@@ -140,6 +144,7 @@ extern "C" {
 #include <ZoneContaminantPredictorCorrector.hh>
 #include <ZoneEquipmentManager.hh>
 #include <ZoneTempPredictorCorrector.hh>
+#include <GroundTemperatureModeling/FiniteDifferenceGroundTemperatureModel.hh>
 
 namespace EnergyPlus {
 namespace SimulationManager {
@@ -174,13 +179,16 @@ namespace SimulationManager {
     using namespace HeatBalanceManager;
     using namespace WeatherManager;
     using namespace ExternalInterface;
+    using namespace DataConvergParams;
+    using namespace DataHeatBalance;
+    using namespace DataBranchAirLoopPlant;
 
     // Data
     // MODULE PARAMETER DEFINITIONS:
     static std::string const BlankString;
     static ObjexxFCL::gio::Fmt fmtLD("*");
     static ObjexxFCL::gio::Fmt fmtA("(A)");
-
+   
     // DERIVED TYPE DEFINITIONS:
     // na
 
@@ -243,7 +251,7 @@ namespace SimulationManager {
         using DataEnvironment::TotDesDays;
         using DataEnvironment::TotRunDesPersDays;
         using DataHVACGlobals::TimeStepSys;
-
+        
         using BranchInputManager::InvalidBranchDefinitions;
         using BranchInputManager::ManageBranchInput;
         using BranchInputManager::TestBranchIntegrity;
@@ -1078,15 +1086,16 @@ namespace SimulationManager {
                     continue;
                     //        CreateMinimalSurfaceVariables=.TRUE.
                 } else if (UtilityRoutines::SameString(Alphas(NumA), "CreateNormalSurfaceVariables")) {
-                    continue;
-                    //        IF (CreateMinimalSurfaceVariables) THEN
-                    //          CALL ShowWarningError('GetProjectData: '//TRIM(CurrentModuleObject)//'=''//  &
-                    //             TRIM(Alphas(NumA))//'', prior set=true for this condition reverts to false.')
-                    //        ENDIF
-                    //        CreateMinimalSurfaceVariables=.FALSE.
-                } else if (!Alphas(NumA).empty()) {
-                    ShowWarningError("GetProjectData: " + CurrentModuleObject + "=\"" + Alphas(NumA) +
-                                     "\", Invalid value for field, entered value ignored.");
+continue;
+//        IF (CreateMinimalSurfaceVariables) THEN
+//          CALL ShowWarningError('GetProjectData: '//TRIM(CurrentModuleObject)//'=''//  &
+//             TRIM(Alphas(NumA))//'', prior set=true for this condition reverts to false.')
+//        ENDIF
+//        CreateMinimalSurfaceVariables=.FALSE.
+                }
+ else if (!Alphas(NumA).empty()) {
+ ShowWarningError("GetProjectData: " + CurrentModuleObject + "=\"" + Alphas(NumA) +
+     "\", Invalid value for field, entered value ignored.");
                 }
             }
         }
@@ -1095,24 +1104,26 @@ namespace SimulationManager {
         Num = inputProcessor->getNumObjectsFound(CurrentModuleObject);
         if (Num > 0) {
             inputProcessor->getObjectItem(CurrentModuleObject,
-                                          1,
-                                          Alphas,
-                                          NumAlpha,
-                                          Number,
-                                          NumNumber,
-                                          IOStat,
-                                          lNumericFieldBlanks,
-                                          lAlphaFieldBlanks,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
+                1,
+                Alphas,
+                NumAlpha,
+                Number,
+                NumNumber,
+                IOStat,
+                lNumericFieldBlanks,
+                lAlphaFieldBlanks,
+                cAlphaFieldNames,
+                cNumericFieldNames);
             if (!lNumericFieldBlanks(1)) {
                 deviationFromSetPtThresholdHtg = -Number(1);
-            } else {
+            }
+            else {
                 deviationFromSetPtThresholdHtg = -0.2;
             }
             if (!lNumericFieldBlanks(2)) {
                 deviationFromSetPtThresholdClg = Number(2);
-            } else {
+            }
+            else {
                 deviationFromSetPtThresholdClg = 0.2;
             }
         }
@@ -1129,16 +1140,16 @@ namespace SimulationManager {
         if (NumRunControl > 0) {
             RunControlInInput = true;
             inputProcessor->getObjectItem(CurrentModuleObject,
-                                          1,
-                                          Alphas,
-                                          NumAlpha,
-                                          Number,
-                                          NumNumber,
-                                          IOStat,
-                                          lNumericFieldBlanks,
-                                          lAlphaFieldBlanks,
-                                          cAlphaFieldNames,
-                                          cNumericFieldNames);
+                1,
+                Alphas,
+                NumAlpha,
+                Number,
+                NumNumber,
+                IOStat,
+                lNumericFieldBlanks,
+                lAlphaFieldBlanks,
+                cAlphaFieldNames,
+                cNumericFieldNames);
             if (Alphas(1) == "YES") DoZoneSizing = true;
             if (Alphas(2) == "YES") DoSystemSizing = true;
             if (Alphas(3) == "YES") DoPlantSizing = true;
@@ -1169,6 +1180,91 @@ namespace SimulationManager {
                         DoCoilDirectSolutions = true;
                     }
                 }
+                if (fields.find("max_zone_temp_diff") != fields.end()) {
+                    MaxZoneTempDiff = fields.at("max_zone_temp_diff");
+                }
+                if (fields.find("ctf_convergence_limit") != fields.end()) {
+                    ConvrgLim = fields.at("ctf_convergence_limit");
+                }
+                if (fields.find("heat_balance_max_temp_diff") != fields.end()) {
+                    MaxAllowedDelTempCondFD = fields.at("heat_balance_max_temp_diff");
+                }
+                if (fields.find("mass_flow_tolerance") != fields.end()) {
+                    MassFlowTolerance = fields.at("mass_flow_tolerance");
+                }
+                if (fields.find("flow_rate_toler") != fields.end()) {
+                    HVACFlowRateToler = fields.at("flow_rate_toler");
+                }
+                if (fields.find("flow_rate_slope_toler") !=fields.end()) {
+                    DataConvergParams::HVACFlowRateSlopeToler = fields.at("flow_rate_slope_toler");
+                }
+                if (fields.find("flow_rate_oscillation_toler")!= fields.end()) {
+                    DataConvergParams::HVACFlowRateOscillationToler = fields.at("flow_rate_oscillation_toler");
+                }
+                if (fields.find("hum_rat_slope_toler") != fields.end()) {
+                    DataConvergParams::HVACHumRatSlopeToler = fields.at("hum_rat_slope_toler");
+                }
+                if (fields.find("hum_rat_oscillation_toler") != fields.end()) {
+                    DataConvergParams::HVACHumRatOscillationToler = fields.at("hum_rat_oscillation_toler");
+                }
+                if (fields.find("temp_slope_toler") != fields.end()) {
+                    DataConvergParams::HVACTemperatureSlopeToler= fields.at("temp_slope_toler");
+                }
+                if (fields.find("temp_oscillation_toler") != fields.end()) {
+                    DataConvergParams::HVACTemperatureOscillationToler = fields.at("temp_oscillation_toler");
+                }
+                if (fields.find("plant_flow_rate_slope_toler") != fields.end()) {
+                    DataConvergParams::PlantFlowRateSlopeToler = fields.at("plant_flow_rate_slope_toler");
+                }
+                if (fields.find("plant_flow_rate_oscillation_toler") != fields.end()) {
+                    DataConvergParams::PlantFlowRateOscillationToler = fields.at("plant_flow_rate_oscillation_toler");
+                }
+                if (fields.find("plant_temperature_slope_toler") != fields.end()) {
+                    DataConvergParams::PlantTemperatureSlopeToler = fields.at("plant_temperature_slope_toler");
+                }
+                if (fields.find("plant_temperature_oscillation_toler") != fields.end()) {
+                    DataConvergParams::PlantTemperatureOscillationToler = fields.at("plant_temperature_oscillation_toler");
+                }
+
+                if (fields.find("iteration_temp_convergence_criteria") != fields.end()) {
+                    iterationTempConvergenceCriteria = fields.at("iteration_temp_convergence_criteria");
+                }
+
+                if (fields.find("acc") != fields.end()) {
+                    FluidCoolers::Acc = fields.at("acc");
+                }
+                if (fields.find("err_tolerance_furnace") != fields.end()) {
+                    Furnaces::ErrTolerance = fields.at("err_tolerance_furnace");
+                }
+                if (fields.find("err_tolerance_pthp") != fields.end()) {
+                    PackagedTerminalHeatPump::ErrTolerance = fields.at("err_tolerance_pthp");
+                }
+                if (fields.find("iter_limit_baseboard") != fields.end()) {
+                    BBIterLimit = fields.at("iter_limit_baseboard");
+                }
+                if (fields.find("iter_damp_const") != fields.end()) {
+                    HeatBalanceSurfaceManager::IterDampConst= fields.at("iter_damp_const");
+                }
+                if (fields.find("max_allowed_del_temp") != fields.end()) {
+                   HeatBalanceSurfaceManager::MaxAllowedDelTemp = fields.at("max_allowed_del_temp");
+                }
+                if (fields.find("hum_rat_toler") != fields.end()) {
+                    DataConvergParams::HVACHumRatToler = fields.at("hum_rat_toler");
+                }
+                if (fields.find("temperature_toler") != fields.end()) {
+                    DataConvergParams::HVACTemperatureToler = fields.at("temperature_toler");
+                }
+                if (fields.find("plant_temperature_toler") != fields.end()) {
+                    DataConvergParams::PlantTemperatureToler = fields.at("plant_temperature_toler");
+                }
+                if (fields.find("plant_flow_rate_toler") != fields.end()) {
+                    DataConvergParams::PlantFlowRateToler = fields.at("plant_flow_rate_toler");
+                }
+                if (fields.find("plant_flow_flow_rate_toler") != fields.end()) {
+                    DataConvergParams::PlantFlowFlowRateToler = fields.at("plant_flow_flow_rate_toler");
+                }
+               
+
             }
         }
 

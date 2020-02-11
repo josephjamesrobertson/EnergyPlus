@@ -1,7 +1,12 @@
-!-Generator IDFEditor 1.34
+!-Generator IDFEditor 1.50
 !-Option OriginalOrderTop UseSpecialFormat
+
 !-NOTE: All comments with '!-' are ignored by the IDFEditor and are generated automatically.
 !-      Use '!' comments if they need to be retained when using the IDFEditor.
+
+PerformancePrecisionTradeoffs,
+    No;                      !- Use Coil Direct Solutions
+
 !1ZoneUncontrolled.idf
 ! Basic file description:  Basic test for EnergyPlus.  Resistive Walls.  Regular (no ground contact) floor.
 !                          Regular roof.  No Windows.
@@ -87,12 +92,10 @@
 ! HTML Report:                    None
 ! Environmental Emissions:        None
 ! Utility Tariffs:                None
+Version,9.2;
+Timestep,4;
 
-  Version,9.2;
-
-  Timestep,4;
-
-  Building,
+Building,
     Simple One Zone (Wireframe DXF),  !- Name
     0,                       !- North Axis {deg}
     Suburbs,                 !- Terrain
@@ -102,20 +105,18 @@
     30,                      !- Maximum Number of Warmup Days
     6;                       !- Minimum Number of Warmup Days
 
-  HeatBalanceAlgorithm,ConductionTransferFunction;
+HeatBalanceAlgorithm,ConductionTransferFunction;
+SurfaceConvectionAlgorithm:Inside,TARP;
+SurfaceConvectionAlgorithm:Outside,DOE-2;
 
-  SurfaceConvectionAlgorithm:Inside,TARP;
-
-  SurfaceConvectionAlgorithm:Outside,DOE-2;
-
-  SimulationControl,
+SimulationControl,
     No,                      !- Do Zone Sizing Calculation
     No,                      !- Do System Sizing Calculation
     No,                      !- Do Plant Sizing Calculation
     Yes,                     !- Run Simulation for Sizing Periods
     Yes;                     !- Run Simulation for Weather File Run Periods
 
-  RunPeriod,
+RunPeriod,
     Run Period 1,            !- Name
     1,                       !- Begin Month
     1,                       !- Begin Day of Month
@@ -130,20 +131,19 @@
     Yes,                     !- Use Weather File Rain Indicators
     Yes;                     !- Use Weather File Snow Indicators
 
-  Site:Location,
+Site:Location,
     Denver Centennial  Golden   N_CO_USA Design_Conditions,  !- Name
     39.74,                   !- Latitude {deg}
     -105.18,                 !- Longitude {deg}
     -7.00,                   !- Time Zone {hr}
     1829.00;                 !- Elevation {m}
 
- !  WMO=724666 Time Zone=NAM: (GMT-07:00) Mountain Time (US & Canada)
- !  Data Source=ASHRAE 2009 Annual Design Conditions
- ! Denver Centennial  Golden   N_CO_USA Annual Heating Design Conditions Wind Speed=3m/s Wind Dir=340
- ! Coldest Month=DEC
- ! Denver Centennial  Golden   N_CO_USA Annual Heating 99%, MaxDB=-15.5°C
-
-  SizingPeriod:DesignDay,
+!  WMO=724666 Time Zone=NAM: (GMT-07:00) Mountain Time (US & Canada)
+!  Data Source=ASHRAE 2009 Annual Design Conditions
+! Denver Centennial  Golden   N_CO_USA Annual Heating Design Conditions Wind Speed=3m/s Wind Dir=340
+! Coldest Month=DEC
+! Denver Centennial  Golden   N_CO_USA Annual Heating 99%, MaxDB=-15.5°C
+SizingPeriod:DesignDay,
     Denver Centennial  Golden   N Ann Htg 99% Condns DB,  !- Name
     12,                      !- Month
     21,                      !- Day of Month
@@ -171,11 +171,10 @@
     ,                        !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud) {dimensionless}
     0.00;                    !- Sky Clearness
 
- ! Denver Centennial  Golden   N Annual Cooling Design Conditions Wind Speed=4.9m/s Wind Dir=0
- ! Hottest Month=JUL
- ! Denver Centennial  Golden   N_CO_USA Annual Cooling (DB=>MWB) 1%, MaxDB=32°C MWB=15.5°C
-
-  SizingPeriod:DesignDay,
+! Denver Centennial  Golden   N Annual Cooling Design Conditions Wind Speed=4.9m/s Wind Dir=0
+! Hottest Month=JUL
+! Denver Centennial  Golden   N_CO_USA Annual Cooling (DB=>MWB) 1%, MaxDB=32°C MWB=15.5°C
+SizingPeriod:DesignDay,
     Denver Centennial  Golden   N Ann Clg 1% Condns DB=>MWB,  !- Name
     7,                       !- Month
     21,                      !- Day of Month
@@ -203,7 +202,7 @@
     ,                        !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud) {dimensionless}
     1.00;                    !- Sky Clearness
 
-  Material:NoMass,
+Material:NoMass,
     R13LAYER,                !- Name
     Rough,                   !- Roughness
     2.290965,                !- Thermal Resistance {m2-K/W}
@@ -211,7 +210,7 @@
     0.7500000,               !- Solar Absorptance
     0.7500000;               !- Visible Absorptance
 
-  Material:NoMass,
+Material:NoMass,
     R31LAYER,                !- Name
     Rough,                   !- Roughness
     5.456,                   !- Thermal Resistance {m2-K/W}
@@ -219,7 +218,7 @@
     0.7500000,               !- Solar Absorptance
     0.7500000;               !- Visible Absorptance
 
-  Material,
+Material,
     C5 - 4 IN HW CONCRETE,   !- Name
     MediumRough,             !- Roughness
     0.1014984,               !- Thickness {m}
@@ -230,41 +229,39 @@
     0.6500000,               !- Solar Absorptance
     0.6500000;               !- Visible Absorptance
 
-  Construction,
+Construction,
     R13WALL,                 !- Name
     R13LAYER;                !- Outside Layer
 
-  Construction,
+Construction,
     FLOOR,                   !- Name
     C5 - 4 IN HW CONCRETE;   !- Outside Layer
 
-  Construction,
+Construction,
     ROOF31,                  !- Name
     R31LAYER;                !- Outside Layer
 
-  Zone,
+Zone,
     ZONE ONE,                !- Name
     0,                       !- Direction of Relative North {deg}
-    0,                       !- X Origin {m}
-    0,                       !- Y Origin {m}
-    0,                       !- Z Origin {m}
+    0, 0, 0,                            !- X,Y,Z  {m}
     1,                       !- Type
     1,                       !- Multiplier
     autocalculate,           !- Ceiling Height {m}
     autocalculate;           !- Volume {m3}
 
-  ScheduleTypeLimits,
+ScheduleTypeLimits,
     Fraction,                !- Name
     0.0,                     !- Lower Limit Value
     1.0,                     !- Upper Limit Value
     CONTINUOUS;              !- Numeric Type
 
-  GlobalGeometryRules,
+GlobalGeometryRules,
     UpperLeftCorner,         !- Starting Vertex Position
     CounterClockWise,        !- Vertex Entry Direction
     World;                   !- Coordinate System
 
-  BuildingSurface:Detailed,
+BuildingSurface:Detailed,
     Zn001:Wall001,           !- Name
     Wall,                    !- Surface Type
     R13WALL,                 !- Construction Name
@@ -275,12 +272,12 @@
     WindExposed,             !- Wind Exposure
     0.5000000,               !- View Factor to Ground
     4,                       !- Number of Vertices
-    0,0,4.572000,  !- X,Y,Z ==> Vertex 1 {m}
-    0,0,0,  !- X,Y,Z ==> Vertex 2 {m}
-    15.24000,0,0,  !- X,Y,Z ==> Vertex 3 {m}
-    15.24000,0,4.572000;  !- X,Y,Z ==> Vertex 4 {m}
+    0, 0, 4.572000,                     !- X,Y,Z  1 {m}
+    0, 0, 0,                            !- X,Y,Z  2 {m}
+    15.24000, 0, 0,                     !- X,Y,Z  3 {m}
+    15.24000, 0, 4.572000;              !- X,Y,Z  4 {m}
 
-  BuildingSurface:Detailed,
+BuildingSurface:Detailed,
     Zn001:Wall002,           !- Name
     Wall,                    !- Surface Type
     R13WALL,                 !- Construction Name
@@ -291,12 +288,12 @@
     WindExposed,             !- Wind Exposure
     0.5000000,               !- View Factor to Ground
     4,                       !- Number of Vertices
-    15.24000,0,4.572000,  !- X,Y,Z ==> Vertex 1 {m}
-    15.24000,0,0,  !- X,Y,Z ==> Vertex 2 {m}
-    15.24000,15.24000,0,  !- X,Y,Z ==> Vertex 3 {m}
-    15.24000,15.24000,4.572000;  !- X,Y,Z ==> Vertex 4 {m}
+    15.24000, 0, 4.572000,              !- X,Y,Z  1 {m}
+    15.24000, 0, 0,                     !- X,Y,Z  2 {m}
+    15.24000, 15.24000, 0,              !- X,Y,Z  3 {m}
+    15.24000, 15.24000, 4.572000;       !- X,Y,Z  4 {m}
 
-  BuildingSurface:Detailed,
+BuildingSurface:Detailed,
     Zn001:Wall003,           !- Name
     Wall,                    !- Surface Type
     R13WALL,                 !- Construction Name
@@ -307,12 +304,12 @@
     WindExposed,             !- Wind Exposure
     0.5000000,               !- View Factor to Ground
     4,                       !- Number of Vertices
-    15.24000,15.24000,4.572000,  !- X,Y,Z ==> Vertex 1 {m}
-    15.24000,15.24000,0,  !- X,Y,Z ==> Vertex 2 {m}
-    0,15.24000,0,  !- X,Y,Z ==> Vertex 3 {m}
-    0,15.24000,4.572000;  !- X,Y,Z ==> Vertex 4 {m}
+    15.24000, 15.24000, 4.572000,       !- X,Y,Z  1 {m}
+    15.24000, 15.24000, 0,              !- X,Y,Z  2 {m}
+    0, 15.24000, 0,                     !- X,Y,Z  3 {m}
+    0, 15.24000, 4.572000;              !- X,Y,Z  4 {m}
 
-  BuildingSurface:Detailed,
+BuildingSurface:Detailed,
     Zn001:Wall004,           !- Name
     Wall,                    !- Surface Type
     R13WALL,                 !- Construction Name
@@ -323,12 +320,12 @@
     WindExposed,             !- Wind Exposure
     0.5000000,               !- View Factor to Ground
     4,                       !- Number of Vertices
-    0,15.24000,4.572000,  !- X,Y,Z ==> Vertex 1 {m}
-    0,15.24000,0,  !- X,Y,Z ==> Vertex 2 {m}
-    0,0,0,  !- X,Y,Z ==> Vertex 3 {m}
-    0,0,4.572000;  !- X,Y,Z ==> Vertex 4 {m}
+    0, 15.24000, 4.572000,              !- X,Y,Z  1 {m}
+    0, 15.24000, 0,                     !- X,Y,Z  2 {m}
+    0, 0, 0,                            !- X,Y,Z  3 {m}
+    0, 0, 4.572000;                     !- X,Y,Z  4 {m}
 
-  BuildingSurface:Detailed,
+BuildingSurface:Detailed,
     Zn001:Flr001,            !- Name
     Floor,                   !- Surface Type
     FLOOR,                   !- Construction Name
@@ -339,12 +336,12 @@
     NoWind,                  !- Wind Exposure
     1.000000,                !- View Factor to Ground
     4,                       !- Number of Vertices
-    15.24000,0.000000,0.0,  !- X,Y,Z ==> Vertex 1 {m}
-    0.000000,0.000000,0.0,  !- X,Y,Z ==> Vertex 2 {m}
-    0.000000,15.24000,0.0,  !- X,Y,Z ==> Vertex 3 {m}
-    15.24000,15.24000,0.0;  !- X,Y,Z ==> Vertex 4 {m}
+    15.24000, 0.000000, 0.0,            !- X,Y,Z  1 {m}
+    0.000000, 0.000000, 0.0,            !- X,Y,Z  2 {m}
+    0.000000, 15.24000, 0.0,            !- X,Y,Z  3 {m}
+    15.24000, 15.24000, 0.0;            !- X,Y,Z  4 {m}
 
-  BuildingSurface:Detailed,
+BuildingSurface:Detailed,
     Zn001:Roof001,           !- Name
     Roof,                    !- Surface Type
     ROOF31,                  !- Construction Name
@@ -355,71 +352,52 @@
     WindExposed,             !- Wind Exposure
     0,                       !- View Factor to Ground
     4,                       !- Number of Vertices
-    0.000000,15.24000,4.572,  !- X,Y,Z ==> Vertex 1 {m}
-    0.000000,0.000000,4.572,  !- X,Y,Z ==> Vertex 2 {m}
-    15.24000,0.000000,4.572,  !- X,Y,Z ==> Vertex 3 {m}
-    15.24000,15.24000,4.572;  !- X,Y,Z ==> Vertex 4 {m}
+    0.000000, 15.24000, 4.572,          !- X,Y,Z  1 {m}
+    0.000000, 0.000000, 4.572,          !- X,Y,Z  2 {m}
+    15.24000, 0.000000, 4.572,          !- X,Y,Z  3 {m}
+    15.24000, 15.24000, 4.572;          !- X,Y,Z  4 {m}
 
-  Output:Variable,*,Site Outdoor Air Drybulb Temperature,hourly;
+Output:Variable,*,Site Outdoor Air Drybulb Temperature,hourly;
+Output:Variable,*,Site Daylight Saving Time Status,daily;
+Output:Variable,*,Site Day Type Index,daily;
+Output:Variable,*,Zone Mean Air Temperature,hourly;
+Output:Variable,*,Zone Total Internal Latent Gain Energy,hourly;
+Output:Variable,*,Zone Mean Radiant Temperature,hourly;
+Output:Variable,*,Zone Air Heat Balance Surface Convection Rate,hourly;
+Output:Variable,*,Zone Air Heat Balance Air Energy Storage Rate,hourly;
+Output:Variable,*,Surface Inside Face Temperature,daily;
+Output:Variable,*,Surface Outside Face Temperature,daily;
+Output:Variable,*,Surface Inside Face Convection Heat Transfer Coefficient,daily;
+Output:Variable,*,Surface Outside Face Convection Heat Transfer Coefficient,daily;
+Output:Variable,*,Other Equipment Total Heating Energy,monthly;
+Output:Variable,*,Zone Other Equipment Total Heating Energy,monthly;
+Output:VariableDictionary,IDF;
+Output:Surfaces:Drawing,dxf:wireframe;
+Output:Constructions,Constructions;
+Output:Meter:MeterFileOnly,ExteriorLights:Electricity,hourly;
+Output:Meter:MeterFileOnly,EnergyTransfer:Building,hourly;
+Output:Meter:MeterFileOnly,EnergyTransfer:Facility,hourly;
 
-  Output:Variable,*,Site Daylight Saving Time Status,daily;
-
-  Output:Variable,*,Site Day Type Index,daily;
-
-  Output:Variable,*,Zone Mean Air Temperature,hourly;
-
-  Output:Variable,*,Zone Total Internal Latent Gain Energy,hourly;
-
-  Output:Variable,*,Zone Mean Radiant Temperature,hourly;
-
-  Output:Variable,*,Zone Air Heat Balance Surface Convection Rate,hourly;
-
-  Output:Variable,*,Zone Air Heat Balance Air Energy Storage Rate,hourly;
-
-  Output:Variable,*,Surface Inside Face Temperature,daily;
-
-  Output:Variable,*,Surface Outside Face Temperature,daily;
-
-  Output:Variable,*,Surface Inside Face Convection Heat Transfer Coefficient,daily;
-
-  Output:Variable,*,Surface Outside Face Convection Heat Transfer Coefficient,daily;
-
-  Output:Variable,*,Other Equipment Total Heating Energy,monthly;
-
-  Output:Variable,*,Zone Other Equipment Total Heating Energy,monthly;
-
-  Output:VariableDictionary,IDF;
-
-  Output:Surfaces:Drawing,dxf:wireframe;
-
-  Output:Constructions,Constructions;
-
-  Output:Meter:MeterFileOnly,ExteriorLights:Electricity,hourly;
-
-  Output:Meter:MeterFileOnly,EnergyTransfer:Building,hourly;
-
-  Output:Meter:MeterFileOnly,EnergyTransfer:Facility,hourly;
-
-  OutputControl:Table:Style,
+OutputControl:Table:Style,
     ALL;                     !- Column Separator
 
-  Output:Table:SummaryReports,
+Output:Table:SummaryReports,
     AllSummary;              !- Report 1 Name
 
-  Exterior:Lights,
+Exterior:Lights,
     ExtLights,               !- Name
     AlwaysOn,                !- Schedule Name
     5250,                    !- Design Level {W}
     AstronomicalClock,       !- Control Option
     Grounds Lights;          !- End-Use Subcategory
 
-  ScheduleTypeLimits,
+ScheduleTypeLimits,
     On/Off,                  !- Name
     0,                       !- Lower Limit Value
     1,                       !- Upper Limit Value
     DISCRETE;                !- Numeric Type
 
-  OtherEquipment,
+OtherEquipment,
     Test 352a,               !- Name
     None,                    !- Fuel Type
     ZONE ONE,                !- Zone or ZoneList Name
@@ -432,7 +410,7 @@
     0,                       !- Fraction Radiant
     0;                       !- Fraction Lost
 
-  OtherEquipment,
+OtherEquipment,
     Test 352 minus,          !- Name
     None,                    !- Fuel Type
     ZONE ONE,                !- Zone or ZoneList Name
@@ -445,5 +423,4 @@
     0,                       !- Fraction Radiant
     0;                       !- Fraction Lost
 
-  Schedule:Constant,AlwaysOn,On/Off,1.0;
-
+Schedule:Constant,AlwaysOn,On/Off,1.0;

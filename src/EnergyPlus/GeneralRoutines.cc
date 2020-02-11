@@ -99,6 +99,7 @@
 namespace EnergyPlus {
 
 static ObjexxFCL::gio::Fmt fmtLD("*");
+Real64 BBIterLimit(0.00001);
 
 // Integer constants for different system types handled by the routines in this file
 enum GeneralRoutinesEquipNums
@@ -681,7 +682,7 @@ bool BBConvergeCheck(int const SimCompNum, Real64 const MaxFlow, Real64 const Mi
     bool BBConvergeCheck;
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static Real64 const BBIterLimit(0.00001);
+    //Real64 BBIterLimit(0.00001);
 
     if (SimCompNum != BBSteamRadConvNum && SimCompNum != BBWaterRadConvNum) {
         // For all zone equipment except radiant/convective baseboard (steam and water) units:

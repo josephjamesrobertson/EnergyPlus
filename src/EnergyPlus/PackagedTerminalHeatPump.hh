@@ -107,6 +107,7 @@ namespace PackagedTerminalHeatPump {
     extern bool CoolingLoad;         // defines a cooling load on PTUnit
     extern Real64 MinWaterFlow;      // minimum water flow for heating [kg/s]
     extern Real64 TempSteamIn;       // steam coil steam inlet temperature
+    extern Real64 ErrTolerance; // convergence limit for hotwater coil
 
     // SUBROUTINE SPECIFICATIONS FOR MODULE
 
