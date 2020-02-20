@@ -3004,6 +3004,7 @@ void Resimulate(bool &ResimExt, // Flag to resimulate the exterior energy use si
     using ZoneContaminantPredictorCorrector::ManageZoneContaminanUpdates;
     using namespace ZoneEquipmentManager;
     // using ZoneEquipmentManager::CalcAirFlowSimple;
+    using namespace std::chrono;
 
     // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     Real64 ZoneTempChange(0.0); // Dummy variable needed for calling ManageZoneAirUpdates
@@ -3017,9 +3018,31 @@ void Resimulate(bool &ResimExt, // Flag to resimulate the exterior energy use si
 
     if (ResimHB) {
         // Surface simulation
+
+
+//        DataGlobals::counter_1 += 1;
+//        high_resolution_clock::time_point t1 = high_resolution_clock::now();
         InitSurfaceHeatBalance();
+//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_1 += time_span.count();
+//
+//        DataGlobals::counter_2 += 1;
+//        t1 = high_resolution_clock::now();
+
         HeatBalanceSurfaceManager::CalcHeatBalanceOutsideSurf();
+
+//        t2 = high_resolution_clock::now();
+//        time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_2 += time_span.count();
+//
+//        DataGlobals::counter_3 += 1;
+//        t1 = high_resolution_clock::now();
         HeatBalanceSurfaceManager::CalcHeatBalanceInsideSurf();
+
+//        t2 = high_resolution_clock::now();
+//        time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_3 += time_span.count();
 
         // Air simulation
         InitAirHeatBalance();

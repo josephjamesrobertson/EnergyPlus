@@ -13,6 +13,9 @@ if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_GREATER "3.0")
   CMAKE_POLICY(SET CMP0054 NEW) # CMake 3.1 added this policy
 endif()
 
+include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
+link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")
+
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp" )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )
@@ -32,8 +35,7 @@ string( TIMESTAMP CMAKE_YEAR "%Y")
 set( CMAKE_VERSION_BUILD "Unknown" CACHE STRING "Build number" )
 find_package(Git)
 
-include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
-link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")
+
 
 if(NOT GIT_FOUND)
   find_program(GIT_EXECUTABLE git HINTS "$ENV{LOCALAPPDATA}/Programs/git/bin")

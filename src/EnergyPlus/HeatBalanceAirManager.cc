@@ -4452,6 +4452,10 @@ namespace HeatBalanceAirManager {
         using Psychrometrics::PsyTdpFnWPb;
         using ScheduleManager::GetCurrentScheduleValue;
 
+//        using namespace std::chrono;
+//        DataGlobals::counter_2 += 1;
+//        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+
         // Locals
         // SUBROUTINE ARGUMENT DEFINITIONS:
         // na
@@ -4497,6 +4501,9 @@ namespace HeatBalanceAirManager {
                 }
             }
         }
+//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_2 += time_span.count();
     }
 
 } // namespace HeatBalanceAirManager

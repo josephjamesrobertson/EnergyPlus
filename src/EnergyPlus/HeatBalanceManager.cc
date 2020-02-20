@@ -310,6 +310,9 @@ namespace HeatBalanceManager {
         using DataGlobals::emsCallFromEndZoneTimestepBeforeZoneReporting;
         using EMSManager::ManageEMS;
         using EMSManager::UpdateEMSTrendVariables;
+//        using namespace std::chrono;
+//        DataGlobals::counter_1 += 1;
+//        high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
         // Locals
         // SUBROUTINE ARGUMENT DEFINITIONS:
@@ -393,6 +396,10 @@ namespace HeatBalanceManager {
         if (!WarmupFlag && EndDayFlag && DayOfSim == 1 && !DoingSizing) {
             ReportWarmupConvergence(OutputFiles::getSingleton());
         }
+
+//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer += time_span.count();
     }
 
     // Get Input Section of the Module

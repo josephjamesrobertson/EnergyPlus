@@ -49,6 +49,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <chrono>
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array.functions.hh>
@@ -228,24 +229,50 @@ namespace HeatBalanceSurfaceManager {
         using HeatBalFiniteDiffManager::SurfaceFD;
         using OutputReportTabular::GatherComponentLoadsSurface; // for writing tabular component loads output reports
         using ThermalComfort::ManageThermalComfort;
+        using namespace std::chrono;
 
         int SurfNum;
         int ConstrNum;
 
         if (ManageSurfaceHeatBalancefirstTime) DisplayString("Initializing Surfaces");
-        InitSurfaceHeatBalance(); // Initialize all heat balance related parameters
+
+//        DataGlobals::counter_1 += 1;
+//        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+        InitSurfaceHeatBalance();
+//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_1 += time_span.count();
 
         // Solve the zone heat balance 'Detailed' solution
         // Call the outside and inside surface heat balances
         if (ManageSurfaceHeatBalancefirstTime) DisplayString("Calculate Outside Surface Heat Balance");
+
+
+//        DataGlobals::counter_2 += 1;
+//        t1 = high_resolution_clock::now();
         CalcHeatBalanceOutsideSurf();
+//        t2 = high_resolution_clock::now();
+//        time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_2 += time_span.count();
+
         if (ManageSurfaceHeatBalancefirstTime) DisplayString("Calculate Inside Surface Heat Balance");
+
+//        DataGlobals::counter_3 += 1;
+//        t1 = high_resolution_clock::now();
         CalcHeatBalanceInsideSurf();
+//        t2 = high_resolution_clock::now();
+//        time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_3 += time_span.count();
 
         // The air heat balance must be called before the temperature history
         // updates because there may be a radiant system in the building
         if (ManageSurfaceHeatBalancefirstTime) DisplayString("Calculate Air Heat Balance");
+//        DataGlobals::counter_4 += 1;
+//        t1 = high_resolution_clock::now();
         ManageAirHeatBalance();
+//        t2 = high_resolution_clock::now();
+//        time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_4 += time_span.count();
 
         // IF NECESSARY, do one final "average" heat balance pass.  This is only
         // necessary if a radiant system is present and it was actually on for
@@ -254,7 +281,14 @@ namespace HeatBalanceSurfaceManager {
 
         // Before we leave the Surface Manager the thermal histories need to be updated
         if (DataHeatBalance::AnyCTF || DataHeatBalance::AnyEMPD) {
+
+//            DataGlobals::counter_2 += 1;
+//            high_resolution_clock::time_point t1 = high_resolution_clock::now();
             UpdateThermalHistories(); // Update the thermal histories
+//            high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//            duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//            DataGlobals::timer_2 += time_span.count();
+
         }
 
         if (DataHeatBalance::AnyCondFD) {
@@ -269,7 +303,13 @@ namespace HeatBalanceSurfaceManager {
 
         ManageThermalComfort(false); // "Record keeping" for the zone
 
+//        DataGlobals::counter_5 += 1;
+//        t1 = high_resolution_clock::now();
         ReportSurfaceHeatBalance();
+//        t2 = high_resolution_clock::now();
+//        time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_5 += time_span.count();
+
         if (ZoneSizingCalc) GatherComponentLoadsSurface();
 
         ManageSurfaceHeatBalancefirstTime = false;
@@ -326,6 +366,7 @@ namespace HeatBalanceSurfaceManager {
         // RJH DElight Modification Begin
         using namespace DElightManagerF;
         // RJH DElight Modification End
+
 
         // Locals
         // SUBROUTINE PARAMETER DEFINITIONS:
@@ -850,6 +891,7 @@ namespace HeatBalanceSurfaceManager {
 
         if (InitSurfaceHeatBalancefirstTime) DisplayString("Completed Initializing Surface Heat Balance");
         InitSurfaceHeatBalancefirstTime = false;
+
     }
 
     void GatherForPredefinedReport()
@@ -4405,6 +4447,7 @@ namespace HeatBalanceSurfaceManager {
         using LowTempRadiantSystem::UpdateRadSysSourceValAvg;
         using SteamBaseboardRadiator::UpdateBBSteamRadSourceValAvg;
         using SwimmingPool::UpdatePoolSourceValAvg;
+        using namespace std::chrono;
 
         // Locals
         // SUBROUTINE ARGUMENT DEFINITIONS:
@@ -4441,8 +4484,19 @@ namespace HeatBalanceSurfaceManager {
             SwimmingPoolOn) {
             // Solve the zone heat balance 'Detailed' solution
             // Call the outside and inside surface heat balances
+//            DataGlobals::counter_2 += 1;
+//            high_resolution_clock::time_point t1 = high_resolution_clock::now();
             CalcHeatBalanceOutsideSurf();
+//            high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//            duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//            DataGlobals::timer_2 += time_span.count();
+//
+//            DataGlobals::counter_3 += 1;
+//            t1 = high_resolution_clock::now();
             CalcHeatBalanceInsideSurf();
+//            t2 = high_resolution_clock::now();
+//            time_span = duration_cast<duration<double>>(t2 - t1);
+//            DataGlobals::timer_3 += time_span.count();
         }
     }
 

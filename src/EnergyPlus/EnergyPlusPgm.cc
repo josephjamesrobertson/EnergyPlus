@@ -475,11 +475,21 @@ int RunEnergyPlus(std::string const & filepath)
         EnergyPlus::inputProcessor->reportOrphanRecordObjects();
         ReportOrphanFluids();
         ReportOrphanSchedules();
+        std::cout << "timer 1: " << DataGlobals::timer_1 << "\n";
+        std::cout << "count 1: " << DataGlobals::counter_1 << "\n";
 
-        std::cout << "Plant equip loop: " << DataGlobals::timer << "\n";
-        std::cout << "Solver loop: " << DataGlobals::timer_1 << "\n";
-        std::cout << "Inner: " << DataGlobals::timer_2 << "\n";
-        std::cout << "branch: " << DataGlobals::timer_3 << "\n";
+        std::cout << "timer 2: " << DataGlobals::timer_2 << "\n";
+//        std::cout << "count 2: " << DataGlobals::counter_2 << "\n";
+//
+//        std::cout << "GetSysInput: " << DataGlobals::timer_3 << "\n";
+//        std::cout << "GetSysInput count: " << DataGlobals::counter_3 << "\n";
+//
+//        std::cout << "ManageNonZoneEquipment: " << DataGlobals::timer_4 << "\n";
+//        std::cout << "ManageNonZoneEquipment count: " << DataGlobals::counter_4 << "\n";
+//
+//        std::cout << "ManagePlantLoops: " << DataGlobals::timer_5 << "\n";
+//        std::cout << "ManagePlantLoops count: " << DataGlobals::counter_5 << "\n";
+
 
         if (runReadVars) {
             std::string readVarsPath = exeDirectory + "ReadVarsESO" + exeExtension;

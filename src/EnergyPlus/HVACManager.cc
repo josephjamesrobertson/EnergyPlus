@@ -48,6 +48,8 @@
 // C++ Headers
 #include <cmath>
 #include <string>
+#include <chrono>
+#include <omp.h>
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array.functions.hh>
@@ -299,6 +301,8 @@ namespace HVACManager {
         using ZoneEquipmentManager::CalcAirFlowSimple;
         using ZoneEquipmentManager::UpdateZoneSizing;
         using ZoneTempPredictorCorrector::NumOnOffCtrZone;
+        using namespace std::chrono;
+
         // Locals
         // SUBROUTINE ARGUMENT DEFINITIONS:
         // na
@@ -394,7 +398,14 @@ namespace HVACManager {
         ManageRefrigeratedCaseRacks();
 
         // ZONE INITIALIZATION  'Get Zone Setpoints'
+
+//        DataGlobals::counter_1 += 1;
+//        high_resolution_clock::time_point t1 = high_resolution_clock::now();
         ManageZoneAirUpdates(iGetZoneSetPoints, ZoneTempChange, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
+//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_1 += time_span.count();
+
         if (Contaminant.SimulateContaminants)
             ManageZoneContaminanUpdates(iGetZoneSetPoints, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
 
@@ -411,8 +422,13 @@ namespace HVACManager {
         SysDepZoneLoadsLagged = SysDepZoneLoads;
 
         UpdateInternalGainValues(true, true);
-
+//        DataGlobals::counter_1 += 1;
+//        t1 = high_resolution_clock::now();
         ManageZoneAirUpdates(iPredictStep, ZoneTempChange, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
+//        t2 = high_resolution_clock::now();
+//        time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_1 += time_span.count();
+
 
         if (Contaminant.SimulateContaminants) ManageZoneContaminanUpdates(iPredictStep, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
 
@@ -433,8 +449,13 @@ namespace HVACManager {
         }
 
         BeginTimeStepFlag = false; // At this point, we have been through the first pass through SimHVAC so this needs to be set
-
+//        DataGlobals::counter_1 += 1;
+//        t1 = high_resolution_clock::now();
         ManageZoneAirUpdates(iCorrectStep, ZoneTempChange, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
+//        t2 = high_resolution_clock::now();
+//        time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_1 += time_span.count();
+
         if (Contaminant.SimulateContaminants) ManageZoneContaminanUpdates(iCorrectStep, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
 
         if (ZoneTempChange > MaxZoneTempDiff && !KickOffSimulation) {
@@ -485,10 +506,12 @@ namespace HVACManager {
                 ShortenTimeStepSys = false;
 
                 ManageZoneAirUpdates(iCorrectStep, ZoneTempChange, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
+
                 if (Contaminant.SimulateContaminants)
                     ManageZoneContaminanUpdates(iCorrectStep, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
 
                 ManageZoneAirUpdates(iPushSystemTimestepHistories, ZoneTempChange, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
+
                 if (Contaminant.SimulateContaminants)
                     ManageZoneContaminanUpdates(iPushSystemTimestepHistories, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
                 PreviousTimeStep = TimeStepSys;
@@ -606,6 +629,7 @@ namespace HVACManager {
         } // system time step  loop (loops once if no downstepping)
 
         ManageZoneAirUpdates(iPushZoneTimestepHistories, ZoneTempChange, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
+
         if (Contaminant.SimulateContaminants)
             ManageZoneContaminanUpdates(iPushZoneTimestepHistories, ShortenTimeStepSys, UseZoneTimeStepHistory, PriorTimeStep);
 
@@ -645,6 +669,7 @@ namespace HVACManager {
                 }
             }
         }
+
     }
 
     void SimHVAC()
@@ -704,6 +729,7 @@ namespace HVACManager {
         using SetPointManager::ManageSetPoints;
         using SystemAvailabilityManager::ManageSystemAvailability;
         using ZoneEquipmentManager::ManageZoneEquipment;
+        using namespace std::chrono;
 
         // Locals
         // SUBROUTINE ARGUMENT DEFINITIONS:
@@ -844,6 +870,9 @@ namespace HVACManager {
         // first explicitly call each system type with FirstHVACIteration,
 
         // Manages the various component simulations
+//        DataGlobals::counter_1 += 1;
+//        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+
         SimSelectedEquipment(SimAirLoopsFlag,
                              SimZoneEquipmentFlag,
                              SimNonZoneEquipmentFlag,
@@ -852,6 +881,9 @@ namespace HVACManager {
                              FirstHVACIteration,
                              SimWithPlantFlowUnlocked);
 
+//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataGlobals::timer_1 += time_span.count();
         // Eventually, when all of the flags are set to false, the
         // simulation has converged for this system time step.
 
@@ -868,7 +900,8 @@ namespace HVACManager {
                (HVACManageIteration <= MaxIter)) {
 
             ManageEMS(emsCallFromHVACIterationLoop, anyEMSRan); // calling point id
-
+//            DataGlobals::counter_1 += 1;
+//            t1 = high_resolution_clock::now();
             // Manages the various component simulations
             SimSelectedEquipment(SimAirLoopsFlag,
                                  SimZoneEquipmentFlag,
@@ -877,6 +910,10 @@ namespace HVACManager {
                                  SimElecCircuitsFlag,
                                  FirstHVACIteration,
                                  SimWithPlantFlowUnlocked);
+
+//            t2 = high_resolution_clock::now();
+//            time_span = duration_cast<duration<double>>(t2 - t1);
+//            DataGlobals::timer_1 += time_span.count();
 
             // Eventually, when all of the flags are set to false, the
             // simulation has converged for this system time step.
@@ -904,6 +941,10 @@ namespace HVACManager {
                 SimNonZoneEquipmentFlag = false;
                 SimPlantLoopsFlag = true;
                 SimElecCircuitsFlag = false;
+
+//                DataGlobals::counter_1 += 1;
+//                t1 = high_resolution_clock::now();
+
                 SimSelectedEquipment(SimAirLoopsFlag,
                                      SimZoneEquipmentFlag,
                                      SimNonZoneEquipmentFlag,
@@ -911,12 +952,19 @@ namespace HVACManager {
                                      SimElecCircuitsFlag,
                                      FirstHVACIteration,
                                      SimWithPlantFlowUnlocked);
+
+//                t2 = high_resolution_clock::now();
+//                time_span = duration_cast<duration<double>>(t2 - t1);
+//                DataGlobals::timer_1 += time_span.count();
+
                 // now call for all non-plant simulation, but with plant flow lock on
                 SimAirLoopsFlag = true;
                 SimZoneEquipmentFlag = true;
                 SimNonZoneEquipmentFlag = true;
                 SimPlantLoopsFlag = false;
                 SimElecCircuitsFlag = true;
+//                DataGlobals::counter_1 += 1;
+//                t1 = high_resolution_clock::now();
                 SimSelectedEquipment(SimAirLoopsFlag,
                                      SimZoneEquipmentFlag,
                                      SimNonZoneEquipmentFlag,
@@ -924,6 +972,9 @@ namespace HVACManager {
                                      SimElecCircuitsFlag,
                                      FirstHVACIteration,
                                      SimWithPlantFlowLocked);
+//                t2 = high_resolution_clock::now();
+//                time_span = duration_cast<duration<double>>(t2 - t1);
+//                DataGlobals::timer_1 += time_span.count();
                 UpdateZoneInletConvergenceLog();
                 // now call for a last plant simulation
                 SimAirLoopsFlag = false;
@@ -931,6 +982,8 @@ namespace HVACManager {
                 SimNonZoneEquipmentFlag = false;
                 SimPlantLoopsFlag = true;
                 SimElecCircuitsFlag = false;
+//                DataGlobals::counter_1 += 1;
+//                t1 = high_resolution_clock::now();
                 SimSelectedEquipment(SimAirLoopsFlag,
                                      SimZoneEquipmentFlag,
                                      SimNonZoneEquipmentFlag,
@@ -938,12 +991,17 @@ namespace HVACManager {
                                      SimElecCircuitsFlag,
                                      FirstHVACIteration,
                                      SimWithPlantFlowUnlocked);
+//                t2 = high_resolution_clock::now();
+//                time_span = duration_cast<duration<double>>(t2 - t1);
+//                DataGlobals::timer_1 += time_span.count();
                 // now call for a last all non-plant simulation, but with plant flow lock on
                 SimAirLoopsFlag = true;
                 SimZoneEquipmentFlag = true;
                 SimNonZoneEquipmentFlag = true;
                 SimPlantLoopsFlag = false;
                 SimElecCircuitsFlag = true;
+//                DataGlobals::counter_1 += 1;
+//                t1 = high_resolution_clock::now();
                 SimSelectedEquipment(SimAirLoopsFlag,
                                      SimZoneEquipmentFlag,
                                      SimNonZoneEquipmentFlag,
@@ -951,7 +1009,10 @@ namespace HVACManager {
                                      SimElecCircuitsFlag,
                                      FirstHVACIteration,
                                      SimWithPlantFlowLocked);
-                UpdateZoneInletConvergenceLog();
+//                t2 = high_resolution_clock::now();
+//                time_span = duration_cast<duration<double>>(t2 - t1);
+//                DataGlobals::timer_1 += time_span.count();
+//                UpdateZoneInletConvergenceLog();
             }
         }
 
@@ -1756,6 +1817,7 @@ namespace HVACManager {
         using PlantUtilities::SetAllFlowLocks;
         using SimAirServingZones::ManageAirLoops;
         using ZoneEquipmentManager::ManageZoneEquipment;
+        using namespace std::chrono;
 
         // Locals
         // SUBROUTINE ARGUMENT DEFINITIONS:
@@ -1796,7 +1858,15 @@ namespace HVACManager {
             // determination of which zones are connected to which air loops.
             // This call of ManageZoneEquipment does nothing except force the
             // zone equipment data to be read in.
+
+//            DataGlobals::counter_2 += 1;
+//            high_resolution_clock::time_point t1 = high_resolution_clock::now();
+
             ManageZoneEquipment(FirstHVACIteration, SimZoneEquipment, SimAirLoops);
+
+//            high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//            duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//            DataGlobals::timer_2 += time_span.count();
             MyEnvrnFlag = false;
         }
         if (!BeginEnvrnFlag) {
@@ -1809,18 +1879,44 @@ namespace HVACManager {
             if (AirflowNetwork::SimulateAirflowNetwork > AirflowNetwork::AirflowNetworkControlSimple) {
                 ManageAirflowNetworkBalance(FirstHVACIteration);
             }
+//            DataGlobals::counter_3 += 1;
+//            high_resolution_clock::time_point  t1 = high_resolution_clock::now();
             ManageAirLoops(FirstHVACIteration, SimAirLoops, SimZoneEquipment);
+//            high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//            duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//            DataGlobals::timer_3 += time_span.count();
+
             AirLoopInputsFilled = true; // all air loop inputs have been read in
             SimAirLoops = true;         // Need to make sure that SimAirLoop is simulated at min twice to calculate PLR in some air loop equipment
             AirLoopsSimOnce = true;     // air loops simulated once for this environment
             ResetTerminalUnitFlowLimits();
             FlowMaxAvailAlreadyReset = true;
+
+//            DataGlobals::counter_2 += 1;
+//            t1 = high_resolution_clock::now();
             ManageZoneEquipment(FirstHVACIteration, SimZoneEquipment, SimAirLoops);
+//            t2 = high_resolution_clock::now();
+//            time_span = duration_cast<duration<double>>(t2 - t1);
+//            DataGlobals::timer_2 += time_span.count();
+
+
             SimZoneEquipment = true; // needs to be simulated at least twice for flow resolution to propagate to this routine
+
+//            DataGlobals::counter_4 += 1;
+//            t1 = high_resolution_clock::now();
             ManageNonZoneEquipment(FirstHVACIteration, SimNonZoneEquipment);
+//            t2 = high_resolution_clock::now();
+//            time_span = duration_cast<duration<double>>(t2 - t1);
+//            DataGlobals::timer_4 += time_span.count();
+
             facilityElectricServiceObj->manageElectricPowerService(FirstHVACIteration, SimElecCircuitsFlag, false);
 
+//            DataGlobals::counter_5 += 1;
+//            t1 = high_resolution_clock::now();
             ManagePlantLoops(FirstHVACIteration, SimAirLoops, SimZoneEquipment, SimNonZoneEquipment, SimPlantLoops, SimElecCircuits);
+//            t2 = high_resolution_clock::now();
+//            time_span = duration_cast<duration<double>>(t2 - t1);
+//            DataGlobals::timer_5 += time_span.count();
 
             AskForPlantCheckOnAbort = true; // need to make a first pass through plant calcs before this check make sense
             facilityElectricServiceObj->manageElectricPowerService(FirstHVACIteration, SimElecCircuitsFlag, false);
@@ -1834,7 +1930,13 @@ namespace HVACManager {
                     ManageAirflowNetworkBalance(FirstHVACIteration, IterAir, ResimulateAirZone);
                 }
                 if (SimAirLoops) {
+//                    DataGlobals::counter_3 += 1;
+//                    high_resolution_clock::time_point t1 = high_resolution_clock::now();
                     ManageAirLoops(FirstHVACIteration, SimAirLoops, SimZoneEquipment);
+//                    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//                    duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//                    DataGlobals::timer_3 += time_span.count();
+
                     SimElecCircuits = true; // If this was simulated there are possible electric changes that need to be simulated
                 }
 
@@ -1850,7 +1952,13 @@ namespace HVACManager {
                         ResolveAirLoopFlowLimits();
                         FlowResolutionNeeded = false;
                     }
+//                    DataGlobals::counter_2 += 1;
+//                    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+
                     ManageZoneEquipment(FirstHVACIteration, SimZoneEquipment, SimAirLoops);
+//                    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//                    duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//                    DataGlobals::timer_2 += time_span.count();
                     SimElecCircuits = true; // If this was simulated there are possible electric changes that need to be simulated
                 }
                 FlowMaxAvailAlreadyReset = false;
@@ -1874,7 +1982,12 @@ namespace HVACManager {
             ResolveLockoutFlags(SimAirLoops);
 
             if (SimNonZoneEquipment) {
+//                DataGlobals::counter_4 += 1;
+//                high_resolution_clock::time_point t1 = high_resolution_clock::now();
                 ManageNonZoneEquipment(FirstHVACIteration, SimNonZoneEquipment);
+//                high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//                duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//                DataGlobals::timer_4 += time_span.count();
                 SimElecCircuits = true; // If this was simulated there are possible electric changes that need to be simulated
             }
 
@@ -1890,7 +2003,12 @@ namespace HVACManager {
             }
 
             if (SimPlantLoops) {
+//                DataGlobals::counter_5 += 1;
+//                high_resolution_clock::time_point t1 = high_resolution_clock::now();
                 ManagePlantLoops(FirstHVACIteration, SimAirLoops, SimZoneEquipment, SimNonZoneEquipment, SimPlantLoops, SimElecCircuits);
+//                high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//                duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//                DataGlobals::timer_5 += time_span.count();
             }
 
             if (SimElecCircuits) {
