@@ -283,12 +283,12 @@ namespace HeatBalanceSurfaceManager {
         // Before we leave the Surface Manager the thermal histories need to be updated
         if (DataHeatBalance::AnyCTF || DataHeatBalance::AnyEMPD) {
 
-//            DataGlobals::counter_4 += 1;
-//            high_resolution_clock::time_point t1 = high_resolution_clock::now();
+            DataGlobals::counter_4 += 1;
+            high_resolution_clock::time_point t1 = high_resolution_clock::now();
             UpdateThermalHistories(); // Update the thermal histories
-//            high_resolution_clock::time_point t2 = high_resolution_clock::now();
-//            duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-//            DataGlobals::timer_4 += time_span.count();
+            high_resolution_clock::time_point t2 = high_resolution_clock::now();
+            duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+            DataGlobals::timer_4 += time_span.count();
 
         }
 
@@ -304,12 +304,12 @@ namespace HeatBalanceSurfaceManager {
 
         ManageThermalComfort(false); // "Record keeping" for the zone
 
-//        DataGlobals::counter_5 += 1;
-//        t1 = high_resolution_clock::now();
+        DataGlobals::counter_5 += 1;
+        t1 = high_resolution_clock::now();
         ReportSurfaceHeatBalance();
-//        t2 = high_resolution_clock::now();
-//        time_span = duration_cast<duration<double>>(t2 - t1);
-//        DataGlobals::timer_5 += time_span.count();
+        t2 = high_resolution_clock::now();
+        time_span = duration_cast<duration<double>>(t2 - t1);
+        DataGlobals::timer_5 += time_span.count();
 
         if (ZoneSizingCalc) GatherComponentLoadsSurface();
 
