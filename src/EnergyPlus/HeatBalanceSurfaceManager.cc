@@ -237,33 +237,33 @@ namespace HeatBalanceSurfaceManager {
 
         if (ManageSurfaceHeatBalancefirstTime) DisplayString("Initializing Surfaces");
 
-//        DataGlobals::counter_1 += 1;
-//        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+        DataGlobals::counter_1 += 1;
+        high_resolution_clock::time_point t1 = high_resolution_clock::now();
         InitSurfaceHeatBalance();
-//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
-//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-//        DataGlobals::timer_1 += time_span.count();
+        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+        DataGlobals::timer_1 += time_span.count();
 
         // Solve the zone heat balance 'Detailed' solution
         // Call the outside and inside surface heat balances
         if (ManageSurfaceHeatBalancefirstTime) DisplayString("Calculate Outside Surface Heat Balance");
 
 
-//        DataGlobals::counter_2 += 1;
-//        t1 = high_resolution_clock::now();
+        DataGlobals::counter_2 += 1;
+        t1 = high_resolution_clock::now();
         CalcHeatBalanceOutsideSurf();
-//        t2 = high_resolution_clock::now();
-//        time_span = duration_cast<duration<double>>(t2 - t1);
-//        DataGlobals::timer_2 += time_span.count();
+        t2 = high_resolution_clock::now();
+        time_span = duration_cast<duration<double>>(t2 - t1);
+        DataGlobals::timer_2 += time_span.count();
 
         if (ManageSurfaceHeatBalancefirstTime) DisplayString("Calculate Inside Surface Heat Balance");
 
-//        DataGlobals::counter_3 += 1;
-//        t1 = high_resolution_clock::now();
+        DataGlobals::counter_3 += 1;
+        t1 = high_resolution_clock::now();
         CalcHeatBalanceInsideSurf();
-//        t2 = high_resolution_clock::now();
-//        time_span = duration_cast<duration<double>>(t2 - t1);
-//        DataGlobals::timer_3 += time_span.count();
+        t2 = high_resolution_clock::now();
+        time_span = duration_cast<duration<double>>(t2 - t1);
+        DataGlobals::timer_3 += time_span.count();
 
         // The air heat balance must be called before the temperature history
         // updates because there may be a radiant system in the building
@@ -283,12 +283,12 @@ namespace HeatBalanceSurfaceManager {
         // Before we leave the Surface Manager the thermal histories need to be updated
         if (DataHeatBalance::AnyCTF || DataHeatBalance::AnyEMPD) {
 
-//            DataGlobals::counter_2 += 1;
+//            DataGlobals::counter_4 += 1;
 //            high_resolution_clock::time_point t1 = high_resolution_clock::now();
             UpdateThermalHistories(); // Update the thermal histories
 //            high_resolution_clock::time_point t2 = high_resolution_clock::now();
 //            duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-//            DataGlobals::timer_2 += time_span.count();
+//            DataGlobals::timer_4 += time_span.count();
 
         }
 
@@ -4546,9 +4546,9 @@ namespace HeatBalanceSurfaceManager {
         // na
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        int HistTermNum; // DO loop counter for history terms
-        int SideNum;     // DO loop counter for surfaces sides (inside, outside)
-        int SurfNum;     // Surface number DO loop counter
+//        int HistTermNum; // DO loop counter for history terms
+//        int SideNum;     // DO loop counter for surfaces sides (inside, outside)
+//        int SurfNum;     // Surface number DO loop counter
 
         static Array1D<Real64> QExt1;    // Heat flux at the exterior surface during first time step/series
         static Array1D<Real64> QInt1;    // Heat flux at the interior surface during first time step/series
@@ -4589,12 +4589,16 @@ namespace HeatBalanceSurfaceManager {
             UpdateThermalHistoriesFirstTimeFlag = false;
         }
 
-        auto const l111(TH.index(1, 1, 1));
-        auto const l211(TH.index(2, 1, 1));
-        auto l11(l111);
-        auto l21(l211);
-        for (SurfNum = 1; SurfNum <= TotSurfaces;
-             ++SurfNum, ++l11, ++l21) { // Loop through all (heat transfer) surfaces...  [ l11 ] = ( 1, 1, SurfNum ), [ l21 ] = ( 2, 1, SurfNum )
+//        auto const l111(TH.index(1, 1, 1));
+//        auto const l211(TH.index(2, 1, 1));
+//        auto l11(l111);
+//        auto l21(l211);
+#pragma omp parallel for
+        for (int SurfNum = 1; SurfNum <= TotSurfaces;
+             ++SurfNum) { // Loop through all (heat transfer) surfaces...  [ l11 ] = ( 1, 1, SurfNum ), [ l21 ] = ( 2, 1, SurfNum )
+
+            auto const l11(TH.index(1, 1, SurfNum));
+            auto const l21(TH.index(2, 1, SurfNum));
             auto const &surface(Surface(SurfNum));
 
             if (surface.Class == SurfaceClass_Window || !surface.HeatTransSurf) continue;
@@ -4663,10 +4667,12 @@ namespace HeatBalanceSurfaceManager {
 
         } // ...end of loop over all (heat transfer) surfaces...
 
-        l11 = l111;
-        l21 = l211;
-        for (SurfNum = 1; SurfNum <= TotSurfaces;
-             ++SurfNum, ++l11, ++l21) { // Loop through all (heat transfer) surfaces...  [ l11 ] = ( 1, 1, SurfNum ), [ l21 ] = ( 2, 1, SurfNum )
+#pragma omp parallel for
+        for (int SurfNum = 1; SurfNum <= TotSurfaces;
+             ++SurfNum) { // Loop through all (heat transfer) surfaces...  [ l11 ] = ( 1, 1, SurfNum ), [ l21 ] = ( 2, 1, SurfNum )
+
+            auto const l11(TH.index(1, 1, SurfNum));
+            auto const l21(TH.index(2, 1, SurfNum));
             auto const &surface(Surface(SurfNum));
 
             if (surface.Class == SurfaceClass_Window || !surface.HeatTransSurf) continue;
@@ -4689,7 +4695,8 @@ namespace HeatBalanceSurfaceManager {
 
         // SHIFT TEMPERATURE AND FLUX HISTORIES:
         // SHIFT AIR TEMP AND FLUX SHIFT VALUES WHEN AT BOTTOM OF ARRAY SPACE.
-        for (SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) { // Loop through all (heat transfer) surfaces...
+#pragma omp parallel for
+        for (int SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) { // Loop through all (heat transfer) surfaces...
             auto const &surface(Surface(SurfNum));
 
             if (surface.Class == SurfaceClass_Window || surface.Class == SurfaceClass_TDD_Dome || !surface.HeatTransSurf) continue;
@@ -4709,11 +4716,11 @@ namespace HeatBalanceSurfaceManager {
 
                 if (construct.NumCTFTerms > 1) {
                     int const numCTFTerms(construct.NumCTFTerms);
-                    for (SideNum = 1; SideNum <= 2; ++SideNum) { // Tuned Index order switched for cache friendliness
+                    for (int SideNum = 1; SideNum <= 2; ++SideNum) { // Tuned Index order switched for cache friendliness
                         auto l(THM.index(SideNum, numCTFTerms, SurfNum));
                         auto const li(THM.size3());
                         auto l1(l + li);
-                        for (HistTermNum = numCTFTerms + 1; HistTermNum >= 3; --HistTermNum, l1 = l, l -= li) { // Tuned Linear indexing
+                        for (int HistTermNum = numCTFTerms + 1; HistTermNum >= 3; --HistTermNum, l1 = l, l -= li) { // Tuned Linear indexing
                             // TH( SideNum, HistTermNum, SurfNum ) = THM( SideNum, HistTermNum, SurfNum ) = THM( SideNum, HistTermNum - 1, SurfNum );
                             // QH( SideNum, HistTermNum, SurfNum ) = QHM( SideNum, HistTermNum, SurfNum ) = QHM( SideNum, HistTermNum - 1, SurfNum );
                             TH[l1] = THM[l1] = THM[l];
@@ -4723,7 +4730,7 @@ namespace HeatBalanceSurfaceManager {
                     if (construct.SourceSinkPresent) {
                         auto m(TsrcHistM.index(SurfNum, numCTFTerms));
                         auto m1(m + 1);
-                        for (HistTermNum = numCTFTerms + 1; HistTermNum >= 3; --HistTermNum, --m, --m1) { // Tuned Linear indexing
+                        for (int HistTermNum = numCTFTerms + 1; HistTermNum >= 3; --HistTermNum, --m, --m1) { // Tuned Linear indexing
                             // TsrcHist( SurfNum, HistTerm ) = TsrcHistM( SurfNum, HHistTerm ) = TsrcHistM( SurfNum, HistTermNum - 1 );
                             // QsrcHist( SurfNum, HistTerm ) = QsrcHistM( SurfNum, HHistTerm ) = QsrcHistM( SurfNum, HistTermNum - 1 );
                             TsrcHist[m1] = TsrcHistM[m1] = TsrcHistM[m];
@@ -4774,11 +4781,11 @@ namespace HeatBalanceSurfaceManager {
                 Real64 const sum_steps(SumTime(SurfNum) / construct.CTFTimeStep);
                 if (construct.NumCTFTerms > 1) {
                     int const numCTFTerms(construct.NumCTFTerms);
-                    for (SideNum = 1; SideNum <= 2; ++SideNum) { // Tuned Index order switched for cache friendliness
+                    for (int SideNum = 1; SideNum <= 2; ++SideNum) { // Tuned Index order switched for cache friendliness
                         auto l(THM.index(SideNum, numCTFTerms, SurfNum));
                         auto const s3(THM.size3());
                         auto l1(l + s3);
-                        for (HistTermNum = numCTFTerms + 1; HistTermNum >= 3; --HistTermNum, l1 = l, l -= s3) { // Tuned Linear indexing
+                        for (int HistTermNum = numCTFTerms + 1; HistTermNum >= 3; --HistTermNum, l1 = l, l -= s3) { // Tuned Linear indexing
                             // Real64 const THM_l1( THM( SideNum, HistTermNum, SurfNum ) );
                             // TH( SideNum, HistTermNum, SurfNum ) = THM_l1 - ( THM_l1 - THM( SideNum, HistTermNum - 1, SurfNum ) ) * sum_steps;
                             // Real64 const QHM_l1( QHM( SideNum, HistTermNum, SurfNum ) );
@@ -4792,7 +4799,7 @@ namespace HeatBalanceSurfaceManager {
                     if (construct.SourceSinkPresent) {
                         auto m(TsrcHistM.index(SurfNum, numCTFTerms));
                         auto m1(m + 1);
-                        for (HistTermNum = numCTFTerms + 1; HistTermNum >= 3; --HistTermNum, --m, --m1) { // Tuned Linear indexing [ l ] == ()
+                        for (int HistTermNum = numCTFTerms + 1; HistTermNum >= 3; --HistTermNum, --m, --m1) { // Tuned Linear indexing [ l ] == ()
                             // Real64 const TsrcHistM_elem( TsrcHistM( SurfNum, HistTermNum ) );
                             // TsrcHist( SurfNum, HistTermNum ) = TsrcHistM_elem - ( TsrcHistM_elem - TsrcHistM( SurfNum, HistTermNum - 1 ) ) *
                             // sum_steps;  Real64 const QsrcHistM_elem( QsrcHistM( SurfNum, HistTermNum ) );  QsrcHist( SurfNum, HistTermNum ) =
@@ -4960,8 +4967,8 @@ namespace HeatBalanceSurfaceManager {
         // na
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        int SurfNum;
-        int ZoneNum;
+//        int SurfNum;
+//        int ZoneNum;
         static int TimeStepInDay(0);
 
         SumSurfaceHeatEmission = 0.0;
@@ -4971,7 +4978,8 @@ namespace HeatBalanceSurfaceManager {
         ReportSurfaceShading();
 
         // update inside face radiation reports
-        for (SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) {
+#pragma omp parallel for reduction(+: SumSurfaceHeatEmission)
+        for (int SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) {
             Real64 const surfaceArea(Surface(SurfNum).Area);
             // Tuned Replaced by one line form below for speed
             //			QdotRadNetSurfInRep( SurfNum ) = NetLWRadToSurf( SurfNum ) * surfaceArea;
@@ -5073,7 +5081,8 @@ namespace HeatBalanceSurfaceManager {
                 SumSurfaceHeatEmission += QHeatEmiReport(SurfNum) * TimeStepZoneSec;
             }
         } // loop over surfaces
-        for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+#pragma omp parallel for
+        for (int ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
             if (ZoneOpaqSurfInsFaceCond(ZoneNum) >= 0.0) {
                 ZoneOpaqSurfInsFaceCondGainRep(ZoneNum) = ZoneOpaqSurfInsFaceCond(ZoneNum);
                 ZnOpqSurfInsFaceCondGnRepEnrg(ZoneNum) = ZoneOpaqSurfInsFaceCondGainRep(ZoneNum) * TimeStepZoneSec;
@@ -5201,25 +5210,25 @@ namespace HeatBalanceSurfaceManager {
         // na
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        Real64 AbsThermSurf;     // Thermal absoptance of the exterior surface
-        int ConstrNum;           // Construction index for the current surface
-        Real64 HGround;          // "Convection" coefficient from ground to surface
-        Real64 HMovInsul;        // "Convection" coefficient of movable insulation
-        Real64 HSky;             // "Convection" coefficient from sky to surface
-        Real64 HAir;             // "Convection" coefficient from air to surface (radiation)
-        Real64 ConstantTempCoef; // Temperature Coefficient as input or modified using sine wave  COP mod
-        int RoughSurf;           // Roughness index of the exterior surface
-        int SurfNum;             // Surface number DO loop counter
-        int SrdSurfsNum;         // Surrounding surfaces list number
-        int SrdSurfNum;          // Surrounding surface number DO loop counter
-        Real64 SrdSurfTempAbs;   // Absolute temperature of a surrounding surface
-        Real64 SrdSurfViewFac;   // View factor of a surrounding surface
-        Real64 TempExt;          // Exterior temperature boundary condition
-        int ZoneNum;             // Zone number the current surface is attached to
-        int OPtr;
-        Real64 RhoVaporSat;     // Local temporary saturated vapor density for checking
+//        Real64 AbsThermSurf;     // Thermal absoptance of the exterior surface
+//        int ConstrNum;           // Construction index for the current surface
+//        Real64 HGround;          // "Convection" coefficient from ground to surface
+//        Real64 HMovInsul;        // "Convection" coefficient of movable insulation
+//        Real64 HSky;             // "Convection" coefficient from sky to surface
+//        Real64 HAir;             // "Convection" coefficient from air to surface (radiation)
+//        Real64 ConstantTempCoef; // Temperature Coefficient as input or modified using sine wave  COP mod
+//        int RoughSurf;           // Roughness index of the exterior surface
+//        int SurfNum;             // Surface number DO loop counter
+//        int SrdSurfsNum;         // Surrounding surfaces list number
+//        int SrdSurfNum;          // Surrounding surface number DO loop counter
+//        Real64 SrdSurfTempAbs;   // Absolute temperature of a surrounding surface
+//        Real64 SrdSurfViewFac;   // View factor of a surrounding surface
+//        Real64 TempExt;          // Exterior temperature boundary condition
+//        int ZoneNum;             // Zone number the current surface is attached to
+//        int OPtr;
+//        Real64 RhoVaporSat;     // Local temporary saturated vapor density for checking
         bool MovInsulErrorFlag; // Movable Insulation error flag
-        Real64 TSurf;           // Absolute temperature of the outside surface of an exterior surface
+//        Real64 TSurf;           // Absolute temperature of the outside surface of an exterior surface
 
         // FUNCTION DEFINITIONS:
         // na
@@ -5228,7 +5237,7 @@ namespace HeatBalanceSurfaceManager {
         MovInsulErrorFlag = false;
 
         if (AnyConstructInternalSourceInInput) {
-            for (SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) {
+            for (int SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) {
                 // Need to transfer any source/sink for a surface to the local array.  Note that
                 // the local array is flux (W/m2) while the QRadSysSource is heat transfer (W).
                 // This must be done at this location so that this is always updated correctly.
@@ -5246,10 +5255,10 @@ namespace HeatBalanceSurfaceManager {
         } else {
             CalcInteriorRadExchange(TH(2, 1, _), 0, NetLWRadToSurf, _, Outside);
         }
+#pragma omp parallel for shared(MovInsulErrorFlag)
+        for (int SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) { // Loop through all surfaces...
 
-        for (SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) { // Loop through all surfaces...
-
-            ZoneNum = Surface(SurfNum).Zone;
+            int ZoneNum = Surface(SurfNum).Zone;
 
             if (present(ZoneToResimulate)) {
                 if ((ZoneNum != ZoneToResimulate) && (AdjacentZoneToSurface(SurfNum) != ZoneToResimulate)) {
@@ -5265,11 +5274,11 @@ namespace HeatBalanceSurfaceManager {
             // Window layer temperatures are calculated in CalcHeatBalanceInsideSurf
 
             // Initializations for this surface
-            ConstrNum = Surface(SurfNum).Construction;
-            HMovInsul = 0.0;
-            HSky = 0.0;
-            HGround = 0.0;
-            HAir = 0.0;
+            int ConstrNum = Surface(SurfNum).Construction;
+            double HMovInsul = 0.0;
+            double HSky = 0.0;
+            double HGround = 0.0;
+            double HAir = 0.0;
             HcExtSurf(SurfNum) = 0.0;
             HAirExtSurf(SurfNum) = 0.0;
             HSkyExtSurf(SurfNum) = 0.0;
@@ -5373,7 +5382,7 @@ namespace HeatBalanceSurfaceManager {
                     // Use Other Side Coefficients to determine the surface film coefficient and
                     // the exterior boundary condition temperature
 
-                    OPtr = Surface(SurfNum).OSCPtr;
+                    int OPtr = Surface(SurfNum).OSCPtr;
                     // Set surface temp from previous timestep
                     if (BeginTimeStepFlag) {
                         OSC(OPtr).TOutsideSurfPast = TH(1, 1, SurfNum);
@@ -5382,7 +5391,7 @@ namespace HeatBalanceSurfaceManager {
                     if (OSC(OPtr).ConstTempScheduleIndex != 0) { // Determine outside temperature from schedule
                         OSC(OPtr).ConstTemp = GetCurrentScheduleValue(OSC(OPtr).ConstTempScheduleIndex);
                     }
-
+                    double ConstantTempCoef = 0.0;
                     //  Allow for modification of TemperatureCoefficient with unitary sine wave.
                     if (OSC(OPtr).SinusoidalConstTempCoef) { // Sine wave C4
                         ConstantTempCoef = std::sin(2 * Pi * CurrentTime / OSC(OPtr).SinusoidPeriod);
@@ -5428,7 +5437,7 @@ namespace HeatBalanceSurfaceManager {
 
                     // First, set up the outside convection coefficient and the exterior temperature
                     // boundary condition for the surface
-                    OPtr = Surface(SurfNum).OSCPtr;
+                    int OPtr = Surface(SurfNum).OSCPtr;
                     // Set surface temp from previous timestep
                     if (BeginTimeStepFlag) {
                         OSC(OPtr).TOutsideSurfPast = TH(1, 1, SurfNum);
@@ -5449,7 +5458,7 @@ namespace HeatBalanceSurfaceManager {
                     if (OSC(OPtr).MinLimitPresent) OSC(OPtr).OSCTempCalc = max(OSC(OPtr).MinTempLimit, OSC(OPtr).OSCTempCalc);
                     if (OSC(OPtr).MaxLimitPresent) OSC(OPtr).OSCTempCalc = min(OSC(OPtr).MaxTempLimit, OSC(OPtr).OSCTempCalc);
 
-                    TempExt = OSC(OPtr).OSCTempCalc;
+                    double TempExt = OSC(OPtr).OSCTempCalc;
 
                     // Set the only radiant system heat balance coefficient that is non-zero for this case
                     if (Construct(ConstrNum).SourceSinkPresent) RadSysToHBConstCoef(SurfNum) = TH(1, 1, SurfNum);
@@ -5487,7 +5496,7 @@ namespace HeatBalanceSurfaceManager {
 
                     // First, set up the outside convection coefficient and the exterior temperature
                     // boundary condition for the surface
-                    OPtr = Surface(SurfNum).OSCMPtr;
+                    int OPtr = Surface(SurfNum).OSCMPtr;
                     // EMS overrides
                     if (OSCM(OPtr).EMSOverrideOnTConv) OSCM(OPtr).TConv = OSCM(OPtr).EMSOverrideTConvValue;
                     if (OSCM(OPtr).EMSOverrideOnHConv) OSCM(OPtr).HConv = OSCM(OPtr).EMSOverrideHConvValue;
@@ -5495,7 +5504,7 @@ namespace HeatBalanceSurfaceManager {
                     if (OSCM(OPtr).EMSOverrideOnHrad) OSCM(OPtr).HRad = OSCM(OPtr).EMSOverrideHradValue;
                     HcExtSurf(SurfNum) = OSCM(OPtr).HConv;
 
-                    TempExt = OSCM(OPtr).TConv;
+                    double TempExt = OSCM(OPtr).TConv;
 
                     // Set the only radiant system heat balance coefficient that is non-zero for this case
                     if (Construct(ConstrNum).SourceSinkPresent) RadSysToHBConstCoef(SurfNum) = TH(1, 1, SurfNum);
@@ -5540,15 +5549,15 @@ namespace HeatBalanceSurfaceManager {
 
                     // checking the EcoRoof presented in the external environment
                     // recompute each load by calling ecoroof
-
+                    double TempExt = 0.0;
                     if (Surface(SurfNum).ExtEcoRoof) {
                         CalcEcoRoof(SurfNum, ZoneNum, ConstrNum, TempExt);
                         continue;
                     }
 
                     if (SurfaceWindow(SurfNum).StormWinFlag == 1) ConstrNum = Surface(SurfNum).StormWinConstruction;
-                    RoughSurf = Material(Construct(ConstrNum).LayerPoint(1)).Roughness;
-                    AbsThermSurf = Material(Construct(ConstrNum).LayerPoint(1)).AbsorpThermal;
+                    int RoughSurf = Material(Construct(ConstrNum).LayerPoint(1)).Roughness;
+                    double AbsThermSurf = Material(Construct(ConstrNum).LayerPoint(1)).AbsorpThermal;
 
                     // Check for outside movable insulation
                     if (Surface(SurfNum).MaterialMovInsulExt > 0) {
@@ -5635,7 +5644,7 @@ namespace HeatBalanceSurfaceManager {
                                       RhoVaporAirOut(SurfNum)) *
                                      PsyCpAirFnW(OutHumRat));
                                 //  check for saturation conditions of air
-                                RhoVaporSat = PsyRhovFnTdbRh(TempOutsideAirFD(SurfNum), 1.0, HBSurfManDrySurfCondFD);
+                                double RhoVaporSat = PsyRhovFnTdbRh(TempOutsideAirFD(SurfNum), 1.0, HBSurfManDrySurfCondFD);
                                 if (RhoVaporAirOut(SurfNum) > RhoVaporSat) RhoVaporAirOut(SurfNum) = RhoVaporSat;
                                 HSkyFD(SurfNum) = HSkyExtSurf(SurfNum);
                                 HGrndFD(SurfNum) = HGrdExtSurf(SurfNum);
@@ -5679,11 +5688,11 @@ namespace HeatBalanceSurfaceManager {
                     // Calculate LWR from surrounding surfaces if defined for an exterior surface
                     QRadLWOutSrdSurfs(SurfNum) = 0;
                     if (Surface(SurfNum).HasSurroundingSurfProperties) {
-                        SrdSurfsNum = Surface(SurfNum).SurroundingSurfacesNum;
-                        TSurf = TH(1, 1, SurfNum) + KelvinConv;
-                        for (SrdSurfNum = 1; SrdSurfNum <= SurroundingSurfsProperty(SrdSurfsNum).TotSurroundingSurface; SrdSurfNum++) {
-                            SrdSurfViewFac = SurroundingSurfsProperty(SrdSurfsNum).SurroundingSurfs(SrdSurfNum).ViewFactor;
-                            SrdSurfTempAbs =
+                        int SrdSurfsNum = Surface(SurfNum).SurroundingSurfacesNum;
+                        double TSurf = TH(1, 1, SurfNum) + KelvinConv;
+                        for (int SrdSurfNum = 1; SrdSurfNum <= SurroundingSurfsProperty(SrdSurfsNum).TotSurroundingSurface; SrdSurfNum++) {
+                            double SrdSurfViewFac = SurroundingSurfsProperty(SrdSurfsNum).SurroundingSurfs(SrdSurfNum).ViewFactor;
+                            double SrdSurfTempAbs =
                                 GetCurrentScheduleValue(SurroundingSurfsProperty(SrdSurfsNum).SurroundingSurfs(SrdSurfNum).TempSchNum) + KelvinConv;
                             QRadLWOutSrdSurfs(SurfNum) += StefanBoltzmann * AbsThermSurf * SrdSurfViewFac * (pow_4(SrdSurfTempAbs) - pow_4(TSurf));
                         }
@@ -5697,8 +5706,8 @@ namespace HeatBalanceSurfaceManager {
                     }
 
                 } else if (SELECT_CASE_var == KivaFoundation) {
-                    RoughSurf = Material(Construct(ConstrNum).LayerPoint(1)).Roughness;
-                    AbsThermSurf = Material(Construct(ConstrNum).LayerPoint(1)).AbsorpThermal;
+                    double RoughSurf = Material(Construct(ConstrNum).LayerPoint(1)).Roughness;
+                    double AbsThermSurf = Material(Construct(ConstrNum).LayerPoint(1)).AbsorpThermal;
 
                     // Set Kiva exterior convection algorithms
                     InitExteriorConvectionCoeff(SurfNum,

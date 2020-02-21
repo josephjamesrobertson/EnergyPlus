@@ -476,20 +476,20 @@ int RunEnergyPlus(std::string const & filepath)
         EnergyPlus::inputProcessor->reportOrphanRecordObjects();
         ReportOrphanFluids();
         ReportOrphanSchedules();
-        std::cout << "timer 1: " << DataGlobals::timer_1 << "\n";
-        std::cout << "count 1: " << DataGlobals::counter_1 << "\n";
+        std::cout << "Init: " << DataGlobals::timer_1 << "\n";
+//        std::cout << "count 1: " << DataGlobals::counter_1 << "\n";
 
-        std::cout << "timer 2: " << DataGlobals::timer_2 << "\n";
+        std::cout << "Outside: " << DataGlobals::timer_2 << "\n";
 //        std::cout << "count 2: " << DataGlobals::counter_2 << "\n";
 //
-//        std::cout << "GetSysInput: " << DataGlobals::timer_3 << "\n";
+        std::cout << "Inside: " << DataGlobals::timer_3 << "\n";
 //        std::cout << "GetSysInput count: " << DataGlobals::counter_3 << "\n";
 //
-//        std::cout << "ManageNonZoneEquipment: " << DataGlobals::timer_4 << "\n";
-//        std::cout << "ManageNonZoneEquipment count: " << DataGlobals::counter_4 << "\n";
+        std::cout << "UpdateThermal: " << DataGlobals::timer_4 << "\n";
+        std::cout << "count 4: " << DataGlobals::counter_4 << "\n";
 //
-//        std::cout << "ManagePlantLoops: " << DataGlobals::timer_5 << "\n";
-//        std::cout << "ManagePlantLoops count: " << DataGlobals::counter_5 << "\n";
+        std::cout << "Report: " << DataGlobals::timer_5 << "\n";
+        std::cout << "count 5: " << DataGlobals::counter_5 << "\n";
 
 
         if (runReadVars) {
