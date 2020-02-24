@@ -481,16 +481,21 @@ int RunEnergyPlus(std::string const & filepath)
 
         std::cout << "Outside: " << DataGlobals::timer_2 << "\n";
 //        std::cout << "count 2: " << DataGlobals::counter_2 << "\n";
-//
+
         std::cout << "Inside: " << DataGlobals::timer_3 << "\n";
 //        std::cout << "GetSysInput count: " << DataGlobals::counter_3 << "\n";
-//
-        std::cout << "UpdateThermal: " << DataGlobals::timer_4 << "\n";
-        std::cout << "count 4: " << DataGlobals::counter_4 << "\n";
-//
-        std::cout << "Report: " << DataGlobals::timer_5 << "\n";
-        std::cout << "count 5: " << DataGlobals::counter_5 << "\n";
 
+        std::cout << "UpdateThermal: " << DataGlobals::timer_4 << "\n";
+//        std::cout << "count 4: " << DataGlobals::counter_4 << "\n";
+
+        std::cout << "Report: " << DataGlobals::timer_5 << "\n";
+//        std::cout << "count 5: " << DataGlobals::counter_5 << "\n";
+
+        std::cout << "ZoneMeanAir: " << DataGlobals::timer_6 << "\n";
+//        std::cout << "count 4: " << DataGlobals::counter_6 << "\n";
+//
+        std::cout << "ReportHeatBalance: " << DataGlobals::timer_7 << "\n";
+//        std::cout << "count 5: " << DataGlobals::counter_7 << "\n";
 
         if (runReadVars) {
             std::string readVarsPath = exeDirectory + "ReadVarsESO" + exeExtension;

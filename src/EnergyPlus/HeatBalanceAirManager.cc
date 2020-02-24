@@ -193,6 +193,7 @@ namespace HeatBalanceAirManager {
         // static bool ManageAirHeatBalanceGetInputFlag( true );
         /////////////////////////////////////////////
         // FLOW:
+        using namespace std::chrono;
 
         // Obtains and Allocates heat balance related parameters from input file
         if (ManageAirHeatBalanceGetInputFlag) {
@@ -205,8 +206,12 @@ namespace HeatBalanceAirManager {
         // Solve the zone heat balance 'Detailed' solution
         // Call the air surface heat balances
         CalcHeatBalanceAir();
-
+        DataGlobals::counter_6 += 1;
+        high_resolution_clock::time_point t1 = high_resolution_clock::now();
         ReportZoneMeanAirTemp();
+        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+        DataGlobals::timer_6 += time_span.count();
     }
 
     // Get Input Section of the Module
@@ -4253,10 +4258,6 @@ namespace HeatBalanceAirManager {
         using Psychrometrics::PsyTdpFnWPb;
         using ScheduleManager::GetCurrentScheduleValue;
 
-//        using namespace std::chrono;
-//        DataGlobals::counter_2 += 1;
-//        high_resolution_clock::time_point t1 = high_resolution_clock::now();
-
         // Locals
         // SUBROUTINE ARGUMENT DEFINITIONS:
         // na
@@ -4271,11 +4272,11 @@ namespace HeatBalanceAirManager {
         // na
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        int ZoneLoop;             // Counter for the # of zones (nz)
-        int TempControlledZoneID; // index for zone in TempConrolled Zone structure
-        Real64 thisMRTFraction;   // temp working value for radiative fraction/weight
-
-        for (ZoneLoop = 1; ZoneLoop <= NumOfZones; ++ZoneLoop) {
+//        int ZoneLoop;             // Counter for the # of zones (nz)
+//        int TempControlledZoneID; // index for zone in TempConrolled Zone structure
+//        Real64 thisMRTFraction;   // temp working value for radiative fraction/weight
+#pragma omp parallel for
+        for (int ZoneLoop = 1; ZoneLoop <= NumOfZones; ++ZoneLoop) {
             // The mean air temperature is actually ZTAV which is the average
             // temperature of the air temperatures at the system time step for the
             // entire zone time step.
@@ -4288,10 +4289,11 @@ namespace HeatBalanceAirManager {
             //  might be defined by user to be something different than 0.5, even scheduled over simulation period
             if (AnyOpTempControl) { // dig further...
                 // find TempControlledZoneID from ZoneLoop index
-                TempControlledZoneID = Zone(ZoneLoop).TempControlledZoneIndex;
+                int TempControlledZoneID = Zone(ZoneLoop).TempControlledZoneIndex;
                 if (Zone(ZoneLoop).IsControlled) {
                     if ((TempControlledZone(TempControlledZoneID).OperativeTempControl)) {
                         // is operative temp radiative fraction scheduled or fixed?
+                        double thisMRTFraction;
                         if (TempControlledZone(TempControlledZoneID).OpTempCntrlModeScheduled) {
                             thisMRTFraction = GetCurrentScheduleValue(TempControlledZone(TempControlledZoneID).OpTempRadiativeFractionSched);
                         } else {
@@ -4302,9 +4304,6 @@ namespace HeatBalanceAirManager {
                 }
             }
         }
-//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
-//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-//        DataGlobals::timer_2 += time_span.count();
     }
 
 } // namespace HeatBalanceAirManager

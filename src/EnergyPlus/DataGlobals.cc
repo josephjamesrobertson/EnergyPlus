@@ -265,11 +265,15 @@ namespace DataGlobals {
     double timer_3(0.0);
     double timer_4(0.0);
     double timer_5(0.0);
+    double timer_6(0.0);
+    double timer_7(0.0);
     int counter_1(0);
     int counter_2(0);
     int counter_3(0);
     int counter_4(0);
     int counter_5(0);
+    int counter_6(0);
+    int counter_7(0);
 
     int Progress(0); // current progress (0-100)
     void (*fProgressPtr)(int const);
@@ -374,11 +378,15 @@ namespace DataGlobals {
         timer_3 = 0.0;
         timer_4 = 0.0;
         timer_5 = 0.0;
+        timer_6 = 0.0;
+        timer_7 = 0.0;
         counter_1 = 0;
         counter_2 = 0;
         counter_3 = 0;
         counter_4 = 0;
         counter_5 = 0;
+        counter_6 = 0;
+        counter_7 = 0;
         eso_stream = nullptr;
         mtr_stream = nullptr;
         err_stream = nullptr;

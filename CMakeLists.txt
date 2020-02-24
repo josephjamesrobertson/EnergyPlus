@@ -12,7 +12,8 @@ Project(EnergyPlus)
 if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_GREATER "3.0")
   CMAKE_POLICY(SET CMP0054 NEW) # CMake 3.1 added this policy
 endif()
-
+include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
+link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp" )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )

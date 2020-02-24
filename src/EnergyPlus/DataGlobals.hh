@@ -308,12 +308,16 @@ namespace DataGlobals {
     extern double timer_3;
     extern double timer_4;
     extern double timer_5;
+    extern double timer_6;
+    extern double timer_7;
 
     extern int counter_1;
     extern int counter_2;
     extern int counter_3;
     extern int counter_4;
     extern int counter_5;
+    extern int counter_6;
+    extern int counter_7;
 
     // Clears the global data in DataGlobals.
     // Needed for unit tests, should not be normally called.
