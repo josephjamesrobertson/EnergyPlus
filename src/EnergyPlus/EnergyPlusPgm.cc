@@ -492,10 +492,10 @@ int RunEnergyPlus(std::string const & filepath)
 //        std::cout << "count 5: " << DataGlobals::counter_5 << "\n";
 
         std::cout << "ZoneMeanAir: " << DataGlobals::timer_6 << "\n";
-//        std::cout << "count 4: " << DataGlobals::counter_6 << "\n";
+//        std::cout << "count 6: " << DataGlobals::counter_6 << "\n";
 //
-        std::cout << "ReportHeatBalance: " << DataGlobals::timer_7 << "\n";
-//        std::cout << "count 5: " << DataGlobals::counter_7 << "\n";
+        std::cout << "Radiant: " << DataGlobals::timer_7 << "\n";
+        std::cout << "count 7: " << DataGlobals::counter_7 << "\n";
 
         if (runReadVars) {
             std::string readVarsPath = exeDirectory + "ReadVarsESO" + exeExtension;

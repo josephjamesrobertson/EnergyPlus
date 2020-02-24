@@ -777,6 +777,8 @@ namespace DataSurfaces {
 
         std::vector<int> DisabledShadowingZoneList; // Array of all disabled shadowing zone number to the current surface
                                                     // the surface diffusion model
+        std::vector<double> SurfNetLWRadToRecSurf;
+        std::vector<double> SurfWindowIRfromParentZone;
 
         // Default Constructor
         SurfaceData()
