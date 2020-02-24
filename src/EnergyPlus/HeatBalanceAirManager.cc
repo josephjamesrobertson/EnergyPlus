@@ -47,6 +47,7 @@
 
 // C++ Headers
 #include <string>
+#include <chrono>
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array.functions.hh>

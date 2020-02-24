@@ -55,6 +55,7 @@
 #include <ostream>
 #include <string>
 #include <unordered_set>
+#include <chrono>
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array.functions.hh>
@@ -6061,6 +6062,8 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
     using DataGlobals::HourOfDay;
     using General::EncodeMonDayHrMin;
     using ScheduleManager::GetCurrentScheduleValue;
+    using namespace std::chrono;
+
 
     // Locals
     // SUBROUTINE ARGUMENT DEFINITIONS:
@@ -6075,15 +6078,15 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
     // na
 
     // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-    int Loop;             // Loop Variable
-    Real64 CurVal;        // Current value for real variables
-    Real64 ICurVal;       // Current value for integer variables
+//    int Loop;             // Loop Variable
+//    Real64 CurVal;        // Current value for real variables
+//    Real64 ICurVal;       // Current value for integer variables
     int MDHM;             // Month,Day,Hour,Minute
     bool TimePrint(true); // True if the time needs to be printed
     Real64 StartMinute;   // StartMinute for UpdateData call
     Real64 MinuteNow;     // What minute it is now
-    bool ReportNow;       // True if this variable should be reported now
-    int CurDayType;       // What kind of day it is (weekday (sunday, etc) or holiday)
+//    bool ReportNow;       // True if this variable should be reported now
+//    int CurDayType;       // What kind of day it is (weekday (sunday, etc) or holiday)
     //////////// hoisted into namespace ////////////////////////////////////////////////
     // static int LHourP( -1 ); // Helps set hours for timestamp output
     // static Real64 LStartMin( -1.0 ); // Helps set minutes for timestamp output
@@ -6141,16 +6144,16 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
             ResultsFramework::OutputSchema->RIDetailedHVACTSData.newRow(Month, DayOfMonth, HourOfDay, TimeValue.at(TimeStepType::TimeStepSystem).CurMinute);
         }
     }
-
     // Main "Record Keeping" Loops for R and I variables
-    for (Loop = 1; Loop <= NumOfRVariable; ++Loop) {
+#pragma omp parallel for
+    for (int Loop = 1; Loop <= NumOfRVariable; ++Loop) {
         if (RVariableTypes(Loop).timeStepType != t_TimeStepTypeKey) continue;
 
         // Act on the RVariables variable
         auto &rVar(RVariableTypes(Loop).VarPtr());
         rVar.Stored = true;
         if (rVar.storeType == StoreType::Averaged) {
-            CurVal = rVar.Which * rxTime;
+            double CurVal = rVar.Which * rxTime;
             //        CALL SetMinMax(RVar%Which,MDHM,RVar%MaxValue,RVar%maxValueDate,RVar%MinValue,RVar%minValueDate)
             if (rVar.Which > rVar.MaxValue) {
                 rVar.MaxValue = rVar.Which;
@@ -6178,7 +6181,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
 
         // End of "record keeping"  Report if applicable
         if (!rVar.Report) continue;
-        ReportNow = true;
+        bool ReportNow = true;
         if (rVar.SchedPtr > 0) ReportNow = (GetCurrentScheduleValue(rVar.SchedPtr) != 0.0); // SetReportNow(RVar%SchedPtr)
         if (!ReportNow) continue;
         rVar.tsStored = true;
@@ -6191,7 +6194,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
             if (TimePrint) {
                 if (LHourP != HourOfDay || std::abs(LStartMin - StartMinute) > 0.001 ||
                     std::abs(LEndMin - TimeValue.at(t_TimeStepTypeKey).CurMinute) > 0.001) {
-                    CurDayType = DayOfWeek;
+                    int  CurDayType = DayOfWeek;
                     if (HolidayIndex > 0) {
                         CurDayType = 7 + HolidayIndex;
                     }
@@ -6228,8 +6231,8 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
             }
         }
     }
-
-    for (Loop = 1; Loop <= NumOfIVariable; ++Loop) {
+#pragma omp parallel for
+    for (int Loop = 1; Loop <= NumOfIVariable; ++Loop) {
         if (IVariableTypes(Loop).timeStepType != t_TimeStepTypeKey) continue;
 
         // Act on the IVariables variable
@@ -6237,7 +6240,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
         iVar.Stored = true;
         //      ICurVal=IVar%Which
         if (iVar.storeType == StoreType::Averaged) {
-            ICurVal = iVar.Which * rxTime;
+            double ICurVal = iVar.Which * rxTime;
             iVar.TSValue += ICurVal;
             iVar.EITSValue = iVar.TSValue; // CR - 8481 fix - 09/06/2011
             if (nint(ICurVal) > iVar.MaxValue) {
@@ -6262,7 +6265,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
         }
 
         if (!iVar.Report) continue;
-        ReportNow = true;
+        bool ReportNow = true;
         if (iVar.SchedPtr > 0) ReportNow = (GetCurrentScheduleValue(iVar.SchedPtr) != 0.0); // SetReportNow(IVar%SchedPtr)
         if (!ReportNow) continue;
         iVar.tsStored = true;
@@ -6275,7 +6278,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
             if (TimePrint) {
                 if (LHourP != HourOfDay || std::abs(LStartMin - StartMinute) > 0.001 ||
                     std::abs(LEndMin - TimeValue.at(t_TimeStepTypeKey).CurMinute) > 0.001) {
-                    CurDayType = DayOfWeek;
+                    int CurDayType = DayOfWeek;
                     if (HolidayIndex > 0) {
                         CurDayType = 7 + HolidayIndex;
                     }
@@ -6330,7 +6333,8 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
         }
 
         for (auto& thisTimeStepType: {TimeStepType::TimeStepZone, TimeStepType::TimeStepSystem}) { // Zone, HVAC
-            for (Loop = 1; Loop <= NumOfRVariable; ++Loop) {
+#pragma omp parallel for
+            for (int Loop = 1; Loop <= NumOfRVariable; ++Loop) {
                 if (RVariableTypes(Loop).timeStepType != thisTimeStepType) continue;
                 auto &rVar(RVariableTypes(Loop).VarPtr());
                 // Update meters on the TimeStep  (Zone)
@@ -6347,7 +6351,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
                                           VarMeterArrays(rVar.MeterArrayPtr).OnCustomMeters);
                     }
                 }
-                ReportNow = true;
+                bool ReportNow = true;
                 if (rVar.SchedPtr > 0) ReportNow = (GetCurrentScheduleValue(rVar.SchedPtr) != 0.0); // SetReportNow(RVar%SchedPtr)
                 if (!ReportNow || !rVar.Report) {
                     rVar.TSValue = 0.0;
@@ -6364,7 +6368,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
                     if (TimePrint) {
                         if (LHourP != HourOfDay || std::abs(LStartMin - StartMinute) > 0.001 ||
                             std::abs(LEndMin - TimeValue.at(thisTimeStepType).CurMinute) > 0.001) {
-                            CurDayType = DayOfWeek;
+                            int CurDayType = DayOfWeek;
                             if (HolidayIndex > 0) {
                                 CurDayType = 7 + HolidayIndex;
                             }
@@ -6399,11 +6403,11 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
                 rVar.TSValue = 0.0;
                 rVar.thisTSStored = false;
             } // Number of R Variables
-
-            for (Loop = 1; Loop <= NumOfIVariable; ++Loop) {
+#pragma omp parallel for
+            for (int Loop = 1; Loop <= NumOfIVariable; ++Loop) {
                 if (IVariableTypes(Loop).timeStepType != thisTimeStepType) continue;
                 auto &iVar(IVariableTypes(Loop).VarPtr());
-                ReportNow = true;
+                bool ReportNow = true;
                 if (iVar.SchedPtr > 0) ReportNow = (GetCurrentScheduleValue(iVar.SchedPtr) != 0.0); // SetReportNow(IVar%SchedPtr)
                 if (!ReportNow) {
                     iVar.TSValue = 0.0;
@@ -6420,7 +6424,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
                     if (TimePrint) {
                         if (LHourP != HourOfDay || std::abs(LStartMin - StartMinute) > 0.001 ||
                             std::abs(LEndMin - TimeValue.at(thisTimeStepType).CurMinute) > 0.001) {
-                            CurDayType = DayOfWeek;
+                            int CurDayType = DayOfWeek;
                             if (HolidayIndex > 0) {
                                 CurDayType = 7 + HolidayIndex;
                             }
@@ -6466,7 +6470,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
     // Hour Block
     if (EndHourFlag) {
         if (TrackingHourlyVariables) {
-            CurDayType = DayOfWeek;
+            int CurDayType = DayOfWeek;
             if (HolidayIndex > 0) {
                 CurDayType = 7 + HolidayIndex;
             }
@@ -6499,7 +6503,8 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
 
         for (auto& thisTimeStepType: {TimeStepType::TimeStepZone, TimeStepType::TimeStepSystem}) { // Zone, HVAC
             TimeValue.at(thisTimeStepType).CurMinute = 0.0;
-            for (Loop = 1; Loop <= NumOfRVariable; ++Loop) {
+#pragma omp parallel for
+            for (int Loop = 1; Loop <= NumOfRVariable; ++Loop) {
                 if (RVariableTypes(Loop).timeStepType != thisTimeStepType) continue;
                 auto &rVar(RVariableTypes(Loop).VarPtr());
                 //        ReportNow=.TRUE.
@@ -6528,8 +6533,8 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
                 rVar.thisTSCount = 0;
                 rVar.Value = 0.0;
             } // Number of R Variables
-
-            for (Loop = 1; Loop <= NumOfIVariable; ++Loop) {
+#pragma omp parallel for
+            for (int Loop = 1; Loop <= NumOfIVariable; ++Loop) {
                 if (IVariableTypes(Loop).timeStepType != thisTimeStepType) continue;
                 auto &iVar(IVariableTypes(Loop).VarPtr());
                 //        ReportNow=.TRUE.
@@ -6567,7 +6572,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
     // Day Block
     if (EndDayFlag) {
         if (TrackingDailyVariables) {
-            CurDayType = DayOfWeek;
+            int CurDayType = DayOfWeek;
             if (HolidayIndex > 0) {
                 CurDayType = 7 + HolidayIndex;
             }
@@ -6599,13 +6604,13 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
 
         NumHoursInMonth += 24;
         for (auto& thisTimeStepType: {TimeStepType::TimeStepZone, TimeStepType::TimeStepSystem}) { // Zone, HVAC
-            for (Loop = 1; Loop <= NumOfRVariable; ++Loop) {
+            for (int Loop = 1; Loop <= NumOfRVariable; ++Loop) {
                 if (RVariableTypes(Loop).timeStepType == thisTimeStepType) {
                     WriteRealVariableOutput(RVariableTypes(Loop).VarPtr, ReportingFrequency::Daily);
                 }
             } // Number of R Variables
 
-            for (Loop = 1; Loop <= NumOfIVariable; ++Loop) {
+            for (int Loop = 1; Loop <= NumOfIVariable; ++Loop) {
                 if (IVariableTypes(Loop).timeStepType == thisTimeStepType) {
                     WriteIntegerVariableOutput(IVariableTypes(Loop).VarPtr, ReportingFrequency::Daily);
                 }
@@ -6640,13 +6645,13 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
         NumHoursInSim += NumHoursInMonth;
         EndMonthFlag = false;
         for (auto& thisTimeStepType: {TimeStepType::TimeStepZone, TimeStepType::TimeStepSystem}) { // Zone, HVAC
-           for (Loop = 1; Loop <= NumOfRVariable; ++Loop) {
+           for (int Loop = 1; Loop <= NumOfRVariable; ++Loop) {
                 if (RVariableTypes(Loop).timeStepType == thisTimeStepType) {
                     WriteRealVariableOutput(RVariableTypes(Loop).VarPtr, ReportingFrequency::Monthly);
                 }
             } // Number of R Variables
 
-            for (Loop = 1; Loop <= NumOfIVariable; ++Loop) {
+            for (int Loop = 1; Loop <= NumOfIVariable; ++Loop) {
                 if (IVariableTypes(Loop).timeStepType == thisTimeStepType) {
                     WriteIntegerVariableOutput(IVariableTypes(Loop).VarPtr, ReportingFrequency::Monthly);
                 }
@@ -6676,13 +6681,13 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
             ResultsFramework::OutputSchema->RIRunPeriodTSData.newRow(Month, DayOfMonth, HourOfDay, 0);
         }
         for (auto& thisTimeStepType: {TimeStepType::TimeStepZone, TimeStepType::TimeStepSystem}) { // Zone, HVAC
-            for (Loop = 1; Loop <= NumOfRVariable; ++Loop) {
+            for (int Loop = 1; Loop <= NumOfRVariable; ++Loop) {
                 if (RVariableTypes(Loop).timeStepType == thisTimeStepType) {
                     WriteRealVariableOutput(RVariableTypes(Loop).VarPtr, ReportingFrequency::Simulation);
                 }
             } // Number of R Variables
 
-            for (Loop = 1; Loop <= NumOfIVariable; ++Loop) {
+            for (int Loop = 1; Loop <= NumOfIVariable; ++Loop) {
                 if (IVariableTypes(Loop).timeStepType == thisTimeStepType) {
                     WriteIntegerVariableOutput(IVariableTypes(Loop).VarPtr, ReportingFrequency::Simulation);
                 }
@@ -6701,13 +6706,13 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
             TimePrint = false;
         }
         for (auto& thisTimeStepType: {TimeStepType::TimeStepZone, TimeStepType::TimeStepSystem}) { // Zone, HVAC
-            for (Loop = 1; Loop <= NumOfRVariable; ++Loop) {
+            for (int Loop = 1; Loop <= NumOfRVariable; ++Loop) {
                 if (RVariableTypes(Loop).timeStepType == thisTimeStepType) {
                     WriteRealVariableOutput(RVariableTypes(Loop).VarPtr, ReportingFrequency::Yearly);
                 }
             } // Number of R Variables
 
-            for (Loop = 1; Loop <= NumOfIVariable; ++Loop) {
+            for (int Loop = 1; Loop <= NumOfIVariable; ++Loop) {
                 if (IVariableTypes(Loop).timeStepType == thisTimeStepType) {
                     WriteIntegerVariableOutput(IVariableTypes(Loop).VarPtr, ReportingFrequency::Yearly);
                 }
