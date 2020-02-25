@@ -49,6 +49,7 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
+#include <chrono>
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array.functions.hh>
@@ -5933,6 +5934,7 @@ namespace HeatBalanceManager {
         using namespace DataReportingFlags;
         using DataGlobals::KindOfSim;
         using DataGlobals::ksHVACSizeDesignDay;
+        using namespace std::chrono;
 
         // Locals
         // SUBROUTINE ARGUMENT DEFINITIONS:
@@ -5958,7 +5960,9 @@ namespace HeatBalanceManager {
         ReportScheduleValues();
 
         if (!WarmupFlag && DoOutputReporting) {
+
             CalcMoreNodeInfo();
+
             UpdateDataandReport(OutputProcessor::TimeStepType::TimeStepZone);
             if (KindOfSim == ksHVACSizeDesignDay || KindOfSim == ksHVACSizeRunPeriodDesign) {
                 if (hvacSizingSimulationManager) hvacSizingSimulationManager->UpdateSizingLogsZoneStep();
@@ -5966,6 +5970,7 @@ namespace HeatBalanceManager {
 
             UpdateTabularReports(OutputProcessor::TimeStepType::TimeStepZone);
             UpdateUtilityBills();
+
         } else if (!KickOffSimulation && DoOutputReporting && ReportDuringWarmup) {
             if (BeginDayFlag && !PrintEnvrnStampWarmupPrinted) {
                 PrintEnvrnStampWarmup = true;

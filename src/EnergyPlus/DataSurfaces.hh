@@ -777,8 +777,6 @@ namespace DataSurfaces {
 
         std::vector<int> DisabledShadowingZoneList; // Array of all disabled shadowing zone number to the current surface
                                                     // the surface diffusion model
-        std::vector<double> SurfNetLWRadToRecSurf;
-        std::vector<double> SurfWindowIRfromParentZone;
 
         // Default Constructor
         SurfaceData()
@@ -1115,6 +1113,9 @@ namespace DataSurfaces {
         BSDFWindowDescript ComplexFen; // Data for complex fenestration, see DataBSDFWindow.cc for declaration
 
         int TDDPipeNum; // Tubular daylighting device pipe number for TDD domes and diffusers
+
+        std::vector<double> SurfNetLWRadToRecSurf;
+        std::vector<double> SurfWindowIRfromParentZone;
 
         // Default Constructor
         SurfaceWindowCalc()

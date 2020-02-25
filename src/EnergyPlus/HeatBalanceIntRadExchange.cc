@@ -49,6 +49,7 @@
 #include <cassert>
 #include <cmath>
 #include <chrono>
+
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array.functions.hh>
 #include <ObjexxFCL/ArrayS.functions.hh>
@@ -176,9 +177,11 @@ namespace HeatBalanceIntRadExchange {
         using namespace DataTimings;
         using HeatBalanceMovableInsulation::EvalInsideMovableInsulation;
         using WindowEquivalentLayer::EQLWindowInsideEffectiveEmiss;
+        using namespace std::chrono;
 
         Real64 const StefanBoltzmannConst(5.6697e-8); // Stefan-Boltzmann constant in W/(m2*K4)
         static ObjexxFCL::gio::Fmt fmtLD("*");
+
 
 //        bool IntShadeOrBlindStatusChanged; // True if status of interior shade or blind on at least
 //        // one window in a zone has changed from previous time step
@@ -230,6 +233,8 @@ namespace HeatBalanceIntRadExchange {
             ++NumIntRadExchangeISurf_Calls;
         }
 #endif
+        DataGlobals::counter_7 += 1;
+        high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
         int startEnclosure = 1;
         int endEnclosure = DataViewFactorInformation::NumOfRadiantEnclosures;
@@ -242,32 +247,30 @@ namespace HeatBalanceIntRadExchange {
             }
         } else {
             NetLWRadToSurf = 0.0;
-            for (auto &e : SurfaceWindow)
+            for (auto &e : SurfaceWindow) {
                 e.IRfromParentZone = 0.0;
+            }
+
         }
 
-        for (int SurfNum = 1; SurfNum <= TotSurfaces; SurfNum ++) {
-            Surface(SurfNum).SurfNetLWRadToRecSurf = {0.0};
-            Surface(SurfNum).SurfWindowIRfromParentZone = {0.0};
+        for (auto &e : SurfaceWindow) {
+            std::vector<double> V1(endEnclosure, 0.0);
+            std::vector<double> V2(endEnclosure, 0.0);
+            e.SurfNetLWRadToRecSurf = V1;
+            e.SurfWindowIRfromParentZone = V2;
         }
 
-        DataGlobals::counter_7 += 1;
-        high_resolution_clock::time_point t1 = high_resolution_clock::now();
-
-//        static Array1D<Real64> WindowIRfromParentZone;
-//        double WindowIRfromParentZone[endEnclosure * TotSurf] = {0.0};
-//        double NetLWRadToRecSurf[endEnclosure * TotSurf] = {0.0};
-#pragma omp parallel for
+//#pragma omp parallel for
         for (int enclosureNum = startEnclosure; enclosureNum <= endEnclosure; ++enclosureNum) {
 
-            static Array1D<Real64> SurfaceTempRad;
-            static Array1D<Real64> SurfaceTempInKto4th;
-            static Array1D<Real64> SurfaceEmiss;
-
-
-            SurfaceTempRad.allocate(MaxNumOfRadEnclosureSurfs);
-            SurfaceTempInKto4th.allocate(MaxNumOfRadEnclosureSurfs);
-            SurfaceEmiss.allocate(MaxNumOfRadEnclosureSurfs);
+//            static Array1D<Real64> SurfaceTempRad;
+//            static Array1D<Real64> SurfaceTempInKto4th;
+//            static Array1D<Real64> SurfaceEmiss;
+//
+//
+//            SurfaceTempRad.allocate(MaxNumOfRadEnclosureSurfs);
+//            SurfaceTempInKto4th.allocate(MaxNumOfRadEnclosureSurfs);
+//            SurfaceEmiss.allocate(MaxNumOfRadEnclosureSurfs);
 
             auto &zone_info(ZoneRadiantInfo(enclosureNum));
             auto &zone_ScriptF(zone_info.ScriptF); // Tuned Transposed
@@ -325,7 +328,6 @@ namespace HeatBalanceIntRadExchange {
 
                 if (IntShadeOrBlindStatusChanged || IntMovInsulChanged ||
                     BeginEnvrnFlag) { // Calc inside surface emissivities for this time step
-//#pragma omp parallel for
                     for (int ZoneSurfNum = 1; ZoneSurfNum <= n_zone_Surfaces; ++ZoneSurfNum) {
                         int const SurfNum = zone_SurfacePtr(ZoneSurfNum);
                         int const ConstrNum = Surface(SurfNum).Construction;
@@ -365,7 +367,6 @@ namespace HeatBalanceIntRadExchange {
             // Also, for Carroll method, calculate numerators and denominators of radiant temperature
             Real64 CarrollMRTNumerator(0.0);
             Real64 CarrollMRTDenominator(0.0);
-//#pragma omp parallel for reduction(+:CarrollMRTNumerator, CarrollMRTDenominator)
             for (size_type ZoneSurfNum = 0; ZoneSurfNum < s_zone_Surfaces; ++ZoneSurfNum) {
                 int const SurfNum = zone_SurfacePtr[ZoneSurfNum];
                 auto const &surface_window(SurfaceWindow(SurfNum));
@@ -495,15 +496,14 @@ namespace HeatBalanceIntRadExchange {
                             //            SurfaceWindow(RecSurfNum)%IRfromParentZone=0.0
                             //          ENDIF
                         }
-//                        int cur_surf_zone = (RecSurfNum - 1) * endEnclosure + enclosureNum - 1;
 
-                        Surface(RecSurfNum).SurfNetLWRadToRecSurf.push_back(IRfromParentZone_acc - netLWRadToRecSurf_cor -
-                                             (scriptF_acc * SurfaceTempInKto4th[RecZoneSurfNum]));
+
 //                        netLWRadToRecSurf += IRfromParentZone_acc - netLWRadToRecSurf_cor -
 //                                                           (scriptF_acc * SurfaceTempInKto4th[RecZoneSurfNum]);
 //                        rec_surface_window.IRfromParentZone += IRfromParentZone_acc / SurfaceEmiss[RecZoneSurfNum];
-                        Surface(RecSurfNum).SurfWindowIRfromParentZone.push_back(IRfromParentZone_acc / SurfaceEmiss[RecZoneSurfNum]);
-
+                        SurfaceWindow(RecSurfNum).SurfNetLWRadToRecSurf[enclosureNum] = IRfromParentZone_acc - netLWRadToRecSurf_cor -
+                                                                                        (scriptF_acc * SurfaceTempInKto4th[RecZoneSurfNum]);
+                        SurfaceWindow(RecSurfNum).SurfWindowIRfromParentZone[enclosureNum] = IRfromParentZone_acc / SurfaceEmiss[RecZoneSurfNum];
 
                     } else {
 
@@ -515,23 +515,20 @@ namespace HeatBalanceIntRadExchange {
                                                                               SurfaceTempInKto4th[RecZoneSurfNum]); // [ lSR ] == ( SendZoneSurfNum+1, RecZoneSurfNum+1 )
                             }
                         }
-//                        int cur_surf_zone = (RecSurfNum - 1) * endEnclosure + enclosureNum - 1;
 
-
-                        Surface(RecSurfNum).SurfNetLWRadToRecSurf.push_back(netLWRadToRecSurf_acc);
+                        SurfaceWindow(RecSurfNum).SurfNetLWRadToRecSurf[enclosureNum] = netLWRadToRecSurf_acc;
 //                        netLWRadToRecSurf += netLWRadToRecSurf_acc;
 
                     }
                 }
             }
         }
-#pragma omp parallel for
         for (int SurfNum = 1; SurfNum <= TotSurfaces; SurfNum ++) {
-            for (double cur_val : Surface(SurfNum).SurfWindowIRfromParentZone){
+            for (double cur_val : SurfaceWindow(SurfNum).SurfWindowIRfromParentZone){
                 SurfaceWindow(SurfNum).IRfromParentZone +=  cur_val;
             }
-            for (double cur_val : Surface(SurfNum).SurfNetLWRadToRecSurf){
-                NetLWRadToSurf(SurfNum) += cur_val;
+            for (double cur_val : SurfaceWindow(SurfNum).SurfNetLWRadToRecSurf){
+                NetLWRadToSurf(SurfNum) +=  cur_val;
             }
         }
         high_resolution_clock::time_point t2 = high_resolution_clock::now();
