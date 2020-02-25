@@ -1114,8 +1114,8 @@ namespace DataSurfaces {
 
         int TDDPipeNum; // Tubular daylighting device pipe number for TDD domes and diffusers
 
-//        std::vector<double> SurfNetLWRadToRecSurf;
-//        std::vector<double> SurfWindowIRfromParentZone;
+        Array1D<Real64> SurfWindowIRfromParentZone;
+        Array1D<Real64> SurfNetLWRadToRecSurf;
 
         // Default Constructor
         SurfaceWindowCalc()
