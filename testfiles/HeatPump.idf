@@ -1564,6 +1564,8 @@
 
   Output:Variable,*,Cooling Coil Basin Heater Electric Energy,timestep;
 
+  Output:Variable,*,Cooling Coil Condenser Inlet Temperature,timestep;
+
   Output:Variable,*,Heating Coil Gas Rate,timestep;
 
   Output:Variable,*,Heating Coil Defrost Electric Energy,timestep;
