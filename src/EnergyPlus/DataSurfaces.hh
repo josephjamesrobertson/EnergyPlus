@@ -489,6 +489,13 @@ namespace DataSurfaces {
     // SUBROUTINE SPECIFICATIONS FOR MODULE DataSurfaces:
 
     // Types
+    struct PaddedIR{
+        double SurfWindowIRfromParentZone;
+        double SurfNetLWRadToRecSurf;
+        char padding[48];
+        PaddedIR() : SurfWindowIRfromParentZone(0.0), SurfNetLWRadToRecSurf (0.0) {}
+
+    };
 
     // Y Slab for Surface2D for PierceSurface support of Nonconvex and Many-Vertex Surfaces
     struct Surface2DSlab
@@ -1113,9 +1120,10 @@ namespace DataSurfaces {
         BSDFWindowDescript ComplexFen; // Data for complex fenestration, see DataBSDFWindow.cc for declaration
 
         int TDDPipeNum; // Tubular daylighting device pipe number for TDD domes and diffusers
+        Array1D<PaddedIR> SurfIRThreads;
 
-        Array1D<Real64> SurfWindowIRfromParentZone;
-        Array1D<Real64> SurfNetLWRadToRecSurf;
+//        Array1D<Real64> SurfWindowIRfromParentZone;
+//        Array1D<Real64> SurfNetLWRadToRecSurf;
 
         // Default Constructor
         SurfaceWindowCalc()

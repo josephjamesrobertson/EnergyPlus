@@ -257,11 +257,9 @@ namespace HeatBalanceIntRadExchange {
 
 
         for (auto &e : SurfaceWindow) {
+            e.SurfIRThreads.clear();
+            e.SurfIRThreads.allocate(p);
 
-            e.SurfWindowIRfromParentZone = 0.0;
-            e.SurfWindowIRfromParentZone.allocate(p);
-            e.SurfNetLWRadToRecSurf = 0.0;
-            e.SurfNetLWRadToRecSurf.allocate(p);
         }
 
 //#pragma omp parallel
@@ -509,9 +507,9 @@ namespace HeatBalanceIntRadExchange {
 //                            netLWRadToRecSurf += IRfromParentZone_acc - netLWRadToRecSurf_cor -
 //                                                 (scriptF_acc * SurfaceTempInKto4th[RecZoneSurfNum]);
 //                            rec_surface_window.IRfromParentZone += IRfromParentZone_acc / SurfaceEmiss[RecZoneSurfNum];
-                            SurfaceWindow(RecSurfNum).SurfNetLWRadToRecSurf[tid] += IRfromParentZone_acc - netLWRadToRecSurf_cor -
+                            SurfaceWindow(RecSurfNum).SurfIRThreads[tid].SurfNetLWRadToRecSurf += IRfromParentZone_acc - netLWRadToRecSurf_cor -
                                                                                             (scriptF_acc * SurfaceTempInKto4th[RecZoneSurfNum]);
-                            SurfaceWindow(RecSurfNum).SurfWindowIRfromParentZone[tid] += IRfromParentZone_acc / SurfaceEmiss[RecZoneSurfNum];
+                            SurfaceWindow(RecSurfNum).SurfIRThreads[tid].SurfWindowIRfromParentZone += IRfromParentZone_acc / SurfaceEmiss[RecZoneSurfNum];
 
                         } else {
 
@@ -524,7 +522,7 @@ namespace HeatBalanceIntRadExchange {
                                 }
                             }
 
-                            SurfaceWindow(RecSurfNum).SurfNetLWRadToRecSurf[tid] += netLWRadToRecSurf_acc;
+                            SurfaceWindow(RecSurfNum).SurfIRThreads[tid].SurfNetLWRadToRecSurf += netLWRadToRecSurf_acc;
 //                            netLWRadToRecSurf += netLWRadToRecSurf_acc;
 
                         }
@@ -533,11 +531,11 @@ namespace HeatBalanceIntRadExchange {
             }
         }
         for (int SurfNum = 1; SurfNum <= TotSurfaces; SurfNum ++) {
-            for (double cur_val : SurfaceWindow(SurfNum).SurfWindowIRfromParentZone){
-                SurfaceWindow(SurfNum).IRfromParentZone +=  cur_val;
+            for (PaddedIR cur_val : SurfaceWindow(SurfNum).SurfIRThreads){
+                SurfaceWindow(SurfNum).IRfromParentZone +=  cur_val.SurfWindowIRfromParentZone;
             }
-            for (double cur_val : SurfaceWindow(SurfNum).SurfNetLWRadToRecSurf){
-                NetLWRadToSurf(SurfNum) +=  cur_val;
+            for (PaddedIR cur_val : SurfaceWindow(SurfNum).SurfIRThreads){
+                NetLWRadToSurf(SurfNum) +=  cur_val.SurfNetLWRadToRecSurf;
             }
         }
         high_resolution_clock::time_point t2 = high_resolution_clock::now();
