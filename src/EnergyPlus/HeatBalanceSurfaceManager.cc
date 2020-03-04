@@ -4593,7 +4593,7 @@ namespace HeatBalanceSurfaceManager {
 //        auto const l211(TH.index(2, 1, 1));
 //        auto l11(l111);
 //        auto l21(l211);
-#pragma omp parallel for
+//#pragma omp parallel for
         for (int SurfNum = 1; SurfNum <= TotSurfaces;
              ++SurfNum) { // Loop through all (heat transfer) surfaces...  [ l11 ] = ( 1, 1, SurfNum ), [ l21 ] = ( 2, 1, SurfNum )
 
@@ -4667,7 +4667,7 @@ namespace HeatBalanceSurfaceManager {
 
         } // ...end of loop over all (heat transfer) surfaces...
 
-#pragma omp parallel for
+//#pragma omp parallel for
         for (int SurfNum = 1; SurfNum <= TotSurfaces;
              ++SurfNum) { // Loop through all (heat transfer) surfaces...  [ l11 ] = ( 1, 1, SurfNum ), [ l21 ] = ( 2, 1, SurfNum )
 
@@ -4695,7 +4695,7 @@ namespace HeatBalanceSurfaceManager {
 
         // SHIFT TEMPERATURE AND FLUX HISTORIES:
         // SHIFT AIR TEMP AND FLUX SHIFT VALUES WHEN AT BOTTOM OF ARRAY SPACE.
-#pragma omp parallel for
+//#pragma omp parallel for
         for (int SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) { // Loop through all (heat transfer) surfaces...
             auto const &surface(Surface(SurfNum));
 
@@ -4978,7 +4978,7 @@ namespace HeatBalanceSurfaceManager {
         ReportSurfaceShading();
 
         // update inside face radiation reports
-#pragma omp parallel for reduction(+: SumSurfaceHeatEmission)
+//#pragma omp parallel for reduction(+: SumSurfaceHeatEmission)
         for (int SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) {
             Real64 const surfaceArea(Surface(SurfNum).Area);
             // Tuned Replaced by one line form below for speed
@@ -5081,7 +5081,7 @@ namespace HeatBalanceSurfaceManager {
                 SumSurfaceHeatEmission += QHeatEmiReport(SurfNum) * TimeStepZoneSec;
             }
         } // loop over surfaces
-#pragma omp parallel for
+//#pragma omp parallel for
         for (int ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
             if (ZoneOpaqSurfInsFaceCond(ZoneNum) >= 0.0) {
                 ZoneOpaqSurfInsFaceCondGainRep(ZoneNum) = ZoneOpaqSurfInsFaceCond(ZoneNum);
@@ -5255,7 +5255,7 @@ namespace HeatBalanceSurfaceManager {
         } else {
             CalcInteriorRadExchange(TH(2, 1, _), 0, NetLWRadToSurf, _, Outside);
         }
-#pragma omp parallel for shared(MovInsulErrorFlag)
+//#pragma omp parallel for shared(MovInsulErrorFlag)
         for (int SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) { // Loop through all surfaces...
 
             int ZoneNum = Surface(SurfNum).Zone;

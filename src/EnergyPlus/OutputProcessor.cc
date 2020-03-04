@@ -6145,7 +6145,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
         }
     }
     // Main "Record Keeping" Loops for R and I variables
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int Loop = 1; Loop <= NumOfRVariable; ++Loop) {
         if (RVariableTypes(Loop).timeStepType != t_TimeStepTypeKey) continue;
 
@@ -6231,7 +6231,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
             }
         }
     }
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int Loop = 1; Loop <= NumOfIVariable; ++Loop) {
         if (IVariableTypes(Loop).timeStepType != t_TimeStepTypeKey) continue;
 
@@ -6333,7 +6333,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
         }
 
         for (auto& thisTimeStepType: {TimeStepType::TimeStepZone, TimeStepType::TimeStepSystem}) { // Zone, HVAC
-#pragma omp parallel for
+//#pragma omp parallel for
             for (int Loop = 1; Loop <= NumOfRVariable; ++Loop) {
                 if (RVariableTypes(Loop).timeStepType != thisTimeStepType) continue;
                 auto &rVar(RVariableTypes(Loop).VarPtr());
@@ -6403,7 +6403,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
                 rVar.TSValue = 0.0;
                 rVar.thisTSStored = false;
             } // Number of R Variables
-#pragma omp parallel for
+//#pragma omp parallel for
             for (int Loop = 1; Loop <= NumOfIVariable; ++Loop) {
                 if (IVariableTypes(Loop).timeStepType != thisTimeStepType) continue;
                 auto &iVar(IVariableTypes(Loop).VarPtr());
@@ -6503,7 +6503,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
 
         for (auto& thisTimeStepType: {TimeStepType::TimeStepZone, TimeStepType::TimeStepSystem}) { // Zone, HVAC
             TimeValue.at(thisTimeStepType).CurMinute = 0.0;
-#pragma omp parallel for
+//#pragma omp parallel for
             for (int Loop = 1; Loop <= NumOfRVariable; ++Loop) {
                 if (RVariableTypes(Loop).timeStepType != thisTimeStepType) continue;
                 auto &rVar(RVariableTypes(Loop).VarPtr());
@@ -6533,7 +6533,7 @@ void UpdateDataandReport(OutputProcessor::TimeStepType const t_TimeStepTypeKey) 
                 rVar.thisTSCount = 0;
                 rVar.Value = 0.0;
             } // Number of R Variables
-#pragma omp parallel for
+//#pragma omp parallel for
             for (int Loop = 1; Loop <= NumOfIVariable; ++Loop) {
                 if (IVariableTypes(Loop).timeStepType != thisTimeStepType) continue;
                 auto &iVar(IVariableTypes(Loop).VarPtr());
