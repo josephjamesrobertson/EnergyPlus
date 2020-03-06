@@ -329,28 +329,6 @@ int initializeAsLibrary() {
 #endif
 #endif
 
-    std::cout << "Init: " << DataGlobals::timer_1 << "\n";
-//        std::cout << "count 1: " << DataGlobals::counter_1 << "\n";
-
-    std::cout << "Outside: " << DataGlobals::timer_2 << "\n";
-//        std::cout << "count 2: " << DataGlobals::counter_2 << "\n";
-
-    std::cout << "Inside: " << DataGlobals::timer_3 << "\n";
-//        std::cout << "GetSysInput count: " << DataGlobals::counter_3 << "\n";
-
-    std::cout << "UpdateThermal: " << DataGlobals::timer_4 << "\n";
-//        std::cout << "count 4: " << DataGlobals::counter_4 << "\n";
-
-    std::cout << "Report: " << DataGlobals::timer_5 << "\n";
-//        std::cout << "count 5: " << DataGlobals::counter_5 << "\n";
-
-    std::cout << "ZoneMeanAir: " << DataGlobals::timer_6 << "\n";
-//        std::cout << "count 6: " << DataGlobals::counter_6 << "\n";
-//
-
-    std::cout << "Radiant: " << DataGlobals::timer_7 << "\n";
-    std::cout << "count 7: " << DataGlobals::counter_7 << "\n";
-
 
 #ifdef _MSC_VER
     #ifndef _DEBUG
@@ -456,6 +434,29 @@ int RunEnergyPlus(std::string const & filepath)
         EnergyPlus::ShowSevereError(e.what());
         return EnergyPlus::AbortEnergyPlus();
     }
+
+    std::cout << "Init: " << EnergyPlus::DataGlobals::timer_1 << "\n";
+//        std::cout << "count 1: " << DataGlobals::counter_1 << "\n";
+
+    std::cout << "Outside: " << EnergyPlus::DataGlobals::timer_2 << "\n";
+//        std::cout << "count 2: " << DataGlobals::counter_2 << "\n";
+
+    std::cout << "Inside: " << EnergyPlus::DataGlobals::timer_3 << "\n";
+//        std::cout << "GetSysInput count: " << DataGlobals::counter_3 << "\n";
+
+    std::cout << "UpdateThermal: " << EnergyPlus::DataGlobals::timer_4 << "\n";
+//        std::cout << "count 4: " << DataGlobals::counter_4 << "\n";
+
+    std::cout << "Report: " << EnergyPlus::DataGlobals::timer_5 << "\n";
+//        std::cout << "count 5: " << DataGlobals::counter_5 << "\n";
+
+    std::cout << "ZoneMeanAir: " << EnergyPlus::DataGlobals::timer_6 << "\n";
+//        std::cout << "count 6: " << DataGlobals::counter_6 << "\n";
+//
+
+    std::cout << "Radiant: " << EnergyPlus::DataGlobals::timer_7 << "\n";
+    std::cout << "count 7: " << EnergyPlus::DataGlobals::counter_7 << "\n";
+
     return wrapUpEnergyPlus();
 }
 

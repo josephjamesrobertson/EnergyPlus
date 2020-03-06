@@ -1122,7 +1122,6 @@ namespace DataSurfaces {
         BSDFWindowDescript ComplexFen; // Data for complex fenestration, see DataBSDFWindow.cc for declaration
 
         int TDDPipeNum; // Tubular daylighting device pipe number for TDD domes and diffusers
-        Array1D<PaddedIR> SurfIRThreads;
 
 //        Array1D<Real64> SurfWindowIRfromParentZone;
 //        Array1D<Real64> SurfNetLWRadToRecSurf;
