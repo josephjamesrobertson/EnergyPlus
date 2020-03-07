@@ -4276,7 +4276,7 @@ namespace HeatBalanceAirManager {
 //        int ZoneLoop;             // Counter for the # of zones (nz)
 //        int TempControlledZoneID; // index for zone in TempConrolled Zone structure
 //        Real64 thisMRTFraction;   // temp working value for radiative fraction/weight
-//#pragma omp parallel for
+#pragma omp parallel for
         for (int ZoneLoop = 1; ZoneLoop <= NumOfZones; ++ZoneLoop) {
             // The mean air temperature is actually ZTAV which is the average
             // temperature of the air temperatures at the system time step for the
