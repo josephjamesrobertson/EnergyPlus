@@ -489,13 +489,6 @@ namespace DataSurfaces {
     // SUBROUTINE SPECIFICATIONS FOR MODULE DataSurfaces:
 
     // Types
-    struct PaddedIR{
-        double SurfWindowIRfromParentZone;
-        double SurfNetLWRadToRecSurf;
-        char padding[48];
-        PaddedIR() : SurfWindowIRfromParentZone(0.0), SurfNetLWRadToRecSurf (0.0) {}
-
-    };
 
     // Y Slab for Surface2D for PierceSurface support of Nonconvex and Many-Vertex Surfaces
     struct Surface2DSlab
