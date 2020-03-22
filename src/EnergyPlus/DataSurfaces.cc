@@ -499,6 +499,9 @@ namespace DataSurfaces {
     Array1D<Real64> WinGapConvHtFlowRepEnergy;     // Energy of WinGapConvHtFlowRep [J]
     Array1D<Real64> WinHeatTransferRepEnergy;      // Energy of WinHeatTransfer [J]
 
+
+    Array1D<Real64> WinIRfromParentZone;    // Net interior long wavelength radiation to a surface from other surfaces
+
     std::vector<int> AllHTSurfaceList;          // List of all heat transfer surfaces
     std::vector<int> AllIZSurfaceList;          // List of all interzone heat transfer surfaces
     std::vector<int> AllHTNonWindowSurfaceList; // List of all non-window heat transfer surfaces
@@ -778,7 +781,7 @@ namespace DataSurfaces {
     Real64 SurfaceData::getInsideIR(const int t_SurfNum)
     {
         auto &window(SurfaceWindow(t_SurfNum));
-        const Real64 value = window.IRfromParentZone + QHTRadSysSurf(t_SurfNum) + QHWBaseboardSurf(t_SurfNum) + QSteamBaseboardSurf(t_SurfNum) +
+        const Real64 value = WinIRfromParentZone(t_SurfNum) + QHTRadSysSurf(t_SurfNum) + QHWBaseboardSurf(t_SurfNum) + QSteamBaseboardSurf(t_SurfNum) +
                              QElecBaseboardSurf(t_SurfNum);
         return value;
     }
@@ -833,7 +836,7 @@ namespace DataSurfaces {
         // Calculates outside infrared radiation
         Real64 value = 0;
         if (ExtBoundCond > 0) {
-            value = SurfaceWindow(ExtBoundCond).IRfromParentZone + QHTRadSysSurf(ExtBoundCond) + QHWBaseboardSurf(ExtBoundCond) +
+            value = WinIRfromParentZone(ExtBoundCond) + QHTRadSysSurf(ExtBoundCond) + QHWBaseboardSurf(ExtBoundCond) +
                     QSteamBaseboardSurf(ExtBoundCond) + QElecBaseboardSurf(ExtBoundCond);
         } else {
             Real64 tout = getOutsideAirTemperature(t_SurfNum) + KelvinConv;
@@ -1157,6 +1160,7 @@ namespace DataSurfaces {
         WinShadingAbsorbedSolarEnergy.deallocate();
         WinGapConvHtFlowRepEnergy.deallocate();
         WinHeatTransferRepEnergy.deallocate();
+        WinIRfromParentZone.deallocate();
         AllHTSurfaceList.clear();
         AllIZSurfaceList.clear();
         AllHTNonWindowSurfaceList.clear();

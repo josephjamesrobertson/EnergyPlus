@@ -6056,6 +6056,7 @@ namespace HeatBalanceSurfaceManager {
             WinGainConvShadeToZoneRep(surfNum) = 0.0;
             OtherConvGainInsideFaceToZoneRep(surfNum) = 0.0;
             WinGainIRShadeToZoneRep(surfNum) = 0.0;
+            WinIRfromParentZone(surfNum) = 0.0;
             SurfaceWindow(surfNum).FrameQRadOutAbs = 0.0;
             SurfaceWindow(surfNum).FrameQRadInAbs = 0.0;
             SurfaceWindow(surfNum).DividerQRadOutAbs = 0.0;
@@ -6451,7 +6452,7 @@ namespace HeatBalanceSurfaceManager {
                     WinHeatGain(SurfNum) =
                         WinTransSolar(SurfNum) + HConvIn_surf * surface.Area * (TempSurfIn(SurfNum) - RefAirTemp(SurfNum)) +
                         Construct(surface.Construction).InsideAbsorpThermal * surface.Area *
-                            (Sigma_Temp_4 - (SurfaceWindow(SurfNum).IRfromParentZone + QHTRadSysSurf(SurfNum) + QCoolingPanelSurf(SurfNum) +
+                            (Sigma_Temp_4 - (WinIRfromParentZone(SurfNum) + QHTRadSysSurf(SurfNum) + QCoolingPanelSurf(SurfNum) +
                                              QHWBaseboardSurf(SurfNum) + QSteamBaseboardSurf(SurfNum) + QElecBaseboardSurf(SurfNum))) -
                         QS(surface.SolarEnclIndex) * surface.Area *
                             Construct(surface.Construction).TransDiff; // Transmitted solar | Convection | IR exchange | IR
@@ -6462,7 +6463,7 @@ namespace HeatBalanceSurfaceManager {
                     WinGainConvGlazToZoneRep(SurfNum) = HConvIn_surf * surface.Area * (TempSurfIn(SurfNum) - RefAirTemp(SurfNum));
                     WinGainIRGlazToZoneRep(SurfNum) =
                         Construct(surface.Construction).InsideAbsorpThermal * surface.Area *
-                        (Sigma_Temp_4 - (SurfaceWindow(SurfNum).IRfromParentZone + QHTRadSysSurf(SurfNum) + QCoolingPanelSurf(SurfNum) +
+                        (Sigma_Temp_4 - (WinIRfromParentZone(SurfNum) + QHTRadSysSurf(SurfNum) + QCoolingPanelSurf(SurfNum) +
                                          QHWBaseboardSurf(SurfNum) + QSteamBaseboardSurf(SurfNum) + QElecBaseboardSurf(SurfNum)));
                     WinLossSWZoneToOutWinRep(SurfNum) = QS(surface.SolarEnclIndex) * surface.Area * Construct(surface.Construction).TransDiff;
                 } else {                             // Regular window

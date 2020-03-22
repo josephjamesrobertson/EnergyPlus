@@ -478,6 +478,8 @@ namespace DataSurfaces {
     extern Array1D<Real64> WinGapConvHtFlowRepEnergy;     // Energy of WinGapConvHtFlowRep [J]
     extern Array1D<Real64> WinHeatTransferRepEnergy;      // Energy of WinHeatTransfer [J]
 
+    extern Array1D<Real64> WinIRfromParentZone;
+
     extern std::vector<int> AllHTSurfaceList;          // List of all heat transfer surfaces
     extern std::vector<int> AllIZSurfaceList;          // List of all interzone heat transfer surfaces
     extern std::vector<int> AllHTNonWindowSurfaceList; // List of all non-window heat transfer surfaces
@@ -985,7 +987,7 @@ namespace DataSurfaces {
         Real64 VisTransRatio;   // For windows with switchable glazing, ratio of normal transmittance
         //  in switched state to that in unswitched state
         Array1D<Real64> ThetaFace; // Face temperatures of window layers (K)
-        Real64 IRfromParentZone;   // Incident IR from parent zone (W/m2)
+//        Real64 IRfromParentZone;   // Incident IR from parent zone (W/m2)
         int IRErrCount;            // For recurring error counts
         int IRErrCountC;           // For recurring error counts (continuation)
         Real64 FrameArea;          // Frame projected area (m2)
@@ -1116,8 +1118,6 @@ namespace DataSurfaces {
 
         int TDDPipeNum; // Tubular daylighting device pipe number for TDD domes and diffusers
 
-//        Array1D<Real64> SurfWindowIRfromParentZone;
-//        Array1D<Real64> SurfNetLWRadToRecSurf;
 
         // Default Constructor
         SurfaceWindowCalc()
@@ -1137,7 +1137,7 @@ namespace DataSurfaces {
               ShadingFlag(0), ShadingFlagEMSOn(0), ShadingFlagEMSValue(0), StormWinFlag(0), StormWinFlagPrevDay(0),
               FracTimeShadingDeviceOn(0.0), ExtIntShadePrevTS(0), ShadedConstruction(0), HasShadeOrBlindLayer(false), SurfDayLightInit(false),
               DaylFacPoint(0), VisTransSelected(0.0), SwitchingFactor(0.0), WinCenter(3, 0.0), Theta(0.0), Phi(0.0), RhoCeilingWall(0.0),
-              RhoFloorWall(0.0), FractionUpgoing(0.0), VisTransRatio(0.0), ThetaFace(10, 296.15), IRfromParentZone(0.0), IRErrCount(0),
+              RhoFloorWall(0.0), FractionUpgoing(0.0), VisTransRatio(0.0), ThetaFace(10, 296.15), IRErrCount(0),
               IRErrCountC(0), FrameArea(0.0), FrameConductance(0.0), FrameSolAbsorp(0.0), FrameVisAbsorp(0.0), FrameEmis(0.0), FrameAreaXEmiss(0.0),
               FrameRadExchangeFactor(0.0), FrameHRadLinIn(0.0), FrameRadThermalFluxRec(0.0), FrameRadThermalFluxRecOld(0.0),
               FrEdgeToCenterGlCondRatio(1.0), FrameEdgeArea(0.0), FrameTempSurfIn(23.0), FrameTempSurfInOld(23.0), FrameTempSurfOut(23.0),

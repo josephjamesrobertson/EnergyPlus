@@ -127,12 +127,12 @@ namespace HeatBalanceIntRadExchange {
     // DERIVED TYPE DEFINITIONS
     // na
 
-    struct PaddedIR{
-        double SurfWindowIRfromParentZone;
-        double SurfNetLWRadToRecSurf;
-        PaddedIR() : SurfWindowIRfromParentZone(0.0), SurfNetLWRadToRecSurf (0.0) {}
-
-    };
+//    struct PaddedIR{
+//        double SurfWindowIRfromParentZone;
+//        double SurfNetLWRadToRecSurf;
+//        PaddedIR() : SurfWindowIRfromParentZone(0.0), SurfNetLWRadToRecSurf (0.0) {}
+//
+//    };
 
     // MODULE VARIABLE DECLARATIONS:
     int MaxNumOfRadEnclosureSurfs(0); // Max saved to get large enough space for SurfaceTempInKto4th
@@ -185,6 +185,7 @@ namespace HeatBalanceIntRadExchange {
         using namespace DataTimings;
         using HeatBalanceMovableInsulation::EvalInsideMovableInsulation;
         using WindowEquivalentLayer::EQLWindowInsideEffectiveEmiss;
+        using DataSurfaces::WinIRfromParentZone;
         using namespace std::chrono;
 
         Real64 const StefanBoltzmannConst(5.6697e-8); // Stefan-Boltzmann constant in W/(m2*K4)
@@ -196,9 +197,9 @@ namespace HeatBalanceIntRadExchange {
 //        int ShadeFlagPrev; // Window shading status previous time step
 
         // variables added as part of strategy to reduce calculation time - Glazer 2011-04-22
-//        static Array1D<Real64> SurfaceTempRad;
-//        static Array1D<Real64> SurfaceTempInKto4th;
-//        static Array1D<Real64> SurfaceEmiss;
+//        Array1D<Real64> SurfaceTempRad;
+//        Array1D<Real64> SurfaceTempInKto4th;
+//        Array1D<Real64> SurfaceEmiss;
 
 
         // FLOW:
@@ -238,7 +239,7 @@ namespace HeatBalanceIntRadExchange {
             ++NumIntRadExchangeISurf_Calls;
         }
 #endif
-//        Array2D<PaddedIR> SurfIRThreads;
+//        Array1D<PaddedIR> SurfIRThreads;
         int startEnclosure = 1;
         int endEnclosure = DataViewFactorInformation::NumOfRadiantEnclosures;
         if (PartialResimulate) {
@@ -246,18 +247,18 @@ namespace HeatBalanceIntRadExchange {
             auto const &enclosure(ZoneRadiantInfo(startEnclosure));
             for (int i : enclosure.SurfacePtr) {
                 NetLWRadToSurf(i) = 0.0;
-                SurfaceWindow(i).IRfromParentZone = 0.0;
+                WinIRfromParentZone(i) = 0.0;
+//                SurfaceWindow(i).IRfromParentZone = 0.0;
             }
         } else {
             NetLWRadToSurf = 0.0;
-            for (auto &e : SurfaceWindow)
-                e.IRfromParentZone = 0.0;
+            WinIRfromParentZone = 0.0;
         }
         DataGlobals::counter_7 += 1;
         high_resolution_clock::time_point t1 = high_resolution_clock::now();
 //        int const NUM_THREADS = 4;
 
-//        SurfIRThreads.allocate(TotSurfaces, NUM_THREADS);
+//        SurfIRThreads.allocate(TotSurfaces);
 
 #pragma omp parallel
         {
@@ -440,7 +441,7 @@ namespace HeatBalanceIntRadExchange {
                         auto const &rec_construct(Construct(ConstrNumRec));
                         auto &netLWRadToRecSurf(NetLWRadToSurf(RecSurfNum));
                         if (rec_construct.TypeIsWindow) {
-                            auto &rec_surface_window(SurfaceWindow(RecSurfNum));
+                            auto &rec_surface_window(WinIRfromParentZone(RecSurfNum));
                             Real64 CarrollMRTInKTo4thWin = CarrollMRTInKTo4th; // arbitrary value, IR will be zero
                             Real64 CarrollMRTNumeratorWin(0.0);
                             Real64 CarrollMRTDenominatorWin(0.0);
@@ -457,7 +458,7 @@ namespace HeatBalanceIntRadExchange {
                                 CarrollMRTInKTo4thWin = pow_4(
                                         CarrollMRTNumeratorWin / CarrollMRTDenominatorWin + KelvinConv);
                             }
-                            rec_surface_window.IRfromParentZone +=
+                            rec_surface_window +=
                                     (zone_info.Fp[RecZoneSurfNum] * CarrollMRTInKTo4thWin) / SurfaceEmiss[RecZoneSurfNum];
                         }
                         netLWRadToRecSurf +=
@@ -518,7 +519,7 @@ namespace HeatBalanceIntRadExchange {
 //                            for (size_type RecZoneSurfNum = 0; RecZoneSurfNum < s_zone_Surfaces; ++RecZoneSurfNum)
 //                                for (size_type SendZoneSurfNum = 0; SendZoneSurfNum < s_zone_Surfaces; ++SendZoneSurfNum) {
                             NetLWRadToSurf(RecSurfNum) += IRfromParentZone_acc - netLWRadToRecSurf_cor - (scriptF_acc * SurfaceTempInKto4th[RecZoneSurfNum]);
-                            SurfaceWindow(RecSurfNum).IRfromParentZone += IRfromParentZone_acc / SurfaceEmiss[RecZoneSurfNum];
+                            WinIRfromParentZone(RecSurfNum) += IRfromParentZone_acc / SurfaceEmiss[RecZoneSurfNum];
 
 //                            SurfIRThreads(RecSurfNum, tid + 1).SurfNetLWRadToRecSurf += IRfromParentZone_acc - netLWRadToRecSurf_cor - (scriptF_acc * SurfaceTempInKto4th[RecZoneSurfNum]);
 //                            SurfIRThreads(RecSurfNum, tid + 1).SurfWindowIRfromParentZone += IRfromParentZone_acc / SurfaceEmiss[RecZoneSurfNum];

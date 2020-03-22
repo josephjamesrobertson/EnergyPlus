@@ -2717,7 +2717,7 @@ namespace WindowManager {
             }
 
             // IR incident on window from zone surfaces and high-temp radiant sources
-            Rmir = window.IRfromParentZone + QHTRadSysSurf(SurfNum) + QHWBaseboardSurf(SurfNum) + QSteamBaseboardSurf(SurfNum) +
+            Rmir = WinIRfromParentZone(SurfNum) + QHTRadSysSurf(SurfNum) + QHWBaseboardSurf(SurfNum) + QSteamBaseboardSurf(SurfNum) +
                    QElecBaseboardSurf(SurfNum);
 
             // Short-wave radiation (from interior and exterior solar and zone lights)
@@ -2934,7 +2934,7 @@ namespace WindowManager {
                 // The IR radiance of this window's "exterior" surround is the IR radiance
                 // from surfaces and high-temp radiant sources in the adjacent zone
 
-                Outir = SurfaceWindow(SurfNumAdj).IRfromParentZone + QHTRadSysSurf(SurfNumAdj) + QHWBaseboardSurf(SurfNumAdj) +
+                Outir = WinIRfromParentZone(SurfNumAdj) + QHTRadSysSurf(SurfNumAdj) + QHWBaseboardSurf(SurfNumAdj) +
                         QSteamBaseboardSurf(SurfNumAdj) + QElecBaseboardSurf(SurfNumAdj);
 
             } else { // Exterior window (Ext BoundCond = 0)
@@ -6540,7 +6540,7 @@ namespace WindowManager {
         Real64 DividerHeatGain;     // Heat gain to zone from divider (W)
         Real64 DividerHeatTransfer; // Heat transfer through divider (W)
 
-        TInRad = root_4(SurfaceWindow(SurfNum).IRfromParentZone / sigma);
+        TInRad = root_4(WinIRfromParentZone(SurfNum) / sigma);
         TOutRad = root_4(Outir / sigma);
         ShadeFlag = SurfaceWindow(SurfNum).ShadingFlag;
         FrDivNum = Surface(SurfNum).FrameDivider;

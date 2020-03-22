@@ -1111,6 +1111,7 @@ namespace SolarShading {
         WinHeatLossRepEnergy.dimension(TotSurfaces, 0.0);
         WinGapConvHtFlowRepEnergy.dimension(TotSurfaces, 0.0);
         WinHeatTransferRepEnergy.dimension(TotSurfaces, 0.0);
+        WinIRfromParentZone.dimension(TotSurfaces, 0.0);
         ZoneTransSolarEnergy.dimension(NumOfZones, 0.0);
         ZoneBmSolFrExtWinsRepEnergy.dimension(NumOfZones, 0.0);
         ZoneBmSolFrIntWinsRepEnergy.dimension(NumOfZones, 0.0);
