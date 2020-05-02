@@ -44,7 +44,7 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
-
+#define _OPENMP_TEST
 // C++ Headers
 #include <string>
 
@@ -4267,11 +4267,11 @@ namespace HeatBalanceAirManager {
         // na
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        int ZoneLoop;             // Counter for the # of zones (nz)
-        int TempControlledZoneID; // index for zone in TempConrolled Zone structure
-        Real64 thisMRTFraction;   // temp working value for radiative fraction/weight
 
-        for (ZoneLoop = 1; ZoneLoop <= NumOfZones; ++ZoneLoop) {
+#ifdef _OPENMP_TEST
+#pragma omp parallel for
+#endif
+        for (int ZoneLoop = 1; ZoneLoop <= NumOfZones; ++ZoneLoop) {
             // The mean air temperature is actually ZTAV which is the average
             // temperature of the air temperatures at the system time step for the
             // entire zone time step.
@@ -4284,7 +4284,8 @@ namespace HeatBalanceAirManager {
             //  might be defined by user to be something different than 0.5, even scheduled over simulation period
             if (AnyOpTempControl) { // dig further...
                 // find TempControlledZoneID from ZoneLoop index
-                TempControlledZoneID = Zone(ZoneLoop).TempControlledZoneIndex;
+                int TempControlledZoneID = Zone(ZoneLoop).TempControlledZoneIndex;
+                double thisMRTFraction;
                 if (Zone(ZoneLoop).IsControlled) {
                     if ((TempControlledZone(TempControlledZoneID).OperativeTempControl)) {
                         // is operative temp radiative fraction scheduled or fixed?

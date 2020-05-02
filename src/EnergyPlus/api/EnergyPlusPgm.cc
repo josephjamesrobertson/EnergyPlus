@@ -433,6 +433,15 @@ int RunEnergyPlus(std::string const & filepath)
         EnergyPlus::ShowSevereError(e.what());
         return EnergyPlus::AbortEnergyPlus();
     }
+    std::cout << "Init HB counter, " << EnergyPlus::DataGlobals::counter_hb << "\n";
+    std::cout << "Init solar counter, " << EnergyPlus::DataGlobals::counter_rad << "\n";
+    std::cout << "Init HB, " << EnergyPlus::DataGlobals::timer_init << "\n";
+    std::cout << "Init Int Thermal, " << EnergyPlus::DataGlobals::timer_int_thermal << "\n";
+    std::cout << "Init Int SW, " << EnergyPlus::DataGlobals::timer_int_sw << "\n";
+    std::cout << "Init Solar Gain, " << EnergyPlus::DataGlobals::timer_solar << "\n";
+    std::cout << "Init Solar Distr., " << EnergyPlus::DataGlobals::timer_init_solar_dist << "\n";
+    std::cout << "Init CC, " << EnergyPlus::DataGlobals::timer_init_cc << "\n";
+
     return wrapUpEnergyPlus();
 }
 

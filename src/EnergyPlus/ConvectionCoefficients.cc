@@ -44,13 +44,17 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
-
+#define _OPENMP_TEST
 // C++ Headers
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <limits>
 #include <string>
+#ifdef _OPENMP_TEST
+#include <chrono>
+#endif
+
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array.functions.hh>
@@ -289,8 +293,8 @@ namespace ConvectionCoefficients {
         using DataZoneEquipment::ZoneEquipSimulatedOnce;
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        int ZoneNum;                          // DO loop counter for zones
-        int SurfNum;                          // DO loop counter for surfaces in zone
+//        int ZoneNum;                          // DO loop counter for zones
+//        int SurfNum;                          // DO loop counter for surfaces in zone
         static bool NodeCheck(true);          // for CeilingDiffuser Zones
         static bool ActiveSurfaceCheck(true); // for radiant surfaces in zone
         static bool MyEnvirnFlag(true);
@@ -304,7 +308,7 @@ namespace ConvectionCoefficients {
         if (NodeCheck) { // done once when conditions are ready...
             if (!SysSizingCalc && !ZoneSizingCalc && ZoneEquipInputsFilled && allocated(Node)) {
                 NodeCheck = false;
-                for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+                for (int ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
                     if (Zone(ZoneNum).InsideConvectionAlgo != CeilingDiffuser) continue;
                     if (Zone(ZoneNum).SystemZoneNodeNumber != 0) continue;
                     ShowSevereError("InitInteriorConvectionCoeffs: Inside Convection=CeilingDiffuser, but no system inlet node defined, Zone=" +
@@ -366,7 +370,7 @@ namespace ConvectionCoefficients {
             MyEnvirnFlag = false;
         }
         if (!BeginEnvrnFlag) MyEnvirnFlag = true;
-        for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+        for (int ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
 
             {
                 auto const SELECT_CASE_var(Zone(ZoneNum).InsideConvectionAlgo);
@@ -382,74 +386,88 @@ namespace ConvectionCoefficients {
                 }
             }
         }
-        for (ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+#ifdef _OPENMP_TEST
+#pragma omp parallel
+        {
+            int p = omp_get_num_threads();
+            int tid = omp_get_thread_num();
+            int total_zones = NumOfZones;
+            int zone_start = (total_zones * tid) / p + 1;
+            int zone_end = min((total_zones * (tid + 1)) / p, total_zones);
+            for (int ZoneNum = zone_start; ZoneNum <= zone_end; ++ZoneNum) {
+#else
+            for (int ZoneNum = 1; ZoneNum <= NumOfZones; ++ZoneNum) {
+#endif
+                for (int SurfNum = Zone(ZoneNum).SurfaceFirst; SurfNum <= Zone(ZoneNum).SurfaceLast; ++SurfNum) {
 
-            for (SurfNum = Zone(ZoneNum).SurfaceFirst; SurfNum <= Zone(ZoneNum).SurfaceLast; ++SurfNum) {
+                    if (!Surface(SurfNum).HeatTransSurf) continue; // Skip non-heat transfer surfaces
 
-                if (!Surface(SurfNum).HeatTransSurf) continue; // Skip non-heat transfer surfaces
-
-                if (present(ZoneToResimulate)) {
-                    if ((ZoneNum != ZoneToResimulate) && (AdjacentZoneToSurface(SurfNum) != ZoneToResimulate)) {
-                        continue; // skip surfaces that are not associated with this zone
-                    }
-                }
-
-                int algoNum;
-                bool standardAlgo;
-                if (Surface(SurfNum).IntConvCoeff <= -1) { // Set by user using one of the standard algorithms...
-                    algoNum = std::abs(Surface(SurfNum).IntConvCoeff);
-                    standardAlgo = true;
-                } else if (Surface(SurfNum).IntConvCoeff == 0) { // Not set by user, uses Zone Setting
-                    algoNum = Zone(ZoneNum).InsideConvectionAlgo;
-                    standardAlgo = true;
-                } else {
-                    algoNum = Zone(ZoneNum).InsideConvectionAlgo;
-                    standardAlgo = false;
-                }
-
-                if (standardAlgo) {
-                    auto const SELECT_CASE_var1(algoNum);
-
-                    if (SELECT_CASE_var1 == ASHRAESimple) {
-                        CalcASHRAESimpleIntConvCoeff(SurfNum, SurfaceTemperatures(SurfNum), MAT(ZoneNum));
-                        // Establish some lower limit to avoid a zero convection coefficient (and potential divide by zero problems)
-                        if (HConvIn(SurfNum) < LowHConvLimit) HConvIn(SurfNum) = LowHConvLimit;
-
-                    } else if (SELECT_CASE_var1 == ASHRAETARP) {
-                        if (!Construct(Surface(SurfNum).Construction).TypeIsWindow) {
-                            CalcASHRAEDetailedIntConvCoeff(SurfNum, SurfaceTemperatures(SurfNum), MAT(ZoneNum));
-                        } else {
-                            CalcISO15099WindowIntConvCoeff(SurfNum, SurfaceTemperatures(SurfNum), MAT(ZoneNum));
+                    if (present(ZoneToResimulate)) {
+                        if ((ZoneNum != ZoneToResimulate) && (AdjacentZoneToSurface(SurfNum) != ZoneToResimulate)) {
+                            continue; // skip surfaces that are not associated with this zone
                         }
+                    }
 
+                    int algoNum;
+                    bool standardAlgo;
+                    if (Surface(SurfNum).IntConvCoeff <= -1) { // Set by user using one of the standard algorithms...
+                        algoNum = std::abs(Surface(SurfNum).IntConvCoeff);
+                        standardAlgo = true;
+                    } else if (Surface(SurfNum).IntConvCoeff == 0) { // Not set by user, uses Zone Setting
+                        algoNum = Zone(ZoneNum).InsideConvectionAlgo;
+                        standardAlgo = true;
+                    } else {
+                        algoNum = Zone(ZoneNum).InsideConvectionAlgo;
+                        standardAlgo = false;
+                    }
+
+                    if (standardAlgo) {
+                        auto const SELECT_CASE_var1(algoNum);
+
+                        if (SELECT_CASE_var1 == ASHRAESimple) {
+                            CalcASHRAESimpleIntConvCoeff(SurfNum, SurfaceTemperatures(SurfNum), MAT(ZoneNum));
+                            // Establish some lower limit to avoid a zero convection coefficient (and potential divide by zero problems)
+                            if (HConvIn(SurfNum) < LowHConvLimit) HConvIn(SurfNum) = LowHConvLimit;
+
+                        } else if (SELECT_CASE_var1 == ASHRAETARP) {
+                            if (!Construct(Surface(SurfNum).Construction).TypeIsWindow) {
+                                CalcASHRAEDetailedIntConvCoeff(SurfNum, SurfaceTemperatures(SurfNum), MAT(ZoneNum));
+                            } else {
+                                CalcISO15099WindowIntConvCoeff(SurfNum, SurfaceTemperatures(SurfNum), MAT(ZoneNum));
+                            }
+
+                            // Establish some lower limit to avoid a zero convection coefficient (and potential divide by zero problems)
+                            if (HConvIn(SurfNum) < LowHConvLimit) HConvIn(SurfNum) = LowHConvLimit;
+
+                        } else if (SELECT_CASE_var1 == AdaptiveConvectionAlgorithm) {
+
+                            ManageInsideAdaptiveConvectionAlgo(SurfNum);
+
+                        } else if ((SELECT_CASE_var1 == CeilingDiffuser) || (SELECT_CASE_var1 == TrombeWall)) {
+                            // Already done above and can't be at individual surface
+
+                        } else {
+
+                            ShowFatalError("Unhandled convection coefficient algorithm.");
+                        }
+                    } else { // Interior convection has been set by the user with "value" or "schedule"
+                        HConvIn(SurfNum) = SetIntConvectionCoeff(SurfNum);
                         // Establish some lower limit to avoid a zero convection coefficient (and potential divide by zero problems)
                         if (HConvIn(SurfNum) < LowHConvLimit) HConvIn(SurfNum) = LowHConvLimit;
-
-                    } else if (SELECT_CASE_var1 == AdaptiveConvectionAlgorithm) {
-
-                        ManageInsideAdaptiveConvectionAlgo(SurfNum);
-
-                    } else if ((SELECT_CASE_var1 == CeilingDiffuser) || (SELECT_CASE_var1 == TrombeWall)) {
-                        // Already done above and can't be at individual surface
-
-                    } else {
-
-                        ShowFatalError("Unhandled convection coefficient algorithm.");
                     }
-                } else { // Interior convection has been set by the user with "value" or "schedule"
-                    HConvIn(SurfNum) = SetIntConvectionCoeff(SurfNum);
-                    // Establish some lower limit to avoid a zero convection coefficient (and potential divide by zero problems)
-                    if (HConvIn(SurfNum) < LowHConvLimit) HConvIn(SurfNum) = LowHConvLimit;
-                }
 
-                if (Surface(SurfNum).EMSOverrideIntConvCoef) {
-                    HConvIn(SurfNum) = Surface(SurfNum).EMSValueForIntConvCoef;
-                    if (Surface(SurfNum).ExtBoundCond == DataSurfaces::KivaFoundation) {
-                        SurfaceGeometry::kivaManager.surfaceConvMap[SurfNum].in = KIVA_CONST_CONV(Surface(SurfNum).EMSValueForIntConvCoef);
+                    if (Surface(SurfNum).EMSOverrideIntConvCoef) {
+                        HConvIn(SurfNum) = Surface(SurfNum).EMSValueForIntConvCoef;
+                        if (Surface(SurfNum).ExtBoundCond == DataSurfaces::KivaFoundation) {
+                            SurfaceGeometry::kivaManager.surfaceConvMap[SurfNum].in = KIVA_CONST_CONV(
+                                    Surface(SurfNum).EMSValueForIntConvCoef);
+                        }
                     }
                 }
             }
+#ifdef _OPENMP_TEST
         }
+#endif
     }
 
     void InitExteriorConvectionCoeff(int const SurfNum,      // Surface number (in Surface derived type)

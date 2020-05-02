@@ -262,7 +262,18 @@ namespace DataGlobals {
     // Performance tradeoff globals
     bool DoCoilDirectSolutions(false);       //true if use coil direction solutions
     bool createProfLog(false); //true if the _proflog.csv file should be created and a PerformancePrecisionTradeoffs object is used
-
+    double timer_init_cc(0.0);
+    double timer_init_solar_dist(0.0);
+    double timer_report_air(0.0);
+    double timer_int_thermal(0.0);
+    double timer_int_sw(0.0);
+    double timer_rad(0.0);
+    double timer_solar(0.0);
+    double timer_init(0.0);
+    double timer_outside(0.0);
+    double timer_inside(0.0);
+    int counter_hb(0);
+    int counter_rad(0);
     int Progress(0); // current progress (0-100)
     void (*fProgressPtr)(int const);
     void (*fMessagePtr)(std::string const &);
@@ -378,6 +389,18 @@ namespace DataGlobals {
         err_stream = nullptr;
         delightin_stream = nullptr;
         eplusRunningViaAPI = false;
+        timer_init_cc = 0;
+        timer_int_thermal = 0;
+        timer_int_sw = 0;
+        timer_init_solar_dist = 0;
+        timer_report_air = 0;
+        timer_rad = 0;
+        timer_init = 0;
+        timer_outside = 0;
+        timer_inside = 0;
+        timer_solar = 0;
+        counter_hb = 0;
+        counter_rad = 0;
     }
 
 } // namespace DataGlobals

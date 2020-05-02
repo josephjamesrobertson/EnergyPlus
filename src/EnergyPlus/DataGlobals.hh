@@ -308,7 +308,18 @@ namespace DataGlobals {
     extern void (*messageCallback)(const char * message);
     extern void (*errorCallback)(const char * errorMessage);
     extern bool eplusRunningViaAPI; // a flag for capturing whether we are running via API - if so we can't do python plugins
-
+    extern double timer_init_cc;
+    extern double timer_init_solar_dist;
+    extern double timer_report_air;
+    extern double timer_int_thermal;
+    extern double timer_int_sw;
+    extern double timer_rad;
+    extern double timer_solar;
+    extern double timer_init;
+    extern double timer_outside;
+    extern double timer_inside;
+    extern int counter_hb;
+    extern int counter_rad;
     // Clears the global data in DataGlobals.
     // Needed for unit tests, should not be normally called.
     void clear_state();
