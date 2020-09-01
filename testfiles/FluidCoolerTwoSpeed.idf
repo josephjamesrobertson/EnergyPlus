@@ -100,7 +100,7 @@
 ! Utility Tariffs:                None
 !
 
-  Version,9.3;
+  Version,9.4;
 
   Timestep,6;
 
@@ -116,7 +116,7 @@
     NONE,                    !- Name
     0.0000000E+00,           !- North Axis {deg}
     Suburbs,                 !- Terrain
-    3.9999999E-02,           !- Loads Convergence Tolerance Value
+    3.9999999E-02,           !- Loads Convergence Tolerance Value {W}
     0.4000000,               !- Temperature Convergence Tolerance Value {deltaC}
     FullInteriorAndExterior, !- Solar Distribution
     25,                      !- Maximum Number of Warmup Days
@@ -2230,9 +2230,9 @@
 
   Output:Variable,*,Cooling Tower Heat Transfer Rate,timestep;
 
-  Output:Variable,*,Cooling Tower Fan Electric Power,timestep;
+  Output:Variable,*,Cooling Tower Fan Electricity Rate,timestep;
 
-  Output:Variable,*,Cooling Tower Fan Electric Energy,timestep;
+  Output:Variable,*,Cooling Tower Fan Electricity Energy,timestep;
 
   Output:Variable,*,Site Outdoor Air Drybulb Temperature,timestep;
 

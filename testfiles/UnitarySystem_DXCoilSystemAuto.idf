@@ -100,13 +100,13 @@
 ! Environmental Emissions:        None
 ! Utility Tariffs:                None
 
-  Version,9.3;
+  Version,9.4;
 
   Building,
     NONE,                    !- Name
     0,                       !- North Axis {deg}
     Suburbs,                 !- Terrain
-    3.9999999E-02,           !- Loads Convergence Tolerance Value
+    3.9999999E-02,           !- Loads Convergence Tolerance Value {W}
     0.4000000,               !- Temperature Convergence Tolerance Value {deltaC}
     FullInteriorAndExterior, !- Solar Distribution
     25,                      !- Maximum Number of Warmup Days
@@ -1091,7 +1091,12 @@
     0,                       !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA West Zone,       !- Name
@@ -1122,7 +1127,12 @@
     0,                       !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA EAST ZONE,       !- Name
@@ -1153,7 +1163,12 @@
     0,                       !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA NORTH ZONE,      !- Name
@@ -1749,7 +1764,7 @@
 
   Output:Variable,*,Zone Air Humidity Ratio,hourly;
 
-  Output:Variable,*,Fan Electric Power,hourly;
+  Output:Variable,*,Fan Electricity Rate,hourly;
 
   Output:Variable,*,Cooling Coil Total Cooling Energy,hourly;
 
@@ -1757,19 +1772,19 @@
 
   Output:Variable,*,Cooling Coil Sensible Cooling Energy,hourly;
 
-  Output:Variable,*,Cooling Coil Electric Power,hourly;
+  Output:Variable,*,Cooling Coil Electricity Rate,hourly;
 
   Output:Variable,*,Heating Coil Heating Rate,hourly;
 
   Output:Variable,*,Heating Coil Heating Energy,hourly;
 
-  Output:Variable,*,Heating Coil Electric Power,hourly;
+  Output:Variable,*,Heating Coil Electricity Rate,hourly;
 
-  Output:Variable,*,Heating Coil Defrost Electric Power,hourly;
+  Output:Variable,*,Heating Coil Defrost Electricity Rate,hourly;
 
-  Output:Variable,*,Heating Coil Gas Rate,hourly;
+  Output:Variable,*,Heating Coil NaturalGas Rate,hourly;
 
-  Output:Variable,*,Heating Coil Defrost Electric Energy,hourly;
+  Output:Variable,*,Heating Coil Defrost Electricity Energy,hourly;
 
   Output:Meter:MeterFileOnly,Electricity:Facility,monthly;
 
@@ -1779,9 +1794,9 @@
 
   Output:Meter:MeterFileOnly,Electricity:HVAC,monthly;
 
-  Output:Meter:MeterFileOnly,Gas:Facility,monthly;
+  Output:Meter:MeterFileOnly,NaturalGas:Facility,monthly;
 
-  Output:Meter:MeterFileOnly,Gas:HVAC,monthly;
+  Output:Meter:MeterFileOnly,NaturalGas:HVAC,monthly;
 
   Output:Meter:MeterFileOnly,Electricity:Facility,runperiod;
 
@@ -1791,9 +1806,9 @@
 
   Output:Meter:MeterFileOnly,Electricity:HVAC,runperiod;
 
-  Output:Meter:MeterFileOnly,Gas:Facility,runperiod;
+  Output:Meter:MeterFileOnly,NaturalGas:Facility,runperiod;
 
-  Output:Meter:MeterFileOnly,Gas:HVAC,runperiod;
+  Output:Meter:MeterFileOnly,NaturalGas:HVAC,runperiod;
 
   Output:VariableDictionary,IDF;
 

@@ -111,7 +111,7 @@
 ! ExtWallConstruction=Mass
 ! End SimMetaData
 
-  Version,9.3;
+  Version,9.4;
 
 !-   ===========  ALL OBJECTS IN CLASS: SIMULATIONCONTROL ===========
 
@@ -128,7 +128,7 @@
     Stand-alone Retail,      !- Name
     0.0000,                  !- North Axis {deg}
     City,                    !- Terrain
-    0.0400,                  !- Loads Convergence Tolerance Value
+    0.0400,                  !- Loads Convergence Tolerance Value {W}
     0.2000,                  !- Temperature Convergence Tolerance Value {deltaC}
     FullInteriorAndExterior, !- Solar Distribution
     25,                      !- Maximum Number of Warmup Days
@@ -5227,7 +5227,12 @@
     0.0,                     !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Back_Space,      !- Name
@@ -5260,7 +5265,12 @@
     0.0,                     !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Core_Retail,     !- Name
@@ -5293,7 +5303,12 @@
     0.0,                     !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Point_Of_Sale,   !- Name
@@ -5326,7 +5341,12 @@
     0.0,                     !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Front_Retail,    !- Name
@@ -5359,7 +5379,12 @@
     0.0,                     !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Front_Entry,     !- Name
@@ -5607,7 +5632,7 @@
     0.001,                   !- Heating Convergence Tolerance
     ;                        !- Availability Manager List Name
 
-!-   ===========  ALL OBJECTS IN CLASS: AIRTERMINAL:SINGLEDUCT:CONSTANTVOLUME:NOREHEAT ===========
+!-   ===========  ALL OBJECTS IN CLASS: AIRTERMINAL:SINGLEDUCT:UNCONTROLLED ===========
 
   AirTerminal:SingleDuct:ConstantVolume:NoReheat,
     Back_Space Direct Air,   !- Name
@@ -7036,7 +7061,7 @@
     3,                       !- Digits After Decimal
     Electricity:HVAC,        !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Heating:Gas,             !- Variable or Meter 2 Name
+    Heating:NaturalGas,             !- Variable or Meter 2 Name
     SumOrAverage;            !- Aggregation Type for Variable or Meter 2
 
   Output:Table:Monthly,
@@ -7168,13 +7193,13 @@
   Output:Table:Monthly,
     Building Loads - Electric,  !- Name
     2,                       !- Digits After Decimal
-    Zone Lights Electric Energy,  !- Variable or Meter 1 Name
+    Zone Lights Electricity Energy,  !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Zone Lights Electric Energy,  !- Variable or Meter 2 Name
+    Zone Lights Electricity Energy,  !- Variable or Meter 2 Name
     Maximum,                 !- Aggregation Type for Variable or Meter 2
-    Zone Electric Equipment Electric Energy,  !- Variable or Meter 3 Name
+    Zone Electric Equipment Electricity Energy,  !- Variable or Meter 3 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 3
-    Zone Electric Equipment Electric Energy,  !- Variable or Meter 4 Name
+    Zone Electric Equipment Electricity Energy,  !- Variable or Meter 4 Name
     Maximum;                 !- Aggregation Type for Variable or Meter 4
 
   Output:Table:Monthly,
@@ -7198,9 +7223,9 @@
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
     Electricity:Building,    !- Variable or Meter 2 Name
     Maximum,                 !- Aggregation Type for Variable or Meter 2
-    Gas:Building,            !- Variable or Meter 3 Name
+    NaturalGas:Building,            !- Variable or Meter 3 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 3
-    Gas:Building,            !- Variable or Meter 4 Name
+    NaturalGas:Building,            !- Variable or Meter 4 Name
     Maximum;                 !- Aggregation Type for Variable or Meter 4
 
   Output:Table:Monthly,
@@ -7238,17 +7263,17 @@
   Output:Table:Monthly,
     Building Energy Performance - Natural Gas,  !- Name
     2,                       !- Digits After Decimal
-    InteriorEquipment:Gas,   !- Variable or Meter 1 Name
+    InteriorEquipment:NaturalGas,   !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    ExteriorEquipment:Gas,   !- Variable or Meter 2 Name
+    ExteriorEquipment:NaturalGas,   !- Variable or Meter 2 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 2
-    Heating:Gas,             !- Variable or Meter 3 Name
+    Heating:NaturalGas,             !- Variable or Meter 3 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 3
-    Cooling:Gas,             !- Variable or Meter 4 Name
+    Cooling:NaturalGas,             !- Variable or Meter 4 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 4
-    WaterSystems:Gas,        !- Variable or Meter 5 Name
+    WaterSystems:NaturalGas,        !- Variable or Meter 5 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 5
-    Cogeneration:Gas,        !- Variable or Meter 6 Name
+    Cogeneration:NaturalGas,        !- Variable or Meter 6 Name
     SumOrAverage;            !- Aggregation Type for Variable or Meter 6
 
   Output:Table:Monthly,
@@ -7284,7 +7309,7 @@
 
   Output:Meter:MeterFileOnly,Electricity:HVAC,hourly;
 
-  Output:Meter:MeterFileOnly,Gas:Facility,hourly;
+  Output:Meter:MeterFileOnly,NaturalGas:Facility,hourly;
 
 !-   ===========  ALL OBJECTS IN CLASS: OUTPUT:VARIABLE ===========
 !-   ===========  ALL OBJECTS IN CLASS: OUTPUT:ENVIRONMENTALIMPACTFACTORS ===========
@@ -7341,23 +7366,23 @@
   Output:Table:Monthly,
     Peak Gas Demand,         !- Name
     3,                       !- Digits After Decimal
-    Gas:Facility,            !- Variable or Meter 1 Name
+    NaturalGas:Facility,            !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Gas:Facility,            !- Variable or Meter 2 Name
+    NaturalGas:Facility,            !- Variable or Meter 2 Name
     Maximum,                 !- Aggregation Type for Variable or Meter 2
-    Gas:HVAC,                !- Variable or Meter 3 Name
+    NaturalGas:HVAC,                !- Variable or Meter 3 Name
     ValueWhenMaximumOrMinimum,  !- Aggregation Type for Variable or Meter 3
-    InteriorEquipment:Gas,   !- Variable or Meter 4 Name
+    InteriorEquipment:NaturalGas,   !- Variable or Meter 4 Name
     ValueWhenMaximumOrMinimum,  !- Aggregation Type for Variable or Meter 4
-    MiscPlugGas:InteriorEquipment:Gas,  !- Variable or Meter 5 Name
+    MiscPlugGas:InteriorEquipment:NaturalGas,  !- Variable or Meter 5 Name
     ValueWhenMaximumOrMinimum,  !- Aggregation Type for Variable or Meter 5
-    Gas:Plant,               !- Variable or Meter 6 Name
+    NaturalGas:Plant,               !- Variable or Meter 6 Name
     ValueWhenMaximumOrMinimum,  !- Aggregation Type for Variable or Meter 6
-    WaterSystems:Gas,        !- Variable or Meter 7 Name
+    WaterSystems:NaturalGas,        !- Variable or Meter 7 Name
     ValueWhenMaximumOrMinimum,  !- Aggregation Type for Variable or Meter 7
-    Water Heater:WaterSystems:Gas,  !- Variable or Meter 8 Name
+    Water Heater:WaterSystems:NaturalGas,  !- Variable or Meter 8 Name
     ValueWhenMaximumOrMinimum,  !- Aggregation Type for Variable or Meter 8
-    Heating:Gas,             !- Variable or Meter 9 Name
+    Heating:NaturalGas,             !- Variable or Meter 9 Name
     ValueWhenMaximumOrMinimum;  !- Aggregation Type for Variable or Meter 9
 
 ! EMS code for Addendum CA
@@ -8439,7 +8464,7 @@
   EnergyManagementSystem:Sensor,
     Back_Space_LSr,          !- Name
     Back_Space,              !- Output:Variable or Output:Meter Index Key Name
-    Zone Lights Electric Power;  !- Output:Variable or Output:Meter Name
+    Zone Lights Electricity Rate;  !- Output:Variable or Output:Meter Name
 
   EnergyManagementSystem:Sensor,
     Back_Space_Occ_Sensor,   !- Name
@@ -8476,7 +8501,7 @@
   EnergyManagementSystem:Sensor,
     Core_Retail_LSr,         !- Name
     Core_Retail,             !- Output:Variable or Output:Meter Index Key Name
-    Zone Lights Electric Power;  !- Output:Variable or Output:Meter Name
+    Zone Lights Electricity Rate;  !- Output:Variable or Output:Meter Name
 
   EnergyManagementSystem:Sensor,
     Core_Retail_Occ_Sensor,  !- Name
@@ -8513,7 +8538,7 @@
   EnergyManagementSystem:Sensor,
     Point_Of_Sale_LSr,       !- Name
     Point_Of_Sale,           !- Output:Variable or Output:Meter Index Key Name
-    Zone Lights Electric Power;  !- Output:Variable or Output:Meter Name
+    Zone Lights Electricity Rate;  !- Output:Variable or Output:Meter Name
 
   EnergyManagementSystem:Sensor,
     Point_Of_Sale_Occ_Sensor,!- Name
@@ -8550,7 +8575,7 @@
   EnergyManagementSystem:Sensor,
     Front_Retail_LSr,        !- Name
     Front_Retail,            !- Output:Variable or Output:Meter Index Key Name
-    Zone Lights Electric Power;  !- Output:Variable or Output:Meter Name
+    Zone Lights Electricity Rate;  !- Output:Variable or Output:Meter Name
 
   EnergyManagementSystem:Sensor,
     Front_Retail_Occ_Sensor, !- Name
@@ -8587,7 +8612,7 @@
   EnergyManagementSystem:Sensor,
     Front_Entry_LSr,         !- Name
     Front_Entry,             !- Output:Variable or Output:Meter Index Key Name
-    Zone Lights Electric Power;  !- Output:Variable or Output:Meter Name
+    Zone Lights Electricity Rate;  !- Output:Variable or Output:Meter Name
 
   EnergyManagementSystem:Sensor,
     Front_Entry_Occ_Sensor,  !- Name

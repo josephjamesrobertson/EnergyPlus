@@ -83,7 +83,7 @@
 !                                 The diffrent comfort controls may not be realistic. The purpose is to show how these control
 !                                 objects work in this example input file.
 !
-! Zonal Equipment:                AirTerminal:SingleDuct:ContantVolume:NoReheat
+! Zonal Equipment:                AirTerminal:SingleDuct:Uncontrolled
 ! Central Air Handling Equipment: Yes
 ! System Equipment Autosize:      No (chilled water loop volume is autosized although not used)
 ! Purchased Cooling:              No
@@ -106,13 +106,13 @@
 ! Utility Tariffs:                None
 !
 
-  Version,9.3;
+  Version,9.4;
 
   Building,
     NONE,                    !- Name
     0,                       !- North Axis {deg}
     Suburbs,                 !- Terrain
-    3.9999999E-02,           !- Loads Convergence Tolerance Value
+    3.9999999E-02,           !- Loads Convergence Tolerance Value {W}
     0.4000000,               !- Temperature Convergence Tolerance Value {deltaC}
     FullInteriorAndExterior, !- Solar Distribution
     25,                      !- Maximum Number of Warmup Days
@@ -126,7 +126,9 @@
 
   HeatBalanceAlgorithm,ConductionTransferFunction;
 
-  Output:DebuggingData,0,0;
+  Output:DebuggingData,
+    No,                      !- Report Debugging Data
+    No;                      !- Report During Warmup
 
   SimulationControl,
     No,                      !- Do Zone Sizing Calculation
@@ -1488,7 +1490,7 @@
 
   Output:Variable,*,Cooling Coil Sensible Cooling Energy,hourly;
 
-  Output:Variable,*,Cooling Coil Electric Power,hourly;
+  Output:Variable,*,Cooling Coil Electricity Rate,hourly;
 
   Output:Variable,*,Zone Thermal Comfort Control Type,hourly;
 
@@ -1512,9 +1514,9 @@
 
   Output:Meter:MeterFileOnly,Electricity:HVAC,monthly;
 
-  Output:Meter:MeterFileOnly,Gas:Facility,monthly;
+  Output:Meter:MeterFileOnly,NaturalGas:Facility,monthly;
 
-  Output:Meter:MeterFileOnly,Gas:HVAC,monthly;
+  Output:Meter:MeterFileOnly,NaturalGas:HVAC,monthly;
 
   Output:Meter:MeterFileOnly,Electricity:Facility,runperiod;
 
@@ -1524,9 +1526,9 @@
 
   Output:Meter:MeterFileOnly,Electricity:HVAC,runperiod;
 
-  Output:Meter:MeterFileOnly,Gas:Facility,runperiod;
+  Output:Meter:MeterFileOnly,NaturalGas:Facility,runperiod;
 
-  Output:Meter:MeterFileOnly,Gas:HVAC,runperiod;
+  Output:Meter:MeterFileOnly,NaturalGas:HVAC,runperiod;
 
   Output:VariableDictionary,Regular;
 

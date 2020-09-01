@@ -3,7 +3,7 @@
 !-NOTE: All comments with '!-' are ignored by the IDFEditor and are generated automatically.
 !-      Use '!' comments if they need to be retained when using the IDFEditor.
 
-  Output:Variable,*,Lights Electric Energy,Hourly;
+  Output:Variable,*,Lights Electricity Energy,Hourly;
 
   Schedule:Compact,
     Office Lighting,         !- Name
@@ -121,13 +121,13 @@
 !
 !
 
-  Version,9.3;
+  Version,9.4;
 
   Building,
     Exercise 1C,             !- Name
     0.0,                     !- North Axis {deg}
     Country,                 !- Terrain
-    0.04,                    !- Loads Convergence Tolerance Value
+    0.04,                    !- Loads Convergence Tolerance Value {W}
     0.4,                     !- Temperature Convergence Tolerance Value {deltaC}
     FullInteriorAndExterior, !- Solar Distribution
     ,                        !- Maximum Number of Warmup Days

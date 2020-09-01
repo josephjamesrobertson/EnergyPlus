@@ -79,9 +79,6 @@ class InputProcessor
 public:
     using json = nlohmann::json;
 
-    friend class EnergyPlusFixture;
-    friend class InputProcessorFixture;
-
     json::parser_callback_t callback;
 
     InputProcessor();
@@ -132,7 +129,7 @@ public:
                        int const Number,
                        Array1S_string Alphas,
                        int &NumAlphas,
-                       Array1S<Real64> Numbers,
+                       Array1D<Real64> &Numbers,
                        int &NumNumbers,
                        int &Status,
                        Optional<Array1D_bool> NumBlank = _,
@@ -177,6 +174,8 @@ public:
 
     void preScanReportingVariables();
 
+    void reportIDFRecordsStats();
+
     void reportOrphanRecordObjects();
 
     const json &getObjectInstances(std::string const &ObjType);
@@ -184,6 +183,9 @@ public:
     void clear_state();
 
 private:
+    friend class EnergyPlusFixture;
+    friend class InputProcessorFixture;
+
     struct ObjectInfo
     {
         ObjectInfo() = default;
@@ -245,7 +247,7 @@ private:
                             bool within_max_fields,
                             Array1S_string Alphas,
                             int &NumAlphas,
-                            Array1S<Real64> Numbers,
+                            Array1D<Real64> &Numbers,
                             int &NumNumbers,
                             Optional<Array1D_bool> NumBlank = _,
                             Optional<Array1D_bool> AlphaBlank = _,

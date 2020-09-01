@@ -99,7 +99,7 @@
 ! Environmental Emissions:        None
 ! Utility Tariffs:                None
 
-  Version,9.3;
+  Version,9.4;
 
   Building,
     Building,                !- Name
@@ -1773,7 +1773,7 @@
 
   Output:Variable,*,Cooling Coil Sensible Cooling Rate,hourly;
 
-  Output:Variable,*,Cooling Coil Electric Power,hourly;
+  Output:Variable,*,Cooling Coil Electricity Rate,hourly;
 
   Output:Variable,*,Cooling Coil Runtime Fraction,hourly;
 
@@ -1791,7 +1791,7 @@
 
   Output:Meter:MeterFileOnly,Electricity:Plant,monthly;
 
-  Output:Meter:MeterFileOnly,Gas:Facility,monthly;
+  Output:Meter:MeterFileOnly,NaturalGas:Facility,monthly;
 
   Output:Meter:MeterFileOnly,Electricity:Facility,runperiod;
 
@@ -1803,7 +1803,7 @@
 
   Output:Meter:MeterFileOnly,Electricity:Plant,runperiod;
 
-  Output:Meter:MeterFileOnly,Gas:Facility,runperiod;
+  Output:Meter:MeterFileOnly,NaturalGas:Facility,runperiod;
 
   OutputControl:Table:Style,
     HTML;                    !- Column Separator
@@ -2389,7 +2389,7 @@
     Sys 1 Furnace DX Cool Cooling Coil,  !- Cooling Coil Name
     ,                        !- Use DOAS DX Cooling Coil
     ,                        !- Minimum Supply Air Temperature {C}
-    ,                        !- Latent Load Control
+    LatentWithSensibleLoadControl, !- Latent Load Control
     ,                        !- Supplemental Heating Coil Object Type
     ,                        !- Supplemental Heating Coil Name
     SupplyAirFlowRate,       !- Cooling Supply Air Flow Rate Method
@@ -2831,7 +2831,7 @@
     Sys 2 Furnace DX Cool Cooling Coil,  !- Cooling Coil Name
     ,                        !- Use DOAS DX Cooling Coil
     ,                        !- Minimum Supply Air Temperature {C}
-    ,                        !- Latent Load Control
+    LatentWithSensibleLoadControl, !- Latent Load Control
     ,                        !- Supplemental Heating Coil Object Type
     ,                        !- Supplemental Heating Coil Name
     SupplyAirFlowRate,       !- Cooling Supply Air Flow Rate Method
@@ -3260,7 +3260,7 @@
     Sys 3 Heat Pump Air Source Cooling Coil,  !- Cooling Coil Name
     ,                        !- Use DOAS DX Cooling Coil
     ,                        !- Minimum Supply Air Temperature {C}
-    ,                        !- Latent Load Control
+    LatentWithSensibleLoadControl, !- Latent Load Control
     Coil:Heating:Electric,   !- Supplemental Heating Coil Object Type
     Sys 3 Heat Pump Air Source Supp Heat or Reheat Coil,  !- Supplemental Heating Coil Name
     SupplyAirFlowRate,       !- Cooling Supply Air Flow Rate Method
@@ -3770,7 +3770,7 @@
     Sys 4 Heat Pump Air Source Cooling Coil,  !- Cooling Coil Name
     ,                        !- Use DOAS DX Cooling Coil
     ,                        !- Minimum Supply Air Temperature {C}
-    ,                        !- Latent Load Control
+    LatentWithSensibleLoadControl, !- Latent Load Control
     Coil:Heating:Electric,   !- Supplemental Heating Coil Object Type
     Sys 4 Heat Pump Air Source Supp Heat or Reheat Coil,  !- Supplemental Heating Coil Name
     SupplyAirFlowRate,       !- Cooling Supply Air Flow Rate Method

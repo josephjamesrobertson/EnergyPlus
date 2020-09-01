@@ -70,13 +70,13 @@
 ! Environmental Emissions:        None
 ! Utility Tariffs:                None
 
-  Version,9.3;
+  Version,9.4;
 
   Building,
     Building,                !- Name
     0,                       !- North Axis {deg}
     City,                    !- Terrain
-    0.04,                    !- Loads Convergence Tolerance Value
+    0.04,                    !- Loads Convergence Tolerance Value {W}
     0.4,                     !- Temperature Convergence Tolerance Value {deltaC}
     FullInteriorAndExterior, !- Solar Distribution
     25,                      !- Maximum Number of Warmup Days
@@ -1555,7 +1555,12 @@
     0,                       !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA ZSF1,            !- Name
@@ -1586,7 +1591,12 @@
     0,                       !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA ZNF1,            !- Name
@@ -1617,7 +1627,12 @@
     0,                       !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA ZSF2,            !- Name
@@ -1648,7 +1663,12 @@
     0,                       !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA ZNF2,            !- Name
@@ -2732,7 +2752,7 @@
 
   Output:Meter,Cooling:Electricity,timestep;
 
-  Output:Meter,Heating:Gas,timestep;
+  Output:Meter,Heating:NaturalGas,timestep;
 
   Output:Meter,Fans:Electricity,timestep;
 
@@ -2742,7 +2762,7 @@
 
   Output:Meter,Cooling:Electricity,runperiod;
 
-  Output:Meter,Heating:Gas,runperiod;
+  Output:Meter,Heating:NaturalGas,runperiod;
 
   Output:Meter,Fans:Electricity,runperiod;
 
@@ -2764,9 +2784,9 @@
 
   Output:Meter:MeterFileOnly,Electricity:HVAC,monthly;
 
-  Output:Meter:MeterFileOnly,Gas:Facility,monthly;
+  Output:Meter:MeterFileOnly,NaturalGas:Facility,monthly;
 
-  Output:Meter:MeterFileOnly,Gas:HVAC,monthly;
+  Output:Meter:MeterFileOnly,NaturalGas:HVAC,monthly;
 
   Output:Meter:MeterFileOnly,Electricity:Facility,runperiod;
 
@@ -2774,9 +2794,9 @@
 
   Output:Meter:MeterFileOnly,Electricity:HVAC,runperiod;
 
-  Output:Meter:MeterFileOnly,Gas:Facility,runperiod;
+  Output:Meter:MeterFileOnly,NaturalGas:Facility,runperiod;
 
-  Output:Meter:MeterFileOnly,Gas:HVAC,runperiod;
+  Output:Meter:MeterFileOnly,NaturalGas:HVAC,runperiod;
 
   OutputControl:Table:Style,
     Comma;                   !- Column Separator

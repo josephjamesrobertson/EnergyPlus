@@ -143,7 +143,7 @@
 ! ***GENERAL SIMULATION PARAMETERS***
 ! Number of Zones: 18
 
-  Version,9.3;
+  Version,9.4;
 
   SimulationControl,
     YES,                     !- Do Zone Sizing Calculation
@@ -156,7 +156,7 @@
     Benchmark Medium Office New V1.3_5.0,  !- Name
     0.0000,                  !- North Axis {deg}
     City,                    !- Terrain
-    0.0400,                  !- Loads Convergence Tolerance Value
+    0.0400,                  !- Loads Convergence Tolerance Value {W}
     0.2000,                  !- Temperature Convergence Tolerance Value {deltaC}
     FullInteriorAndExterior, !- Solar Distribution
     25,                      !- Maximum Number of Warmup Days
@@ -5518,7 +5518,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Core_bottom,     !- Name
@@ -5549,7 +5554,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Core_mid,        !- Name
@@ -5580,7 +5590,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Core_top,        !- Name
@@ -5611,7 +5626,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_bot_ZN_1,  !- Name
@@ -5642,7 +5662,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_bot_ZN_2,  !- Name
@@ -5673,7 +5698,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_bot_ZN_3,  !- Name
@@ -5704,7 +5734,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_bot_ZN_4,  !- Name
@@ -5735,7 +5770,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_mid_ZN_1,  !- Name
@@ -5766,7 +5806,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_mid_ZN_2,  !- Name
@@ -5797,7 +5842,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_mid_ZN_3,  !- Name
@@ -5828,7 +5878,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_mid_ZN_4,  !- Name
@@ -5859,7 +5914,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_top_ZN_1,  !- Name
@@ -5890,7 +5950,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_top_ZN_2,  !- Name
@@ -5921,7 +5986,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_top_ZN_3,  !- Name
@@ -5952,7 +6022,12 @@
     ,                        !- Heating Design Air Flow Rate {m3/s}
     ,                        !- Heating Maximum Air Flow per Zone Floor Area {m3/s-m2}
     ,                        !- Heating Maximum Air Flow {m3/s}
-    ;                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Heating Maximum Air Flow Fraction
+    ,                        !- Design Specification Zone Air Distribution Object Name
+    No,                      !- Account for Dedicated Outdoor Air System
+    NeutralSupplyAir,        !- Dedicated Outdoor Air System Control Strategy
+    autosize,                !- Dedicated Outdoor Air Low Setpoint Temperature for Design {C}
+    autosize;                !- Dedicated Outdoor Air High Setpoint Temperature for Design {C}
 
   DesignSpecification:OutdoorAir,
     SZ DSOA Perimeter_top_ZN_4,  !- Name
@@ -8329,7 +8404,7 @@
 
   UtilityCost:Tariff,
     IN_EIAMonthlyRateGas,    !- Name
-    Gas:Facility,            !- Output Meter Name
+    NaturalGas:Facility,            !- Output Meter Name
     MCF,                     !- Conversion Factor Choice
     ,                        !- Energy Conversion Factor
     ,                        !- Demand Conversion Factor
@@ -8397,7 +8472,7 @@
 
   Output:Meter,Electricity:HVAC,HOURLY;
 
-  Output:Meter,Gas:Facility,HOURLY;
+  Output:Meter,NaturalGas:Facility,HOURLY;
 
   Output:Variable,*,Site Outdoor Air Drybulb Temperature,HOURLY;
 
@@ -8407,15 +8482,15 @@
 
   Output:Variable,*,Zone Mean Air Temperature,hourly;
 
-  Output:Variable,*,Cooling Coil Electric Power,hourly;
+  Output:Variable,*,Cooling Coil Electricity Rate,hourly;
 
-  Output:Variable,*,Boiler Gas Rate,hourly;
+  Output:Variable,*,Boiler NaturalGas Rate,hourly;
 
   Output:Variable,*,Boiler Part Load Ratio,HOURLY;
 
   Output:Variable,*,Air System Outdoor Air Flow Fraction,HOURLY;
 
-  Output:Variable,*,Fan Electric Power,hourly;
+  Output:Variable,*,Fan Electricity Rate,hourly;
 
 ! ***REPORT TABLES***
 
@@ -8511,7 +8586,7 @@
     3,                       !- Digits After Decimal
     Electricity:HVAC,        !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Heating:Gas,             !- Variable or Meter 2 Name
+    Heating:NaturalGas,             !- Variable or Meter 2 Name
     SumOrAverage;            !- Aggregation Type for Variable or Meter 2
 
   Output:Table:Monthly,
@@ -8643,13 +8718,13 @@
   Output:Table:Monthly,
     Building Loads - Electric,  !- Name
     2,                       !- Digits After Decimal
-    Zone Lights Electric Energy,  !- Variable or Meter 1 Name
+    Zone Lights Electricity Energy,  !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    Zone Lights Electric Energy,  !- Variable or Meter 2 Name
+    Zone Lights Electricity Energy,  !- Variable or Meter 2 Name
     Maximum,                 !- Aggregation Type for Variable or Meter 2
-    Zone Electric Equipment Electric Energy,  !- Variable or Meter 3 Name
+    Zone Electric Equipment Electricity Energy,  !- Variable or Meter 3 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 3
-    Zone Electric Equipment Electric Energy,  !- Variable or Meter 4 Name
+    Zone Electric Equipment Electricity Energy,  !- Variable or Meter 4 Name
     Maximum;                 !- Aggregation Type for Variable or Meter 4
 
   Output:Table:Monthly,
@@ -8673,9 +8748,9 @@
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
     Electricity:Building,    !- Variable or Meter 2 Name
     Maximum,                 !- Aggregation Type for Variable or Meter 2
-    Gas:Building,            !- Variable or Meter 3 Name
+    NaturalGas:Building,            !- Variable or Meter 3 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 3
-    Gas:Building,            !- Variable or Meter 4 Name
+    NaturalGas:Building,            !- Variable or Meter 4 Name
     Maximum;                 !- Aggregation Type for Variable or Meter 4
 
   Output:Table:Monthly,
@@ -8713,17 +8788,17 @@
   Output:Table:Monthly,
     Building Energy Performance - Natural Gas,  !- Name
     2,                       !- Digits After Decimal
-    InteriorEquipment:Gas,   !- Variable or Meter 1 Name
+    InteriorEquipment:NaturalGas,   !- Variable or Meter 1 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 1
-    ExteriorEquipment:Gas,   !- Variable or Meter 2 Name
+    ExteriorEquipment:NaturalGas,   !- Variable or Meter 2 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 2
-    Heating:Gas,             !- Variable or Meter 3 Name
+    Heating:NaturalGas,             !- Variable or Meter 3 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 3
-    Cooling:Gas,             !- Variable or Meter 4 Name
+    Cooling:NaturalGas,             !- Variable or Meter 4 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 4
-    WaterSystems:Gas,        !- Variable or Meter 5 Name
+    WaterSystems:NaturalGas,        !- Variable or Meter 5 Name
     SumOrAverage,            !- Aggregation Type for Variable or Meter 5
-    Cogeneration:Gas,        !- Variable or Meter 6 Name
+    Cogeneration:NaturalGas,        !- Variable or Meter 6 Name
     SumOrAverage;            !- Aggregation Type for Variable or Meter 6
 
   Output:Table:Monthly,
