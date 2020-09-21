@@ -1783,8 +1783,9 @@ Output:Variable,Sys 3 Furnace DX Cool Cooling Coil Outlet,System Node Standard D
 Output:Variable,Sys 4 Furnace DX Cool Cooling Coil Outlet,System Node Standard Density Volume Flow Rate,hourly; !- HVAC Average [m3/s]
 Output:Variable,Sys 5 Furnace DX Cool Cooling Coil Outlet,System Node Standard Density Volume Flow Rate,hourly; !- HVAC Average [m3/s]
 
-Output:Variable,*,Unitary System Cycling Ratio,hourly; !- HVAC Average []
-Output:Variable,*,Unitary System Compressor Speed Ratio,hourly; !- HVAC Average []
+Output:Variable,*,Unitary System DX Coil Cycling Ratio,hourly; !- HVAC Average []
+Output:Variable,*,Unitary System DX Coil Speed Ratio,hourly; !- HVAC Average []
+Output:Variable,*,Unitary System DX Coil Speed Level,hourly; !- HVAC Average []
 
   Output:VariableDictionary,IDF;
 

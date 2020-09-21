@@ -7044,18 +7044,18 @@ namespace UnitarySystems {
                 {
                     auto const SELECT_CASE_var(unitarySys[sysNum].m_CoolingCoilType_Num);
                     if (SELECT_CASE_var == DataHVACGlobals::CoilDX_CoolingTwoSpeed) {
-                        SetupOutputVariable("Unitary System Cycling Ratio",
-                                            OutputProcessor::Unit::None,
-                                            unitarySys[sysNum].m_CycRatio,
-                                            "System",
-                                            "Average",
-                                            unitarySys[sysNum].Name);
-                        SetupOutputVariable("Unitary System Compressor Speed Ratio",
-                                            OutputProcessor::Unit::None,
-                                            unitarySys[sysNum].m_SpeedRatio,
-                                            "System",
-                                            "Average",
-                                            unitarySys[sysNum].Name);
+                        //SetupOutputVariable("Unitary System Cycling Ratio",
+                        //                    OutputProcessor::Unit::None,
+                        //                    unitarySys[sysNum].m_CycRatio,
+                        //                    "System",
+                        //                    "Average",
+                        //                    unitarySys[sysNum].Name);
+                        //SetupOutputVariable("Unitary System Compressor Speed Ratio",
+                        //                    OutputProcessor::Unit::None,
+                        //                    unitarySys[sysNum].m_SpeedRatio,
+                        //                    "System",
+                        //                    "Average",
+                        //                    unitarySys[sysNum].Name);
                     } else if (SELECT_CASE_var == DataHVACGlobals::CoilDX_MultiSpeedCooling || (SELECT_CASE_var == DataHVACGlobals::CoilDX_Cooling)) {
                         SetupOutputVariable("Unitary System Cooling Ancillary Electricity Energy",
                                             OutputProcessor::Unit::J,
@@ -7167,6 +7167,7 @@ namespace UnitarySystems {
                 }
 
                 if (unitarySys[sysNum].m_CoolingCoilType_Num == DataHVACGlobals::CoilDX_MultiSpeedCooling ||
+                    unitarySys[sysNum].m_CoolingCoilType_Num == DataHVACGlobals::CoilDX_CoolingTwoSpeed ||
                     unitarySys[sysNum].m_CoolingCoilType_Num == DataHVACGlobals::CoilDX_Cooling ||
                     unitarySys[sysNum].m_HeatingCoilType_Num == DataHVACGlobals::CoilDX_MultiSpeedHeating ||
                     unitarySys[sysNum].m_HeatingCoilType_Num == DataHVACGlobals::Coil_HeatingElectric_MultiStage ||
