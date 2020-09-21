@@ -67,6 +67,7 @@
 #include <EnergyPlus/DataZoneEquipment.hh>
 #include <EnergyPlus/Fans.hh>
 #include <EnergyPlus/General.hh>
+#include <EnergyPlus/GeneralRoutines.hh>
 #include <EnergyPlus/GlobalNames.hh>
 #include <EnergyPlus/Data/EnergyPlusData.hh>
 #include <EnergyPlus/HVACFan.hh>
@@ -886,14 +887,14 @@ namespace HVACStandAloneERV {
             thisOAController.RetNode = NodeNumber;
 
             if (!lAlphaBlanks(2)) {
-                thisOAController.EnthalpyCurvePtr = GetCurveIndex(Alphas(2));
-                if (GetCurveIndex(Alphas(2)) == 0) {
+                thisOAController.EnthalpyCurvePtr = GetCurveIndex(state, Alphas(2));
+                if (GetCurveIndex(state, Alphas(2)) == 0) {
                     ShowSevereError(CurrentModuleObject + " \"" + Alphas(1) + "\"");
                     ShowContinueError("..." + cAlphaFields(2) + " not found:" + Alphas(2));
                     ErrorsFound = true;
                 } else {
                     // Verify Curve Object, only legal types are Quadratic and Cubic
-                    ErrorsFound |= CurveManager::CheckCurveDims(thisOAController.EnthalpyCurvePtr, // Curve index
+                    ErrorsFound |= CurveManager::CheckCurveDims(state, thisOAController.EnthalpyCurvePtr, // Curve index
                                                                 {1},                               // Valid dimensions
                                                                 "GetStandAloneERV: ",              // Routine name
                                                                 CurrentModuleObject,               // Object Type
@@ -1628,7 +1629,6 @@ namespace HVACStandAloneERV {
         int ExhaustInletNode; // unit exhaust air inlet node
         int SupInletNode;     // unit supply air inlet node
         Real64 AirMassFlow;   // total mass flow through supply side of the ERV (supply air outlet node)
-        Real64 MinHumRatio;   // minimum humidity ratio for calculating sensible load met
         // (so enthalpy routines work without error)
         Real64 TotLoadMet;    // total zone load met by unit (W)
         Real64 LatLoadMet;    // latent zone load met by unit (W)
@@ -1693,15 +1693,15 @@ namespace HVACStandAloneERV {
             StandAloneERV(StandAloneERVNum).ElecUseRate += HVACFan::fanObjs[StandAloneERV(StandAloneERVNum).ExhaustAirFanIndex]->fanPower();
         }
 
-        MinHumRatio = Node(ExhaustInletNode).HumRat;
-        if (Node(SupOutletNode).HumRat < Node(ExhaustInletNode).HumRat) MinHumRatio = Node(SupOutletNode).HumRat;
-
         AirMassFlow = Node(SupOutletNode).MassFlowRate;
-        SensLoadMet = AirMassFlow * (PsyHFnTdbW(Node(SupOutletNode).Temp, MinHumRatio) - PsyHFnTdbW(Node(ExhaustInletNode).Temp, MinHumRatio));
-        TotLoadMet = AirMassFlow * (PsyHFnTdbW(Node(SupOutletNode).Temp, Node(SupOutletNode).HumRat) -
-                                    PsyHFnTdbW(Node(ExhaustInletNode).Temp, Node(ExhaustInletNode).HumRat));
-        LatLoadMet = TotLoadMet - SensLoadMet; // watts
-
+        CalcZoneSensibleLatentOutput(AirMassFlow,
+                                     Node(SupOutletNode).Temp,
+                                     Node(SupOutletNode).HumRat,
+                                     Node(ExhaustInletNode).Temp,
+                                     Node(ExhaustInletNode).HumRat,
+                                     SensLoadMet,
+                                     LatLoadMet,
+                                     TotLoadMet);
         LatentMassLoadMet = AirMassFlow * (Node(SupOutletNode).HumRat - Node(ExhaustInletNode).HumRat); // kg/s, dehumidification = negative
 
         if (SensLoadMet < 0.0) {
