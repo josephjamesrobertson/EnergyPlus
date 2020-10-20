@@ -7251,12 +7251,12 @@ namespace UnitarySystems {
                     }
                 }
 
-                if (unitarySys[sysNum].m_CoolingCoilType_Num == DataHVACGlobals::CoilDX_MultiSpeedCooling ||
-                    unitarySys[sysNum].m_CoolingCoilType_Num == DataHVACGlobals::CoilDX_CoolingTwoSpeed ||
-                    unitarySys[sysNum].m_CoolingCoilType_Num == DataHVACGlobals::CoilDX_Cooling ||
-                    unitarySys[sysNum].m_HeatingCoilType_Num == DataHVACGlobals::CoilDX_MultiSpeedHeating ||
-                    unitarySys[sysNum].m_HeatingCoilType_Num == DataHVACGlobals::Coil_HeatingElectric_MultiStage ||
-                    unitarySys[sysNum].m_HeatingCoilType_Num == DataHVACGlobals::Coil_HeatingGas_MultiStage) {
+                if (state.dataUnitarySystems->unitarySys[sysNum].m_CoolingCoilType_Num == DataHVACGlobals::CoilDX_MultiSpeedCooling ||
+                    state.dataUnitarySystems->unitarySys[sysNum].m_CoolingCoilType_Num == DataHVACGlobals::CoilDX_CoolingTwoSpeed ||
+                    state.dataUnitarySystems->unitarySys[sysNum].m_CoolingCoilType_Num == DataHVACGlobals::CoilDX_Cooling ||
+                    state.dataUnitarySystems->unitarySys[sysNum].m_HeatingCoilType_Num == DataHVACGlobals::CoilDX_MultiSpeedHeating ||
+                    state.dataUnitarySystems->unitarySys[sysNum].m_HeatingCoilType_Num == DataHVACGlobals::Coil_HeatingElectric_MultiStage ||
+                    state.dataUnitarySystems->unitarySys[sysNum].m_HeatingCoilType_Num == DataHVACGlobals::Coil_HeatingGas_MultiStage) {
                     SetupOutputVariable(state, "Unitary System DX Coil Cycling Ratio",
                                         OutputProcessor::Unit::None,
                                         state.dataUnitarySystems->unitarySys[sysNum].m_CycRatio,
@@ -9048,7 +9048,7 @@ namespace UnitarySystems {
          // what if there is a heating load for a system using Multimode?
         if (!state.dataUnitarySystems->CoolingLoad && this->m_DehumidControlType_Num == DehumCtrlType::Multimode) return;
         // if HX was previously turned on return since sensible load is already met
-        if (CoolingLoad && this->m_DehumidControlType_Num == DehumCtrlType::Multimode && HXUnitOn) return;
+        if (state.dataUnitarySystems->CoolingLoad && this->m_DehumidControlType_Num == DehumCtrlType::Multimode && HXUnitOn) return;
         //  IF(HeatingLoad .AND. UnitarySystem(UnitarySysNum)%m_DehumidControlType_Num .EQ. dehumidm_ControlType::CoolReheat)RETURN
 
         if ((this->m_DehumidControlType_Num == DehumCtrlType::CoolReheat || this->m_DehumidControlType_Num == DehumCtrlType::Multimode)) {
