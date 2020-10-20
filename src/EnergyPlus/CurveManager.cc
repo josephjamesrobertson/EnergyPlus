@@ -56,7 +56,6 @@
 #include <ObjexxFCL/Array.functions.hh>
 #include <ObjexxFCL/Array3D.hh>
 #include <ObjexxFCL/Fmath.hh>
-#include <ObjexxFCL/gio.hh>
 #include <ObjexxFCL/string.functions.hh>
 
 // EnergyPlus Headers
@@ -74,17 +73,6 @@
 #include <EnergyPlus/UtilityRoutines.hh>
 
 namespace EnergyPlus {
-
-void CurveManagerData::clear_state()
-{
-    NumCurves = 0;
-    GetCurvesInputFlag = true;
-    UniqueCurveNames.clear();
-    PerfCurve.deallocate();
-    btwxtManager.clear();
-    CurveValueMyBeginTimeStepFlag = true;
-    FrictionFactorErrorHasOccurred = false;
-}
 
 namespace CurveManager {
     // Module containing the Curve Manager routines
@@ -350,7 +338,8 @@ namespace CurveManager {
         // Loop over biquadratic curves and load data
         CurrentModuleObject = "Curve:Biquadratic";
         for (CurveIndex = 1; CurveIndex <= NumBiQuad; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -421,7 +410,8 @@ namespace CurveManager {
         // Loop over ChillerPartLoadWithLift curves and load data //zrp_Aug2014
         CurrentModuleObject = "Curve:ChillerPartLoadWithLift";
         for (CurveIndex = 1; CurveIndex <= NumChillerPartLoadWithLift; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -495,7 +485,8 @@ namespace CurveManager {
         // Loop over cubic curves and load data
         CurrentModuleObject = "Curve:Cubic";
         for (CurveIndex = 1; CurveIndex <= NumCubic; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -549,7 +540,8 @@ namespace CurveManager {
         // Loop over quadrinomial curves and load data
         CurrentModuleObject = "Curve:Quartic";
         for (CurveIndex = 1; CurveIndex <= NumQuartic; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -604,7 +596,8 @@ namespace CurveManager {
         // Loop over quadratic curves and load data
         CurrentModuleObject = "Curve:Quadratic";
         for (CurveIndex = 1; CurveIndex <= NumQuad; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -657,7 +650,8 @@ namespace CurveManager {
         // Loop over quadratic-linear curves and load data
         CurrentModuleObject = "Curve:QuadraticLinear";
         for (CurveIndex = 1; CurveIndex <= NumQuadLinear; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -726,7 +720,8 @@ namespace CurveManager {
         // Loop over cubic-linear curves and load data
         CurrentModuleObject = "Curve:CubicLinear";
         for (CurveIndex = 1; CurveIndex <= NumCubicLinear; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -795,7 +790,8 @@ namespace CurveManager {
         // Loop over linear curves and load data
         CurrentModuleObject = "Curve:Linear";
         for (CurveIndex = 1; CurveIndex <= NumLinear; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -847,7 +843,8 @@ namespace CurveManager {
         // Loop over bicubic curves and load data
         CurrentModuleObject = "Curve:Bicubic";
         for (CurveIndex = 1; CurveIndex <= NumBicubic; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -920,7 +917,8 @@ namespace CurveManager {
         // Loop over Triquadratic curves and load data
         CurrentModuleObject = "Curve:Triquadratic";
         for (CurveIndex = 1; CurveIndex <= NumTriQuad; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -1026,7 +1024,8 @@ namespace CurveManager {
         // Loop over quad linear curves and load data
         CurrentModuleObject = "Curve:QuadLinear";
         for (CurveIndex = 1; CurveIndex <= NumQLinear; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -1121,7 +1120,8 @@ namespace CurveManager {
         // Loop over Exponent curves and load data
         CurrentModuleObject = "Curve:Exponent";
         for (CurveIndex = 1; CurveIndex <= NumExponent; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -1167,7 +1167,8 @@ namespace CurveManager {
         // Loop over Fan Pressure Rise curves and load data - udated 15Sep2010 for unit types
         CurrentModuleObject = "Curve:FanPressureRise";
         for (CurveIndex = 1; CurveIndex <= NumFanPressRise; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -1221,7 +1222,8 @@ namespace CurveManager {
         // Loop over Exponential Skew Normal curves and load data
         CurrentModuleObject = "Curve:ExponentialSkewNormal";
         for (CurveIndex = 1; CurveIndex <= NumExpSkewNorm; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -1277,7 +1279,8 @@ namespace CurveManager {
         // Loop over Sigmoid curves and load data
         CurrentModuleObject = "Curve:Sigmoid";
         for (CurveIndex = 1; CurveIndex <= NumSigmoid; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -1334,7 +1337,8 @@ namespace CurveManager {
         // Loop over Rectangular Hyperbola Type 1 curves and load data
         CurrentModuleObject = "Curve:RectangularHyperbola1";
         for (CurveIndex = 1; CurveIndex <= NumRectHyper1; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -1389,7 +1393,8 @@ namespace CurveManager {
         // Loop over Rectangular Hyperbola Type 2 curves and load data
         CurrentModuleObject = "Curve:RectangularHyperbola2";
         for (CurveIndex = 1; CurveIndex <= NumRectHyper2; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -1444,7 +1449,8 @@ namespace CurveManager {
         // Loop over Exponential Decay curves and load data
         CurrentModuleObject = "Curve:ExponentialDecay";
         for (CurveIndex = 1; CurveIndex <= NumExpDecay; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -1499,7 +1505,8 @@ namespace CurveManager {
         // ykt July,2011 Loop over DoubleExponential Decay curves and load data
         CurrentModuleObject = "Curve:DoubleExponentialDecay";
         for (CurveIndex = 1; CurveIndex <= NumDoubleExpDecay; ++CurveIndex) {
-            inputProcessor->getObjectItem(CurrentModuleObject,
+            inputProcessor->getObjectItem(state,
+                                          CurrentModuleObject,
                                           CurveIndex,
                                           Alphas,
                                           NumAlphas,
@@ -1557,7 +1564,8 @@ namespace CurveManager {
                                 " object per simulation is required when using the AirflowNetwork model.");
                 ErrorsFound = true;
             } else if (numOfCPArray == 1) {
-                inputProcessor->getObjectItem(CurrentModuleObject,
+                inputProcessor->getObjectItem(state,
+                                              CurrentModuleObject,
                                               1,
                                               Alphas,
                                               NumAlphas,
@@ -1602,7 +1610,8 @@ namespace CurveManager {
                 // Now that we have the directions, we can read the tables themselves
                 CurrentModuleObject = "AirflowNetwork:MultiZone:WindPressureCoefficientValues";
                 for (int index = 1; index <= NumWPCValTab; ++index) {
-                    inputProcessor->getObjectItem(CurrentModuleObject,
+                    inputProcessor->getObjectItem(state,
+                                                  CurrentModuleObject,
                                                   index,
                                                   Alphas,
                                                   NumAlphas,
@@ -1740,7 +1749,7 @@ namespace CurveManager {
                             std::size_t rowNum = indVarInstance.at("external_file_starting_row_number").get<std::size_t>() - 1;
 
                             if (!state.dataCurveManager->btwxtManager.tableFiles.count(filePath)) {
-                                state.dataCurveManager->btwxtManager.tableFiles.emplace(filePath, TableFile{IOFiles::getSingleton(), filePath});
+                                state.dataCurveManager->btwxtManager.tableFiles.emplace(filePath, TableFile{state, filePath});
                             }
 
                             axis = state.dataCurveManager->btwxtManager.tableFiles[filePath].getArray({colNum, rowNum});
@@ -1930,7 +1939,7 @@ namespace CurveManager {
                     std::size_t rowNum = fields.at("external_file_starting_row_number").get<std::size_t>() - 1;
 
                     if (!state.dataCurveManager->btwxtManager.tableFiles.count(filePath)) {
-                        state.dataCurveManager->btwxtManager.tableFiles.emplace(filePath, TableFile{IOFiles::getSingleton(), filePath});
+                        state.dataCurveManager->btwxtManager.tableFiles.emplace(filePath, TableFile{state, filePath});
                     }
 
                     lookupValues = state.dataCurveManager->btwxtManager.tableFiles[filePath].getArray({colNum, rowNum});
@@ -2029,17 +2038,17 @@ namespace CurveManager {
         tableFiles.clear();
     }
 
-    TableFile::TableFile(IOFiles &ioFiles, std::string path)
+    TableFile::TableFile(EnergyPlusData &state, std::string path)
     {
-        load(ioFiles, path);
+        load(state, path);
     }
 
-    void TableFile::load(IOFiles &ioFiles, std::string path)
+    void TableFile::load(EnergyPlusData &state, std::string path)
     {
         filePath = path;
         bool fileFound;
         std::string fullPath;
-        DataSystemVariables::CheckForActualFileName(ioFiles, path, fileFound, fullPath);
+        DataSystemVariables::CheckForActualFileName(state, path, fileFound, fullPath);
         if (!fileFound) {
             ShowFatalError("File \"" + filePath + "\" : File not found.");
         }
@@ -2134,7 +2143,7 @@ namespace CurveManager {
                 // TODO: Make CurveInput an Array for better looping here...
                 switch (dim) {
                 case 1:
-                    SetupOutputVariable("Performance Curve Input Variable " + numStr + " Value",
+                    SetupOutputVariable(state, "Performance Curve Input Variable " + numStr + " Value",
                                         OutputProcessor::Unit::None,
                                         state.dataCurveManager->PerfCurve(CurveIndex).CurveInput1,
                                         "HVAC",
@@ -2142,7 +2151,7 @@ namespace CurveManager {
                                         state.dataCurveManager->PerfCurve(CurveIndex).Name);
                     break;
                 case 2:
-                    SetupOutputVariable("Performance Curve Input Variable " + numStr + " Value",
+                    SetupOutputVariable(state, "Performance Curve Input Variable " + numStr + " Value",
                                         OutputProcessor::Unit::None,
                                         state.dataCurveManager->PerfCurve(CurveIndex).CurveInput2,
                                         "HVAC",
@@ -2150,7 +2159,7 @@ namespace CurveManager {
                                         state.dataCurveManager->PerfCurve(CurveIndex).Name);
                     break;
                 case 3:
-                    SetupOutputVariable("Performance Curve Input Variable " + numStr + " Value",
+                    SetupOutputVariable(state, "Performance Curve Input Variable " + numStr + " Value",
                                         OutputProcessor::Unit::None,
                                         state.dataCurveManager->PerfCurve(CurveIndex).CurveInput3,
                                         "HVAC",
@@ -2158,7 +2167,7 @@ namespace CurveManager {
                                         state.dataCurveManager->PerfCurve(CurveIndex).Name);
                     break;
                 case 4:
-                    SetupOutputVariable("Performance Curve Input Variable " + numStr + " Value",
+                    SetupOutputVariable(state, "Performance Curve Input Variable " + numStr + " Value",
                                         OutputProcessor::Unit::None,
                                         state.dataCurveManager->PerfCurve(CurveIndex).CurveInput4,
                                         "HVAC",
@@ -2166,7 +2175,7 @@ namespace CurveManager {
                                         state.dataCurveManager->PerfCurve(CurveIndex).Name);
                     break;
                 case 5:
-                    SetupOutputVariable("Performance Curve Input Variable " + numStr + " Value",
+                    SetupOutputVariable(state, "Performance Curve Input Variable " + numStr + " Value",
                                         OutputProcessor::Unit::None,
                                         state.dataCurveManager->PerfCurve(CurveIndex).CurveInput5,
                                         "HVAC",
@@ -2174,7 +2183,7 @@ namespace CurveManager {
                                         state.dataCurveManager->PerfCurve(CurveIndex).Name);
                     break;
                 case 6:
-                    SetupOutputVariable("Performance Curve Input Variable " + numStr + " Value",
+                    SetupOutputVariable(state, "Performance Curve Input Variable " + numStr + " Value",
                                         OutputProcessor::Unit::None,
                                         state.dataCurveManager->PerfCurve(CurveIndex).CurveInput6,
                                         "HVAC",
@@ -2187,7 +2196,7 @@ namespace CurveManager {
                 }
             }
             // set the output up last so it shows up after the input in the csv file
-            SetupOutputVariable("Performance Curve Output Value",
+            SetupOutputVariable(state, "Performance Curve Output Value",
                                 OutputProcessor::Unit::None,
                                 state.dataCurveManager->PerfCurve(CurveIndex).CurveOutput,
                                 "HVAC",
@@ -2196,25 +2205,25 @@ namespace CurveManager {
         }
 
         for (CurveIndex = 1; CurveIndex <= DataBranchAirLoopPlant::NumPressureCurves; ++CurveIndex) {
-            SetupOutputVariable("Performance Curve Input Variable 1 Value",
+            SetupOutputVariable(state, "Performance Curve Input Variable 1 Value",
                                 OutputProcessor::Unit::None,
                                 DataBranchAirLoopPlant::PressureCurve(CurveIndex).CurveInput1,
                                 "HVAC",
                                 "Average",
                                 DataBranchAirLoopPlant::PressureCurve(CurveIndex).Name);
-            SetupOutputVariable("Performance Curve Input Variable 2 Value",
+            SetupOutputVariable(state, "Performance Curve Input Variable 2 Value",
                                 OutputProcessor::Unit::None,
                                 DataBranchAirLoopPlant::PressureCurve(CurveIndex).CurveInput2,
                                 "HVAC",
                                 "Average",
                                 DataBranchAirLoopPlant::PressureCurve(CurveIndex).Name);
-            SetupOutputVariable("Performance Curve Input Variable 3 Value",
+            SetupOutputVariable(state, "Performance Curve Input Variable 3 Value",
                                 OutputProcessor::Unit::None,
                                 DataBranchAirLoopPlant::PressureCurve(CurveIndex).CurveInput3,
                                 "HVAC",
                                 "Average",
                                 DataBranchAirLoopPlant::PressureCurve(CurveIndex).Name);
-            SetupOutputVariable("Performance Curve Output Value",
+            SetupOutputVariable(state, "Performance Curve Output Value",
                                 OutputProcessor::Unit::None,
                                 DataBranchAirLoopPlant::PressureCurve(CurveIndex).CurveOutput,
                                 "HVAC",
@@ -2706,7 +2715,8 @@ namespace CurveManager {
         NumPressure = inputProcessor->getNumObjectsFound(CurveObjectName);
         DataBranchAirLoopPlant::PressureCurve.allocate(NumPressure);
         for (CurveNum = 1; CurveNum <= NumPressure; ++CurveNum) {
-            inputProcessor->getObjectItem(CurveObjectName,
+            inputProcessor->getObjectItem(state,
+                                          CurveObjectName,
                                           CurveNum,
                                           Alphas,
                                           NumAlphas,
@@ -2852,8 +2862,6 @@ namespace CurveManager {
         // DP = [f*(L/D) + K] * (rho * V^2) / 2
 
         // Using/Aliasing
-        using DataGlobals::Pi;
-
         // Return value
         Real64 PressureCurveValue;
 
@@ -2878,7 +2886,7 @@ namespace CurveManager {
         ConstantF = DataBranchAirLoopPlant::PressureCurve(PressureCurveIndex).ConstantF;
 
         // Intermediate calculations
-        CrossSectArea = (Pi / 4.0) * pow_2(Diameter);
+        CrossSectArea = (DataGlobalConstants::Pi() / 4.0) * pow_2(Diameter);
         Velocity = MassFlow / (Density * CrossSectArea);
         ReynoldsNumber = Density * Diameter * Velocity / Viscosity; // assuming mu here
         RoughnessRatio = Roughness / Diameter;

@@ -62,7 +62,6 @@ namespace EnergyPlus {
 
 // Forward declarations
 struct EnergyPlusData;
-struct WaterToAirHeatPumpSimpleData;
 
 namespace WaterToAirHeatPumpSimple {
 
@@ -325,18 +324,18 @@ namespace WaterToAirHeatPumpSimple {
 
         void clear_state() override
         {
-            NumWatertoAirHPs = 0;
-            MyOneTimeFlag = true;
-            GetCoilsInputFlag = true;
-            MySizeFlag.clear();
-            SimpleHPTimeStepFlag.clear();
-            SimpleWatertoAirHP.deallocate();
-            firstTime = true;
+            this->NumWatertoAirHPs = 0;
+            this->MyOneTimeFlag = true;
+            this->GetCoilsInputFlag = true;
+            this->MySizeFlag.clear();
+            this->SimpleHPTimeStepFlag.clear();
+            this->SimpleWatertoAirHP.deallocate();
+            this->firstTime = true;
         }
 
         // Default Constructor
         WaterToAirHeatPumpSimpleData()
-            : CelsiustoKelvin(DataGlobals::KelvinConv), NumWatertoAirHPs(0), GetCoilsInputFlag(true),
+            : CelsiustoKelvin(DataGlobalConstants::KelvinConv()), NumWatertoAirHPs(0), GetCoilsInputFlag(true),
               SourceSideMassFlowRate(0.0), SourceSideInletTemp(0.0), SourceSideInletEnth(0.0), LoadSideMassFlowRate(0.0),
               LoadSideInletDBTemp(0.0), LoadSideInletWBTemp(0.0), LoadSideInletHumRat(0.0), LoadSideInletEnth(0.0),
               LoadSideOutletDBTemp(0.0), LoadSideOutletHumRat(0.0), LoadSideOutletEnth(0.0), QSensible(0.0),

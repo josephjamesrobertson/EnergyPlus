@@ -56,8 +56,9 @@
 #include <EnergyPlus/EnergyPlus.hh>
 
 namespace EnergyPlus {
-    class IOFiles;
-    struct EnergyPlusData;
+
+// Forward declarations
+struct EnergyPlusData;
 
 namespace InternalHeatGains {
 
@@ -77,7 +78,7 @@ namespace InternalHeatGains {
 
     void CalcZoneITEq(EnergyPlusData &state);
 
-    void ReportInternalHeatGains();
+    void ReportInternalHeatGains(EnergyPlusData &state);
 
     Real64 GetDesignLightingLevelForZone(int const WhichZone); // name of zone
 

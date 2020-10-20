@@ -52,14 +52,14 @@
 #include <string>
 
 // EnergyPlus Headers
+#include <EnergyPlus/DataGlobalConstants.hh>
 #include <EnergyPlus/DataHVACSystems.hh>
 #include <EnergyPlus/EnergyPlus.hh>
 
 namespace EnergyPlus {
 
-    // Forward declarations
-    struct EnergyPlusData;
-    struct ZonePlenumData;
+// Forward declarations
+struct EnergyPlusData;
 
 namespace SimAirServingZones {
 
@@ -142,7 +142,7 @@ namespace SimAirServingZones {
 
     void InitAirLoops(EnergyPlusData &state, bool const FirstHVACIteration); // TRUE if first full HVAC iteration in an HVAC timestep
 
-    void ConnectReturnNodes(EnergyPlusData &state, ZonePlenumData &dataZonePlenum);
+    void ConnectReturnNodes(EnergyPlusData &state);
 
     // Begin Algorithm Section of the Module
     //******************************************************************************
@@ -196,7 +196,7 @@ namespace SimAirServingZones {
 
     void SizeSysOutdoorAir(EnergyPlusData &state);
 
-    void UpdateSysSizing(EnergyPlusData &state, int const CallIndicator);
+    void UpdateSysSizing(EnergyPlusData &state, DataGlobalConstants::CallIndicator const CallIndicator);
 
     void UpdateSysSizingForScalableInputs(int const AirLoopNum);
 
