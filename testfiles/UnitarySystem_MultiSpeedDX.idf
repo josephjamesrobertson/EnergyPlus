@@ -2453,7 +2453,7 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Supply Water Storage Tank Name
     ,                        !- Condensate Collection Water Storage Tank Name
-    No,                      !- Apply Part Load Fraction to Speeds Greater than 1
+    Yes,                     !- Apply Part Load Fraction to Speeds Greater than 1
     No,                      !- Apply Latent Degradation to Speeds Greater than 1
     0.0,                     !- Crankcase Heater Capacity {W}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
@@ -2888,7 +2888,7 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Supply Water Storage Tank Name
     ,                        !- Condensate Collection Water Storage Tank Name
-    No,                      !- Apply Part Load Fraction to Speeds Greater than 1
+    Yes,                     !- Apply Part Load Fraction to Speeds Greater than 1
     No,                      !- Apply Latent Degradation to Speeds Greater than 1
     0.0,                     !- Crankcase Heater Capacity {W}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
@@ -3329,7 +3329,7 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Supply Water Storage Tank Name
     ,                        !- Condensate Collection Water Storage Tank Name
-    No,                      !- Apply Part Load Fraction to Speeds Greater than 1
+    Yes,                     !- Apply Part Load Fraction to Speeds Greater than 1
     No,                      !- Apply Latent Degradation to Speeds Greater than 1
     0.0,                     !- Crankcase Heater Capacity {W}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
@@ -3948,7 +3948,7 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Supply Water Storage Tank Name
     ,                        !- Condensate Collection Water Storage Tank Name
-    No,                      !- Apply Part Load Fraction to Speeds Greater than 1
+    Yes,                     !- Apply Part Load Fraction to Speeds Greater than 1
     No,                      !- Apply Latent Degradation to Speeds Greater than 1
     0.0,                     !- Crankcase Heater Capacity {W}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
@@ -4567,7 +4567,7 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Supply Water Storage Tank Name
     ,                        !- Condensate Collection Water Storage Tank Name
-    No,                      !- Apply Part Load Fraction to Speeds Greater than 1
+    Yes,                     !- Apply Part Load Fraction to Speeds Greater than 1
     No,                      !- Apply Latent Degradation to Speeds Greater than 1
     0.0,                     !- Crankcase Heater Capacity {W}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
