@@ -4423,6 +4423,9 @@ namespace UnitarySystems {
                             if (thisSys.m_CoolingCoilType_Num == DataHVACGlobals::CoilDX_CoolingTwoSpeed) {
                                 thisSys.m_NumOfSpeedCooling = 2;
                                 thisSys.m_MultiOrVarSpeedCoolCoil = true;
+                            } else {
+                                thisSys.m_NumOfSpeedCooling = 1;
+                                thisSys.m_MultiOrVarSpeedCoolCoil = false;
                             }
 
                             // Get DX cooling coil index
