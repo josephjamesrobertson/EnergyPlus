@@ -2182,11 +2182,11 @@ namespace UnitarySystems {
             } else {
                 for ( Iter = this->m_NumOfSpeedCooling; Iter > 0; --Iter ) {
                     this->m_CoolVolumeFlowRate[ Iter ] = this->m_MaxCoolAirVolFlow * Iter / this->m_NumOfSpeedCooling;
-                    this->m_CoolMassFlowRate[ Iter ] = this->m_CoolVolumeFlowRate[ Iter ] * DataEnvironment::StdRhoAir;
+                    this->m_CoolMassFlowRate[ Iter ] = this->m_CoolVolumeFlowRate[ Iter ] * state.dataEnvrn->StdRhoAir;
                     this->m_MSCoolingSpeedRatio[ Iter ] = this->m_CoolVolumeFlowRate[ Iter ] / this->m_DesignFanVolFlowRate;
                 }
                 this->m_IdleVolumeAirRate = this->m_MaxNoCoolHeatAirVolFlow;
-                this->m_IdleMassFlowRate = this->m_IdleVolumeAirRate * DataEnvironment::StdRhoAir;
+                this->m_IdleMassFlowRate = this->m_IdleVolumeAirRate * state.dataEnvrn->StdRhoAir;
                 this->m_IdleSpeedRatio = this->m_IdleVolumeAirRate / this->m_DesignFanVolFlowRate;
             }
         } else if (this->m_CoolingCoilType_Num == DataHVACGlobals::Coil_CoolingWater ||
