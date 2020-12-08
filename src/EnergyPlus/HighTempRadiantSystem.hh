@@ -94,7 +94,6 @@ namespace HighTempRadiantSystem {
 
     // MODULE VARIABLE DECLARATIONS:
     // Standard, run-of-the-mill variables...
-    extern int NumOfHighTempRadSys;              // Number of hydronic low tempererature radiant systems
     extern Array1D<Real64> QHTRadSource;         // Need to keep the last value in case we are still iterating
     extern Array1D<Real64> QHTRadSrcAvg;         // Need to keep the last value in case we are still iterating
     extern Array1D<Real64> ZeroSourceSumHATsurf; // Equal to the SumHATsurf for all the walls in a zone with no source
