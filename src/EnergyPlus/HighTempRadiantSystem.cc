@@ -117,8 +117,7 @@ namespace HighTempRadiantSystem {
     std::string const cNaturalGas("NaturalGas");
     std::string const cElectric("Electric");
     std::string const cElectricity("Electricity");
-    int const Gas(1);
-    int const Electric(2);
+
     std::string const cMATControl("MeanAirTemperature");                   // Control for using mean air temperature
     std::string const cMRTControl("MeanRadiantTemperature");               // Control for using mean radiant temperature
     std::string const cOperativeControl("OperativeTemperature");           // Control for using operative temperature
@@ -430,20 +429,20 @@ namespace HighTempRadiantSystem {
             }
 
             if (UtilityRoutines::SameString(cAlphaArgs(5), cNaturalGas)) {
-                HighTempRadSys(Item).HeaterType = Gas;
+                HighTempRadSys(Item).HeaterType = RadHeaterType::Gas;
             } else if (UtilityRoutines::SameString(cAlphaArgs(5), cElectricity)) {
-                HighTempRadSys(Item).HeaterType = Electric;
+                HighTempRadSys(Item).HeaterType = RadHeaterType::Electric;
             } else if (UtilityRoutines::SameString(cAlphaArgs(5), cGas)) {
-                HighTempRadSys(Item).HeaterType = Gas;
+                HighTempRadSys(Item).HeaterType = RadHeaterType::Gas;
             } else if (UtilityRoutines::SameString(cAlphaArgs(5), cElectric)) {
-                HighTempRadSys(Item).HeaterType = Electric;
+                HighTempRadSys(Item).HeaterType = RadHeaterType::Electric;
             } else {
                 ShowSevereError(state, "Invalid " + cAlphaFieldNames(5) + " = " + cAlphaArgs(5));
                 ShowContinueError(state, "Occurs for " + cCurrentModuleObject + " = " + cAlphaArgs(1));
                 ErrorsFound = true;
             }
 
-            if (HighTempRadSys(Item).HeaterType == Gas) {
+            if (HighTempRadSys(Item).HeaterType == RadHeaterType::Gas) {
                 HighTempRadSys(Item).CombustionEffic = rNumericArgs(4);
                 // Limit the combustion efficiency to between zero and one...
                 if (HighTempRadSys(Item).CombustionEffic < MinCombustionEffic) {
@@ -640,7 +639,7 @@ namespace HighTempRadiantSystem {
                                 "HEATINGCOILS",
                                 _,
                                 "System");
-            if (HighTempRadSys(Item).HeaterType == Gas) {
+            if (HighTempRadSys(Item).HeaterType == RadHeaterType::Gas) {
                 SetupOutputVariable(state, "Zone Radiant HVAC NaturalGas Rate",
                                     OutputProcessor::Unit::W,
                                     HighTempRadSys(Item).GasPower,
@@ -658,7 +657,7 @@ namespace HighTempRadiantSystem {
                                     "Heating",
                                     _,
                                     "System");
-            } else if (HighTempRadSys(Item).HeaterType == Electric) {
+            } else if (HighTempRadSys(Item).HeaterType == RadHeaterType::Electric) {
                 SetupOutputVariable(state, "Zone Radiant HVAC Electricity Rate",
                                     OutputProcessor::Unit::W,
                                     HighTempRadSys(Item).ElecPower,
@@ -1444,12 +1443,12 @@ namespace HighTempRadiantSystem {
         // na
 
         // FLOW:
-        if (HighTempRadSys(RadSysNum).HeaterType == Gas) {
+        if (HighTempRadSys(RadSysNum).HeaterType == RadHeaterType::Gas) {
             HighTempRadSys(RadSysNum).GasPower = QHTRadSource(RadSysNum) / HighTempRadSys(RadSysNum).CombustionEffic;
             HighTempRadSys(RadSysNum).GasEnergy = HighTempRadSys(RadSysNum).GasPower * TimeStepSys * DataGlobalConstants::SecInHour;
             HighTempRadSys(RadSysNum).ElecPower = 0.0;
             HighTempRadSys(RadSysNum).ElecEnergy = 0.0;
-        } else if (HighTempRadSys(RadSysNum).HeaterType == Electric) {
+        } else if (HighTempRadSys(RadSysNum).HeaterType == RadHeaterType::Electric) {
             HighTempRadSys(RadSysNum).GasPower = 0.0;
             HighTempRadSys(RadSysNum).GasEnergy = 0.0;
             HighTempRadSys(RadSysNum).ElecPower = QHTRadSource(RadSysNum);
