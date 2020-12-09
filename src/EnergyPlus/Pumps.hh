@@ -94,13 +94,13 @@ namespace Pumps {
     extern std::string const cPumpBank_ConSpeed;
 //    extern Array1D_string const cPumpTypes;
     
-    enum class TypeOfPump {
-        Unassigned,
-        Pump_VarSpeed,        
-        Pump_ConSpeed,        
-        Pump_Cond,        
-        PumpBank_VarSpeed,        
-        PumpBank_ConSpeed,
+    enum class TypeOfPump : int {
+        Unassigned = 0,
+        Pump_VarSpeed = 101,
+        Pump_ConSpeed = 102,
+        Pump_Cond = 103,
+        PumpBank_VarSpeed = 104,
+        PumpBank_ConSpeed = 105,
     };
 
     constexpr std::string_view cPumpTypes(TypeOfPump &e) {
@@ -115,23 +115,6 @@ namespace Pumps {
                 return cPumpBank_VarSpeed;
             case TypeOfPump::PumpBank_ConSpeed:
                 return cPumpBank_ConSpeed;
-            default:
-                assert(false);
-        }
-    }
-
-    constexpr int cPumpTypesInt(TypeOfPump &e) {
-        switch (e) {
-            case TypeOfPump::Pump_VarSpeed:
-                return 101;
-            case TypeOfPump::Pump_ConSpeed:
-                return 102;
-            case TypeOfPump::Pump_Cond:
-                return 103;
-            case TypeOfPump::PumpBank_VarSpeed:
-                return 104;
-            case TypeOfPump::PumpBank_ConSpeed:
-                return 105;
             default:
                 assert(false);
         }
