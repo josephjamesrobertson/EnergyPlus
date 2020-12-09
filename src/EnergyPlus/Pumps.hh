@@ -128,19 +128,12 @@ namespace Pumps {
     // DERIVED TYPE DEFINITIONS
 
     // MODULE VARIABLE DECLARATIONS:
-    extern int NumPumps;         // Num Pumps (used in pump bank)
-    extern int NumPumpsRunning;  // Num of pumps ON (used in pump bank)
-    extern int NumPumpsFullLoad; // Num pumps running at full load (used in pump bank)
     //  INTEGER       :: NumPumpsPartLoad                   = 0    !Num pumps running at part load (used in pump bank)
 
     // simulation and reporting variables
     //  REAL(r64)           :: OutletTemp                   = 0.0d0  ! pump outlet temperature
-    extern Real64 PumpMassFlowRate; // mass flow rate at pump inlet node
     //  REAL(r64)           :: PumpPress                    = 0.0d0  ! For Passing around the steam loops
     //  REAL(r64)           :: PumpQuality                  = 0.0d0  ! For Passing around the steam loops=0.0 here
-    extern Real64 PumpHeattoFluid; // Pump Power dissipated in fluid stream
-    extern Real64 Power;           // Pump Electric power
-    extern Real64 ShaftPower;      // Power passing through pump shaft
 
     // SUBROUTINE SPECIFICATIONS FOR MODULE PrimaryPlantLoops
 
