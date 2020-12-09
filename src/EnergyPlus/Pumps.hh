@@ -92,7 +92,6 @@ namespace Pumps {
     extern std::string const cPump_Cond;
     extern std::string const cPumpBank_VarSpeed;
     extern std::string const cPumpBank_ConSpeed;
-//    extern Array1D_string const cPumpTypes;
     
     enum class TypeOfPump : int {
         Unassigned = 0,
