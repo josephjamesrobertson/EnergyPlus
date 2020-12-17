@@ -79,10 +79,11 @@ namespace LowTempRadiantSystem {
     extern std::string const cHydronicSystem;
     extern std::string const cConstantFlowSystem;
     extern std::string const cElectricSystem;
-    // Operating modes:
-    extern int const NotOperating; // Parameter for use with OperatingMode variable, set for heating
-    extern int const HeatingMode;  // Parameter for use with OperatingMode variable, set for heating
-    extern int const CoolingMode;  // Parameter for use with OperatingMode variable, set for cooling
+    enum class RadHeatingMode : int {
+        NotOperating    = 0, // Parameter for use with OperatingMode variable, set for heating
+        HeatingMode     = 1,  // Parameter for use with OperatingMode variable, set for heating
+        CoolingMode     = 2,  // Parameter for use with OperatingMode variable, set for cooling
+    };
     // Control types:
     enum class LowTempRadiantControlTypes {
       MATControl,           // Controls system using mean air temperature
@@ -167,7 +168,7 @@ namespace LowTempRadiantSystem {
         Real64 TotalSurfaceArea;         // Total surface area for all surfaces that are part of this radiant system
         LowTempRadiantControlTypes ControlType; // Control type for the system (MAT, MRT, Op temp, ODB, OWB, Surface Face Temp, Surface Interior Temp, Running Mean Temp for Constant Flow systems only)
         LowTempRadiantSetpointTypes SetpointType;   // Setpoint type for the syste, (HalfFlowPower or ZeroFlowPower)
-        int OperatingMode;               // Operating mode currently being used (NotOperating, Heating, Cooling)
+        RadHeatingMode OperatingMode;               // Operating mode currently being used (NotOperating, Heating, Cooling)
         Real64 HeatPower;             // heating sent to panel in Watts
         Real64 HeatEnergy;            // heating sent to panel in Joules
         Real64 runningMeanOutdoorAirTemperatureWeightingFactor; // Weighting factor for running mean outdoor air temperature equation (user input)
@@ -179,7 +180,7 @@ namespace LowTempRadiantSystem {
         // Default Constructor
         RadiantSystemBaseData()
             : SchedPtr(0), ZonePtr(0), NumOfSurfaces(0), TotalSurfaceArea(0.0), ControlType(LowTempRadiantControlTypes::MATControl),
-            SetpointType(LowTempRadiantSetpointTypes::halfFlowPower), OperatingMode(NotOperating),
+            SetpointType(LowTempRadiantSetpointTypes::halfFlowPower), OperatingMode(RadHeatingMode::NotOperating),
             runningMeanOutdoorAirTemperatureWeightingFactor(0.8), todayRunningMeanOutdoorDryBulbTemperature(0.0),
             yesterdayRunningMeanOutdoorDryBulbTemperature(0.0), todayAverageOutdoorDryBulbTemperature(0.0),
             yesterdayAverageOutdoorDryBulbTemperature(0.0)
@@ -248,7 +249,7 @@ namespace LowTempRadiantSystem {
         Real64 CircLength;        // Circuit length {m}
         std::string schedNameChangeoverDelay;   // changeover delay schedule
         int schedPtrChangeoverDelay;    // Pointer to the schedule for the changeover delay in hours
-        int lastOperatingMode; // Last mode of operation (heating or cooling)
+        RadHeatingMode lastOperatingMode; // Last mode of operation (heating or cooling)
         int lastDayOfSim;   // Last day of simulation radiant system operated in lastOperatingMode
         int lastHourOfDay;  // Last hour of the day radiant system operated in lastOperatingMode
         int lastTimeStep;   // Last time step radiant system operated in lastOperatingMode
@@ -269,7 +270,7 @@ namespace LowTempRadiantSystem {
               HeatingSystem(false), HotWaterInNode(0), HotWaterOutNode(0), HWLoopNum(0), HWLoopSide(0),
               HWBranchNum(0), HWCompNum(0),CoolingSystem(false), ColdWaterInNode(0), ColdWaterOutNode(0), CWLoopNum(0), CWLoopSide(0),
               CWBranchNum(0), CWCompNum(0), GlycolIndex(0), CondErrIndex(0), CondCtrlType(CondensationCtrlType::CondCtrlNone), CondDewPtDeltaT(1.0), CondCausedTimeOff(0.0),
-              CondCausedShutDown(false), NumCircCalcMethod(NumCircSurfCalc::Unassigned), CircLength(0.0), schedPtrChangeoverDelay(0), lastOperatingMode(NotOperating),
+              CondCausedShutDown(false), NumCircCalcMethod(NumCircSurfCalc::Unassigned), CircLength(0.0), schedPtrChangeoverDelay(0), lastOperatingMode(RadHeatingMode::NotOperating),
               lastDayOfSim(1), lastHourOfDay(1),lastTimeStep(1), EMSOverrideOnWaterMdot(false), EMSWaterMdotOverrideValue(0.0),
               WaterInletTemp(0.0), WaterOutletTemp(0.0), CoolPower(0.0), CoolEnergy(0.0), OutRangeHiErrorCount(0), OutRangeLoErrorCount(0)
         {
