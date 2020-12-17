@@ -2336,7 +2336,7 @@ namespace Pumps {
         std::string equipName;
 
         equipName = PumpEquip(NumPump).Name;
-        PreDefTableEntry(pdchPumpType, equipName, static_cast<int>(PumpEquip(NumPump).PumpType));
+        PreDefTableEntry(state, state.dataOutRptPredefined->pdchPumpType, equipName, static_cast<int>(PumpEquip(NumPump).PumpType));
         if (PumpEquip(NumPump).PumpControl == PumpControlType::Continuous) {
             PreDefTableEntry(pdchPumpControl, equipName, "Continuous");
         } else if (PumpEquip(NumPump).PumpControl == PumpControlType::Intermittent) {
