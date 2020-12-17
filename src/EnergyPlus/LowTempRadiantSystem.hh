@@ -104,15 +104,16 @@ namespace LowTempRadiantSystem {
         ConvectionOnly,     // Convection only model (legacy code, original model)
         ISOStandard         // Using ISO Standard 1185-2 (convection, conduction through pipe, contact resistance)
     };
-
     enum class CondensationCtrlType {
         CondCtrlNone,      // Condensation control--none, so system never shuts down
         CondCtrlSimpleOff, // Condensation control--simple off, system shuts off when condensation predicted
         CondCtrlVariedOff, // Condensation control--variable off, system modulates to keep running if possible
     };
-    // Number of Circuits per Surface Calculation Method
-    extern int const OneCircuit;          // there is 1 circuit per surface
-    extern int const CalculateFromLength; // The number of circuits is TubeLength*SurfaceFlowFrac / CircuitLength
+    enum class NumCircSurfCalc{
+        Unassigned,
+        OneCircuit,          // there is 1 circuit per surface
+        CalculateFromLength, // The number of circuits is TubeLength*SurfaceFlowFrac / CircuitLength
+    };
     extern std::string const OnePerSurf;
     extern std::string const CalcFromLength;
     // Limit temperatures to indicate that a system cannot heat or cannot cool
@@ -243,7 +244,7 @@ namespace LowTempRadiantSystem {
         Real64 CondDewPtDeltaT;   // Diff between surface temperature and dew point for cond. shut-off
         Real64 CondCausedTimeOff; // Amount of time condensation did or could have turned system off
         bool CondCausedShutDown;  // .TRUE. when condensation predicted at surface
-        int NumCircCalcMethod;    // Calculation method for number of circuits per surface; 1=1 per surface, 2=use cicuit length
+        NumCircSurfCalc NumCircCalcMethod;    // Calculation method for number of circuits per surface; 1=1 per surface, 2=use cicuit length
         Real64 CircLength;        // Circuit length {m}
         std::string schedNameChangeoverDelay;   // changeover delay schedule
         int schedPtrChangeoverDelay;    // Pointer to the schedule for the changeover delay in hours
@@ -268,7 +269,7 @@ namespace LowTempRadiantSystem {
               HeatingSystem(false), HotWaterInNode(0), HotWaterOutNode(0), HWLoopNum(0), HWLoopSide(0),
               HWBranchNum(0), HWCompNum(0),CoolingSystem(false), ColdWaterInNode(0), ColdWaterOutNode(0), CWLoopNum(0), CWLoopSide(0),
               CWBranchNum(0), CWCompNum(0), GlycolIndex(0), CondErrIndex(0), CondCtrlType(CondensationCtrlType::CondCtrlNone), CondDewPtDeltaT(1.0), CondCausedTimeOff(0.0),
-              CondCausedShutDown(false), NumCircCalcMethod(0), CircLength(0.0), schedPtrChangeoverDelay(0), lastOperatingMode(NotOperating),
+              CondCausedShutDown(false), NumCircCalcMethod(NumCircSurfCalc::Unassigned), CircLength(0.0), schedPtrChangeoverDelay(0), lastOperatingMode(NotOperating),
               lastDayOfSim(1), lastHourOfDay(1),lastTimeStep(1), EMSOverrideOnWaterMdot(false), EMSWaterMdotOverrideValue(0.0),
               WaterInletTemp(0.0), WaterOutletTemp(0.0), CoolPower(0.0), CoolEnergy(0.0), OutRangeHiErrorCount(0), OutRangeLoErrorCount(0)
         {

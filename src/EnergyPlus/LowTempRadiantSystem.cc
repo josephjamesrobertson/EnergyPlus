@@ -158,13 +158,6 @@ namespace LowTempRadiantSystem {
     int const NotOperating(0); // Parameter for use with OperatingMode variable, set for heating
     int const HeatingMode(1);  // Parameter for use with OperatingMode variable, set for heating
     int const CoolingMode(-1); // Parameter for use with OperatingMode variable, set for cooling
-//    // Condensation control types:
-//    int const CondCtrlNone(0);      // Condensation control--none, so system never shuts down
-//    int const CondCtrlSimpleOff(1); // Condensation control--simple off, system shuts off when condensation predicted
-//    int const CondCtrlVariedOff(2); // Condensation control--variable off, system modulates to keep running if possible
-    // Number of Circuits per Surface Calculation Method
-    int const OneCircuit(1);          // there is 1 circuit per surface
-    int const CalculateFromLength(2); // The number of circuits is TubeLength*SurfaceFrac / CircuitLength
     std::string const OnePerSurf("OnePerSurface");
     std::string const CalcFromLength("CalculateFromCircuitLength");
     // Limit temperatures to indicate that a system cannot heat or cannot cool
@@ -775,11 +768,11 @@ namespace LowTempRadiantSystem {
             thisRadSys.CondDewPtDeltaT = Numbers(15);
 
             if (UtilityRoutines::SameString(Alphas(17), OnePerSurf)) {
-                thisRadSys.NumCircCalcMethod = OneCircuit;
+                thisRadSys.NumCircCalcMethod = NumCircSurfCalc::OneCircuit;
             } else if (UtilityRoutines::SameString(Alphas(17), CalcFromLength)) {
-                thisRadSys.NumCircCalcMethod = CalculateFromLength;
+                thisRadSys.NumCircCalcMethod = NumCircSurfCalc::CalculateFromLength;
             } else {
-                thisRadSys.NumCircCalcMethod = OneCircuit;
+                thisRadSys.NumCircCalcMethod = NumCircSurfCalc::OneCircuit;
             }
 
             thisRadSys.CircLength = Numbers(16);
@@ -1023,11 +1016,11 @@ namespace LowTempRadiantSystem {
             thisCFloSys.CondDewPtDeltaT = Numbers(11);
 
             if (UtilityRoutines::SameString(Alphas(21), OnePerSurf)) {
-                thisCFloSys.NumCircCalcMethod = OneCircuit;
+                thisCFloSys.NumCircCalcMethod = NumCircSurfCalc::OneCircuit;
             } else if (UtilityRoutines::SameString(Alphas(21), CalcFromLength)) {
-                thisCFloSys.NumCircCalcMethod = CalculateFromLength;
+                thisCFloSys.NumCircCalcMethod = NumCircSurfCalc::CalculateFromLength;
             } else {
-                thisCFloSys.NumCircCalcMethod = OneCircuit;
+                thisCFloSys.NumCircCalcMethod = NumCircSurfCalc::OneCircuit;
             }
 
             thisCFloSys.CircLength = Numbers(12);
@@ -2933,7 +2926,7 @@ namespace LowTempRadiantSystem {
             }
 
             for (SurfNum = 1; SurfNum <= HydrRadSys(RadSysNum).NumOfSurfaces; ++SurfNum) {
-                if (HydrRadSys(RadSysNum).NumCircCalcMethod == CalculateFromLength) {
+                if (HydrRadSys(RadSysNum).NumCircCalcMethod == NumCircSurfCalc::CalculateFromLength) {
                     HydrRadSys(RadSysNum).NumCircuits(SurfNum) =
                         (HydrRadSys(RadSysNum).SurfaceFrac(SurfNum) * HydrRadSys(RadSysNum).TubeLength) / HydrRadSys(RadSysNum).CircLength;
                     HydrRadSys(RadSysNum).NumCircuits(SurfNum) = max(HydrRadSys(RadSysNum).NumCircuits(SurfNum), 1.0);
@@ -3132,7 +3125,7 @@ namespace LowTempRadiantSystem {
             }
 
             for (SurfNum = 1; SurfNum <= CFloRadSys(RadSysNum).NumOfSurfaces; ++SurfNum) {
-                if (CFloRadSys(RadSysNum).NumCircCalcMethod == CalculateFromLength) {
+                if (CFloRadSys(RadSysNum).NumCircCalcMethod == NumCircSurfCalc::CalculateFromLength) {
                     CFloRadSys(RadSysNum).NumCircuits(SurfNum) =
                         (CFloRadSys(RadSysNum).SurfaceFrac(SurfNum) * CFloRadSys(RadSysNum).TubeLength) / CFloRadSys(RadSysNum).CircLength;
                     CFloRadSys(RadSysNum).NumCircuits(SurfNum) = max(CFloRadSys(RadSysNum).NumCircuits(SurfNum), 1.0);
