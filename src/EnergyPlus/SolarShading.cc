@@ -7039,11 +7039,7 @@ namespace SolarShading {
                                     // Interior beam absorptance of glass layers and beam transmittance of back exterior  &
                                     // or interior window WITHOUT SHADING this timestep
 
-                                    if (state.dataConstruction->Construct(ConstrNumBack).TypeIsAirBoundaryInteriorWindow) {
-                                        TransBeamWin = 1.0;
-                                        AbsBeamWinEQL = 0.0;
-                                        AbsBeamTotWin = 0.0;
-                                    } else if (ShadeFlagBack <= 0) {
+                                    if (ShadeFlagBack <= 0) {
                                         for (int Lay = 1; Lay <= NBackGlass; ++Lay) {
                                             AbsBeamWin(Lay) = POLYF(CosIncBack, state.dataConstruction->Construct(ConstrNumBack).AbsBeamBackCoef({1, 6}, Lay));
                                         }
@@ -7630,9 +7626,6 @@ namespace SolarShading {
                             if (state.dataConstruction->Construct(FlConstrNum).TransDiff <= 0.0) {
                                 // Opaque surface
                                 SurfOpaqAI(FloorNum) += BTOTWinZone * state.dataSolarShading->ISABSF(FloorNum) / Surface(FloorNum).Area; //[-]
-                            } else if (state.dataConstruction->Construct(FlConstrNum).TypeIsAirBoundaryInteriorWindow) {
-                                AbsBeamWinEQL = 0.0;
-                                AbsBeamTotWin = 0.0;
                             } else {
                                 // Window
 
@@ -10480,33 +10473,33 @@ namespace SolarShading {
         RepCol = 0;
         if (state.dataEnvrn->Month == 3 && state.dataEnvrn->DayOfMonth == 21) {
             if ((state.dataGlobal->HourOfDay == 9) && (state.dataGlobal->TimeStep == 4)) {
-                RepCol = pdchSlfMar21_9;
+                RepCol = state.dataOutRptPredefined->pdchSlfMar21_9;
             } else if ((state.dataGlobal->HourOfDay == 12) && (state.dataGlobal->TimeStep == 4)) {
-                RepCol = pdchSlfMar21_12;
+                RepCol = state.dataOutRptPredefined->pdchSlfMar21_12;
             } else if ((state.dataGlobal->HourOfDay == 15) && (state.dataGlobal->TimeStep == 4)) {
-                RepCol = pdchSlfMar21_15;
+                RepCol = state.dataOutRptPredefined->pdchSlfMar21_15;
             }
         } else if (state.dataEnvrn->Month == 6 && state.dataEnvrn->DayOfMonth == 21) {
             if ((state.dataGlobal->HourOfDay == 9) && (state.dataGlobal->TimeStep == 4)) {
-                RepCol = pdchSlfJun21_9;
+                RepCol = state.dataOutRptPredefined->pdchSlfJun21_9;
             } else if ((state.dataGlobal->HourOfDay == 12) && (state.dataGlobal->TimeStep == 4)) {
-                RepCol = pdchSlfJun21_12;
+                RepCol = state.dataOutRptPredefined->pdchSlfJun21_12;
             } else if ((state.dataGlobal->HourOfDay == 15) && (state.dataGlobal->TimeStep == 4)) {
-                RepCol = pdchSlfJun21_15;
+                RepCol = state.dataOutRptPredefined->pdchSlfJun21_15;
             }
         } else if (state.dataEnvrn->Month == 12 && state.dataEnvrn->DayOfMonth == 21) {
             if ((state.dataGlobal->HourOfDay == 9) && (state.dataGlobal->TimeStep == 4)) {
-                RepCol = pdchSlfDec21_9;
+                RepCol = state.dataOutRptPredefined->pdchSlfDec21_9;
             } else if ((state.dataGlobal->HourOfDay == 12) && (state.dataGlobal->TimeStep == 4)) {
-                RepCol = pdchSlfDec21_12;
+                RepCol = state.dataOutRptPredefined->pdchSlfDec21_12;
             } else if ((state.dataGlobal->HourOfDay == 15) && (state.dataGlobal->TimeStep == 4)) {
-                RepCol = pdchSlfDec21_15;
+                RepCol = state.dataOutRptPredefined->pdchSlfDec21_15;
             }
         }
         if (RepCol != 0) {
             for (SurfNum = 1; SurfNum <= TotSurfaces; ++SurfNum) {
                 if (Surface(SurfNum).Class == SurfaceClass::Window) {
-                    PreDefTableEntry(RepCol, Surface(SurfNum).Name, SurfSunlitFrac(SurfNum));
+                    PreDefTableEntry(state, RepCol, Surface(SurfNum).Name, SurfSunlitFrac(SurfNum));
                 }
             }
         }

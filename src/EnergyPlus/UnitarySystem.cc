@@ -103,9 +103,6 @@
 namespace EnergyPlus {
 namespace UnitarySystems {
 
-    bool myOneTimeFlag(true);
-    bool getInputFlag(true);
-
     static std::string const fluidNameSteam("STEAM");
     static std::string const blankString("");
 
@@ -489,9 +486,9 @@ namespace UnitarySystems {
         static std::string const routineName("InitUnitarySystems");
         bool errorsFound = false; // error flag for mining functions
 
-        if (myOneTimeFlag) {
+        if (state.dataUnitarySystems->myOneTimeFlag) {
             // initialize or allocate something once
-            myOneTimeFlag = false;
+            state.dataUnitarySystems->myOneTimeFlag = false;
         }
 
         if (!state.dataGlobal->SysSizingCalc && this->m_MySizingCheckFlag && !this->m_ThisSysInputShouldBeGotten) {
@@ -14009,7 +14006,7 @@ namespace UnitarySystems {
                 }
                 this->m_ElecPower = locFanElecPower;
                 this->m_ElecPowerConsumption = this->m_ElecPower * ReportingConstant;
-            } else if (SELECT_CASE_var == DataHVACGlobals::CoilDX_Cooling) {
+            } else if (SELECT_CASE_var == DataHVACGlobals::CoilDX_Cooling && (this->m_NumOfSpeedCooling <= 1)) {
                 if (coilCoolingDXs[this->m_CoolingCoilIndex].SubcoolReheatFlag) {
                     if (state.dataUnitarySystems->CoolingLoad && this->LoadSHR == 0.0) {
                         this->LoadSHR = 1.0;
