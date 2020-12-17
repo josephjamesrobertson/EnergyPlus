@@ -135,9 +135,7 @@ namespace DXCoils {
 
     // Data
     // MODULE PARAMETER DEFINITIONS
-    // Defrost strategy (heat pump only)
-    int const ReverseCycle(1); // uses reverse cycle defrost strategy
-    int const Resistive(2);    // uses electric resistance heater for defrost
+
     // Defrost control  (heat pump only)
     int const Timed(1);    // defrost cycle is timed
     int const OnDemand(2); // defrost cycle occurs only when required
@@ -2246,9 +2244,9 @@ namespace DXCoils {
                 }
             }
 
-            if (UtilityRoutines::SameString(Alphas(11), "ReverseCycle")) DXCoil(DXCoilNum).DefrostStrategy = ReverseCycle;
-            if (UtilityRoutines::SameString(Alphas(11), "Resistive")) DXCoil(DXCoilNum).DefrostStrategy = Resistive;
-            if (DXCoil(DXCoilNum).DefrostStrategy == 0) {
+            if (UtilityRoutines::SameString(Alphas(11), "ReverseCycle")) DXCoil(DXCoilNum).DefrostStrategy = DefrstStrategy::ReverseCycle;
+            if (UtilityRoutines::SameString(Alphas(11), "Resistive")) DXCoil(DXCoilNum).DefrostStrategy = DefrstStrategy::Resistive;
+            if (DXCoil(DXCoilNum).DefrostStrategy == DefrstStrategy::Unassigned) {
                 ShowSevereError(state, RoutineName + CurrentModuleObject + "=\"" + DXCoil(DXCoilNum).Name + "\", invalid");
                 ShowContinueError(state, "...illegal " + cAlphaFields(11) + "=\"" + Alphas(11) + "\".");
                 ShowContinueError(state, "...valid values for this field are ReverseCycle or Resistive.");
@@ -2308,7 +2306,7 @@ namespace DXCoils {
 
             // Set defrost capacity (for resistive defrost)
             DXCoil(DXCoilNum).DefrostCapacity = Numbers(11);
-            if (DXCoil(DXCoilNum).DefrostCapacity == 0.0 && DXCoil(DXCoilNum).DefrostStrategy == Resistive) {
+            if (DXCoil(DXCoilNum).DefrostCapacity == 0.0 && DXCoil(DXCoilNum).DefrostStrategy == DefrstStrategy::Resistive) {
                 ShowWarningError(state, RoutineName + CurrentModuleObject + "=\"" + DXCoil(DXCoilNum).Name + "\", ");
                 ShowContinueError(state, "..." + cNumericFields(11) + " = 0.0 for defrost strategy = RESISTIVE.");
             }
@@ -4356,9 +4354,9 @@ namespace DXCoils {
                 }
             }
 
-            if (UtilityRoutines::SameString(Alphas(6), "ReverseCycle")) DXCoil(DXCoilNum).DefrostStrategy = ReverseCycle;
-            if (UtilityRoutines::SameString(Alphas(6), "Resistive")) DXCoil(DXCoilNum).DefrostStrategy = Resistive;
-            if (DXCoil(DXCoilNum).DefrostStrategy == 0) {
+            if (UtilityRoutines::SameString(Alphas(6), "ReverseCycle")) DXCoil(DXCoilNum).DefrostStrategy = DefrstStrategy::ReverseCycle;
+            if (UtilityRoutines::SameString(Alphas(6), "Resistive")) DXCoil(DXCoilNum).DefrostStrategy = DefrstStrategy::Resistive;
+            if (DXCoil(DXCoilNum).DefrostStrategy == DefrstStrategy::Unassigned) {
                 ShowSevereError(state, RoutineName + CurrentModuleObject + "=\"" + DXCoil(DXCoilNum).Name + "\", invalid");
                 ShowContinueError(state, "...illegal " + cAlphaFields(6) + "=\"" + Alphas(6) + "\".");
                 ShowContinueError(state, "...valid values for this field are ReverseCycle or Resistive.");
@@ -4386,7 +4384,7 @@ namespace DXCoils {
 
             // Set defrost capacity (for resistive defrost)
             DXCoil(DXCoilNum).DefrostCapacity = Numbers(7);
-            if (DXCoil(DXCoilNum).DefrostCapacity == 0.0 && DXCoil(DXCoilNum).DefrostStrategy == OnDemand) {
+            if (DXCoil(DXCoilNum).DefrostCapacity == 0.0 && DXCoil(DXCoilNum).DefrostStrategy == DefrstStrategy::Resistive) {
                 ShowWarningError(state, RoutineName + CurrentModuleObject + "=\"" + DXCoil(DXCoilNum).Name + "\", ");
                 ShowContinueError(state, "..." + cNumericFields(7) + " = 0.0 for defrost strategy = RESISTIVE.");
             }
@@ -5756,7 +5754,7 @@ namespace DXCoils {
                                         "System");
                 }
 
-                if (Coil.FuelTypeNum != DataGlobalConstants::ResourceType::Electricity && Coil.DefrostStrategy == ReverseCycle) {
+                if (Coil.FuelTypeNum != DataGlobalConstants::ResourceType::Electricity && Coil.DefrostStrategy == DefrstStrategy::ReverseCycle) {
                     SetupOutputVariable(state, "Heating Coil Defrost " + Coil.FuelType + " Rate",
                                         OutputProcessor::Unit::W,
                                         Coil.DefrostPower,
@@ -7316,7 +7314,7 @@ namespace DXCoils {
                     DXCoil(DXCoilNum).DXCoilType_Num != CoilDX_MultiSpeedHeating) {
                     // IF (DXCoil(DXCoilNum)%DXCoilType_Num == CoilDX_MultiSpeedHeating .OR. &
                     //    DXCoil(DXCoilNum)%DXCoilType_Num == Coil_HeatingAirToAirVariableSpeed) THEN
-                    if (DXCoil(DXCoilNum).DefrostStrategy == Resistive) {
+                    if (DXCoil(DXCoilNum).DefrostStrategy == DefrstStrategy::Resistive) {
                         CompName = DXCoil(DXCoilNum).Name;
                         CompType = DXCoil(DXCoilNum).DXCoilType;
                         // Auto size low speed capacity to 1/3 high speed capacity
@@ -7915,7 +7913,7 @@ namespace DXCoils {
             if (DXCoil(DXCoilNum).DefrostCapacity == AutoSize) {
                 IsAutoSize = true;
             }
-            if (DXCoil(DXCoilNum).DefrostStrategy == Resistive) {
+            if (DXCoil(DXCoilNum).DefrostStrategy == DefrstStrategy::Resistive) {
                 DefrostCapacityDes = DXCoil(DXCoilNum).MSRatedTotCap(1);
             } else {
                 DefrostCapacityDes = 0.0;
@@ -10410,7 +10408,7 @@ namespace DXCoils {
 
                 if (FractionalDefrostTime > 0.0) {
                     // Calculate defrost adjustment factors depending on defrost control strategy
-                    if (DXCoil(DXCoilNum).DefrostStrategy == ReverseCycle) {
+                    if (DXCoil(DXCoilNum).DefrostStrategy == DefrstStrategy::ReverseCycle) {
                         LoadDueToDefrost =
                             (0.01 * FractionalDefrostTime) * (7.222 - OutdoorDryBulb) * (DXCoil(DXCoilNum).RatedTotCap(Mode) / 1.01667);
                         DefrostEIRTempModFac = CurveValue(state, DXCoil(DXCoilNum).DefrostEIRFT, max(15.555, InletAirWetBulbC), max(15.555, OutdoorDryBulb));
@@ -13017,7 +13015,7 @@ namespace DXCoils {
 
                     if (FractionalDefrostTime > 0.0) {
                         // Calculate defrost adjustment factors depending on defrost control strategy
-                        if (DXCoil(DXCoilNum).DefrostStrategy == ReverseCycle && DXCoil(DXCoilNum).DefrostControl == OnDemand) {
+                        if (DXCoil(DXCoilNum).DefrostStrategy == DefrstStrategy::ReverseCycle && DXCoil(DXCoilNum).DefrostControl == OnDemand) {
                             DefrostEIRTempModFac =
                                 CurveValue(state, DXCoil(DXCoilNum).DefrostEIRFT, max(15.555, InletAirWetBulbC), max(15.555, OutdoorDryBulb));
                             LoadDueToDefrostLS =
@@ -13136,7 +13134,7 @@ namespace DXCoils {
 
                 // Adjust defrost power to correct for DOE-2 bug where defrost power is constant regardless of compressor runtime fraction
                 // Defrosts happen based on compressor run time (frost buildup on outdoor coil), not total elapsed time.
-                if (DXCoil(DXCoilNum).DefrostStrategy == ReverseCycle) {
+                if (DXCoil(DXCoilNum).DefrostStrategy == DefrstStrategy::ReverseCycle) {
                     if (!DXCoil(DXCoilNum).PLRImpact) {
                         DXCoil(DXCoilNum).DefrostPower = DefrostPowerHS * SpeedRatio + DefrostPowerLS * (1.0 - SpeedRatio);
                     } else {
@@ -13227,7 +13225,7 @@ namespace DXCoils {
 
                     if (FractionalDefrostTime > 0.0) {
                         // Calculate defrost adjustment factors depending on defrost control strategy
-                        if (DXCoil(DXCoilNum).DefrostStrategy == ReverseCycle && DXCoil(DXCoilNum).DefrostControl == OnDemand) {
+                        if (DXCoil(DXCoilNum).DefrostStrategy == DefrstStrategy::ReverseCycle && DXCoil(DXCoilNum).DefrostControl == OnDemand) {
                             LoadDueToDefrost =
                                 (0.01 * FractionalDefrostTime) * (7.222 - OutdoorDryBulb) * (DXCoil(DXCoilNum).MSRatedTotCap(1) / 1.01667);
                             DefrostEIRTempModFac =
@@ -15224,7 +15222,7 @@ namespace DXCoils {
         }
 
         if (present(DefrostStrategy)) {
-            DXCoil(DXCoilNum).DefrostStrategy = DefrostStrategy;
+            DXCoil(DXCoilNum).DefrostStrategy = DefrstStrategyReturnint(DefrostStrategy);
         }
 
         if (present(DefrostControl)) {
