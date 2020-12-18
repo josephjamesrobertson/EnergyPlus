@@ -188,6 +188,8 @@ INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/Si
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/SpectralAveraging/include)
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/Tarcog/include)
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/Windows-CalcEngine/src/Viewer/include)
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/frozen/include)
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/frozen/include/frozen)
 if( OPENGL_FOUND )
     INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/third_party/penumbra/include )
 endif()
@@ -244,6 +246,8 @@ set_target_properties(generate_embeddedable_epJSON_schema PROPERTIES FOLDER "Int
 IF( NOT APPLE )
   ADD_SUBDIRECTORY(third_party/FMUParser)
   set_target_properties(parser PROPERTIES FOLDER ThirdParty/FMI)
+ELSE()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 ENDIF()
 
 ADD_SUBDIRECTORY(third_party/Windows-CalcEngine)

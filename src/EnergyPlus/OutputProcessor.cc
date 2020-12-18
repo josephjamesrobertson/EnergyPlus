@@ -60,6 +60,9 @@
 #include <ObjexxFCL/Fmath.hh>
 #include <ObjexxFCL/string.functions.hh>
 
+// Third-party Headers
+#include <frozen/unordered_map.h>
+
 // EnergyPlus Headers
 #include "re2/re2.h"
 #include <EnergyPlus/Data/EnergyPlusData.hh>
@@ -796,6 +799,18 @@ namespace OutputProcessor {
                                                                  ReportingFrequency::Simulation,
                                                                  ReportingFrequency::Simulation,
                                                                  ReportingFrequency::Yearly});
+
+        constexpr frozen::unordered_map<std::string, ReportingFrequency, 8> freqMap = {
+            {"Detailed", ReportingFrequency::EachCall},
+            {"Timestep", ReportingFrequency::TimeStep},
+            {"Hourly", ReportingFrequency::Hourly},
+            {"Daily", ReportingFrequency::Daily},
+            {"Monthly", ReportingFrequency::Monthly},
+            {"RunPeriod", ReportingFrequency::Simulation},
+            {"Environment", ReportingFrequency::Simulation},
+            {"Annual", ReportingFrequency::Yearly},
+        };
+
         // note: runperiod and environment are synonomous
 
         // INTERFACE BLOCK SPECIFICATIONS:
