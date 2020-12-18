@@ -1,7 +1,7 @@
 
 #include <cinttypes>
 #include <frozen/unordered_map.h>
-#include <frozen/string.h>
+#include <frozen/fr_string.h>
 
 struct codes_t
 {

@@ -800,7 +800,7 @@ namespace OutputProcessor {
                                                                  ReportingFrequency::Simulation,
                                                                  ReportingFrequency::Yearly});
 
-        constexpr frozen::unordered_map<std::string, ReportingFrequency, 8> freqMap = {
+        constexpr frozen::unordered_map<std::string_view, ReportingFrequency, 8> freqMap = {
             {"Detailed", ReportingFrequency::EachCall},
             {"Timestep", ReportingFrequency::TimeStep},
             {"Hourly", ReportingFrequency::Hourly},

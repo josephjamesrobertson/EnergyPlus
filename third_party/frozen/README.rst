@@ -10,8 +10,8 @@ Frozen provides:
 
 - immutable (a.k.a. frozen), ``constexpr``-compatible versions of ``std::set``,
   ``std::unordered_set``, ``std::map`` and ``std::unordered_map``.
-  
-- fixed-capacity, ``constinit``-compatible versions of ``std::map`` and 
+
+- fixed-capacity, ``constinit``-compatible versions of ``std::map`` and
   ``std::unordered_map`` with immutable, compile-time selected keys mapped
   to mutable values.
 
@@ -23,7 +23,7 @@ The ``unordered_*`` containers are guaranteed *perfect* (a.k.a. no hash
 collision) and the extra storage is linear with respect to the number of keys.
 
 Once initialized, the container keys cannot be updated, and in exchange, lookups
-are faster. And initialization is free when ``constexpr`` or ``constinit`` is 
+are faster. And initialization is free when ``constexpr`` or ``constinit`` is
 used :-).
 
 
@@ -85,7 +85,7 @@ String support is built-in:
 .. code:: C++
 
     #include <frozen/unordered_map.h>
-    #include <frozen/string.h>
+    #include <frozen/fr_string.h>
 
     constexpr frozen::unordered_map<frozen::string, int, 2> olaf = {
         {"19", 19},
@@ -93,21 +93,21 @@ String support is built-in:
     };
     constexpr auto val = olaf.at("19");
 
-The associative containers have different functionality with and without ``constexpr``. 
-With ``constexpr``, frozen maps have immutable keys and values. Without ``constexpr``, the 
+The associative containers have different functionality with and without ``constexpr``.
+With ``constexpr``, frozen maps have immutable keys and values. Without ``constexpr``, the
 values can be updated in runtime (the keys, however, remain immutable):
 
 .. code:: C++
 
 
     #include <frozen/unordered_map.h>
-    #include <frozen/string.h>
+    #include <frozen/fr_string.h>
 
     static constinit frozen::unordered_map<frozen::string, frozen::string, 2> voice = {
         {"Anna", "???"},
         {"Elsa", "???"}
     };
-    
+
     int main() {
     	voice.at("Anna") = "Kristen";
 	voice.at("Elsa") = "Idina";

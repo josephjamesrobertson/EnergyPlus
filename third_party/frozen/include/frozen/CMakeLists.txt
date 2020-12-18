@@ -3,7 +3,7 @@ target_sources(frozen-headers INTERFACE
   "${prefix}/frozen/map.h"
   "${prefix}/frozen/random.h"
   "${prefix}/frozen/set.h"
-  "${prefix}/frozen/string.h"
+  "${prefix}/frozen/fr_string.h"
   "${prefix}/frozen/unordered_map.h"
   "${prefix}/frozen/unordered_set.h"
   "${prefix}/frozen/bits/algorithms.h"

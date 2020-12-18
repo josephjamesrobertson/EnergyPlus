@@ -1,4 +1,4 @@
-#include <frozen/string.h>
+#include <frozen/fr_string.h>
 #include <frozen/set.h>
 #include <iostream>
 #include <set>

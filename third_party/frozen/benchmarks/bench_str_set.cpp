@@ -1,7 +1,7 @@
 #include <benchmark/benchmark.h>
 
 #include <frozen/set.h>
-#include <frozen/string.h>
+#include <frozen/fr_string.h>
 
 #include <set>
 #include <array>

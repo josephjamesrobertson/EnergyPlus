@@ -25,7 +25,7 @@
 
 #include "frozen/bits/basic_types.h"
 #include "frozen/bits/version.h"
-#include "frozen/string.h"
+#include "frozen/fr_string.h"
 
 namespace frozen {
 
@@ -119,7 +119,7 @@ template <std::size_t size> class boyer_moore_searcher {
 
   constexpr bool is_prefix(char const (&needle)[size + 1], std::size_t pos) {
     std::size_t suffixlen = size - pos;
-    
+
     for (std::size_t i = 0; i < suffixlen; i++) {
       if (needle[i] != needle[pos + i])
         return false;
