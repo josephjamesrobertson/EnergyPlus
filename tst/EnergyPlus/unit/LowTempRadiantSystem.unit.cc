@@ -240,7 +240,7 @@ TEST_F(LowTempRadiantSystemTest, SizeLowTempRadiantVariableFlow)
     ExpectedResult2 = FinalZoneSizing(CurZoneEqNum).NonAirSysDesCoolLoad;
     ExpectedResult2 = ExpectedResult2 / (PlantSizData(2).DeltaT * RhoWater * CpWater);
 
-    HydrRadSys(RadSysNum).NumCircCalcMethod = 0;
+    HydrRadSys(RadSysNum).NumCircCalcMethod = NumCircSurfCalc::Unassigned;
     HydrRadSys(RadSysNum).NumOfSurfaces = 1;
     HydrRadSys(RadSysNum).TubeLength = AutoSize;
     HydrRadSys(RadSysNum).TotalSurfaceArea = 1500.0;
@@ -426,7 +426,7 @@ TEST_F(LowTempRadiantSystemTest, SizeLowTempRadiantConstantFlow)
     CFloRadSys(RadSysNum).ColdWaterOutNode = 4;
 
     // Hydronic - embeded tube length autosize
-    CFloRadSys(RadSysNum).NumCircCalcMethod = 0;
+    CFloRadSys(RadSysNum).NumCircCalcMethod = NumCircSurfCalc::Unassigned;
     CFloRadSys(RadSysNum).NumOfSurfaces = 1;
     CFloRadSys(RadSysNum).TubeLength = AutoSize;
     CFloRadSys(RadSysNum).TotalSurfaceArea = 150.0;
@@ -1572,14 +1572,14 @@ TEST_F(LowTempRadiantSystemTest, CalcLowTempCFloRadiantSystem_OperationMode)
     CFloRadSys(RadSysNum).HeatingSystem = false;
     Load = 1000.0;
     CFloRadSys(RadSysNum).calculateLowTemperatureRadiantSystem(*state, Load);
-    EXPECT_EQ(NotOperating, CFloRadSys(RadSysNum).OperatingMode);
+    EXPECT_EQ(RadHeatingMode::NotOperating, CFloRadSys(RadSysNum).OperatingMode);
 
     // Cooling
     CFloRadSys(RadSysNum).CoolingSystem = false;
     CFloRadSys(RadSysNum).HeatingSystem = true;
     DataHeatBalFanSys::MAT(1) = 26.0;
     CFloRadSys(RadSysNum).calculateLowTemperatureRadiantSystem(*state, Load);
-    EXPECT_EQ(NotOperating, CFloRadSys(RadSysNum).OperatingMode);
+    EXPECT_EQ(RadHeatingMode::NotOperating, CFloRadSys(RadSysNum).OperatingMode);
 
     CFloRadSys.deallocate();
     Schedule.deallocate();
@@ -1622,19 +1622,19 @@ TEST_F(LowTempRadiantSystemTest, CalcLowTempHydrRadiantSystem_OperationMode)
     HydrRadSys(RadSysNum).HWLoopNum = 0;
 
     // heating
-    HydrRadSys(RadSysNum).OperatingMode = 0;
+    HydrRadSys(RadSysNum).OperatingMode = RadHeatingMode::NotOperating;
     HydrRadSys(RadSysNum).CoolingSystem = true;
     HydrRadSys(RadSysNum).HeatingSystem = false;
     Load = 1000.0;
     HydrRadSys(RadSysNum).calculateLowTemperatureRadiantSystem(*state, Load);
-    EXPECT_EQ(0, HydrRadSys(RadSysNum).OperatingMode);
+    EXPECT_EQ(RadHeatingMode::NotOperating, HydrRadSys(RadSysNum).OperatingMode);
 
     // Cooling
     HydrRadSys(RadSysNum).CoolingSystem = false;
     HydrRadSys(RadSysNum).HeatingSystem = true;
     DataHeatBalFanSys::MAT(1) = 26.0;
     HydrRadSys(RadSysNum).calculateLowTemperatureRadiantSystem(*state, Load);
-    EXPECT_EQ(NotOperating, HydrRadSys(RadSysNum).OperatingMode);
+    EXPECT_EQ(RadHeatingMode::NotOperating, HydrRadSys(RadSysNum).OperatingMode);
 
     HydrRadSys.deallocate();
     Schedule.deallocate();
@@ -1848,7 +1848,7 @@ TEST_F(LowTempRadiantSystemTest, LowTempRadCalcRadSysHXEffectTermTest)
 
     // Test 1: Heating for Hydronic System
     HXEffectFuncResult = 0.0;
-    HydrRadSys(RadSysNum).OperatingMode = HeatingMode;
+    HydrRadSys(RadSysNum).OperatingMode = RadHeatingMode::HeatingMode;
     RadSysType = LowTempRadiantSystem::SystemType::HydronicSystem;
     Temperature = 10.0;
     HydrRadSys(RadSysNum).HWLoopNum = 1;
@@ -1857,7 +1857,7 @@ TEST_F(LowTempRadiantSystemTest, LowTempRadCalcRadSysHXEffectTermTest)
 
     // Test 2: Cooling for Hydronic System
     HXEffectFuncResult = 0.0;
-    HydrRadSys(RadSysNum).OperatingMode = CoolingMode;
+    HydrRadSys(RadSysNum).OperatingMode = RadHeatingMode::CoolingMode;
     RadSysType = LowTempRadiantSystem::SystemType::HydronicSystem;
     Temperature = 10.0;
     HydrRadSys(RadSysNum).CWLoopNum = 1;
@@ -1866,7 +1866,7 @@ TEST_F(LowTempRadiantSystemTest, LowTempRadCalcRadSysHXEffectTermTest)
 
     // Test 3: Heating for Constant Flow System
     HXEffectFuncResult = 0.0;
-    CFloRadSys(RadSysNum).OperatingMode = HeatingMode;
+    CFloRadSys(RadSysNum).OperatingMode = RadHeatingMode::HeatingMode;
     RadSysType = LowTempRadiantSystem::SystemType::ConstantFlowSystem;
     Temperature = 10.0;
     CFloRadSys(RadSysNum).HWLoopNum = 1;
@@ -1875,7 +1875,7 @@ TEST_F(LowTempRadiantSystemTest, LowTempRadCalcRadSysHXEffectTermTest)
 
     // Test 4: Cooling for Constant Flow System
     HXEffectFuncResult = 0.0;
-    CFloRadSys(RadSysNum).OperatingMode = CoolingMode;
+    CFloRadSys(RadSysNum).OperatingMode = RadHeatingMode::CoolingMode;
     RadSysType = LowTempRadiantSystem::SystemType::ConstantFlowSystem;
     Temperature = 10.0;
     CFloRadSys(RadSysNum).CWLoopNum = 1;
@@ -2510,8 +2510,8 @@ TEST_F(LowTempRadiantSystemTest, updateOperatingModeHistoryTest)
     auto &thisRadSys (HydrRadSys(1));
 
     // Test 1: Operating Mode different, beginning of day-->lastOperatingMode should switch, last parameters should get set appropriately
-    thisRadSys.lastOperatingMode = LowTempRadiantSystem::HeatingMode;
-    thisRadSys.OperatingMode = LowTempRadiantSystem::CoolingMode;
+    thisRadSys.lastOperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
+    thisRadSys.OperatingMode = LowTempRadiantSystem::RadHeatingMode::CoolingMode;
     thisRadSys.lastDayOfSim = resetResult;
     thisRadSys.lastHourOfDay = resetResult;
     thisRadSys.lastTimeStep = resetResult;
@@ -2525,12 +2525,12 @@ TEST_F(LowTempRadiantSystemTest, updateOperatingModeHistoryTest)
     EXPECT_EQ(thisRadSys.lastHourOfDay, expectedResult);
     expectedResult = state->dataGlobal->NumOfTimeStepInHour;
     EXPECT_EQ(thisRadSys.lastTimeStep, expectedResult);
-    EXPECT_EQ(thisRadSys.lastOperatingMode, LowTempRadiantSystem::CoolingMode);
-    EXPECT_EQ(thisRadSys.OperatingMode, LowTempRadiantSystem::NotOperating);
+    EXPECT_EQ(thisRadSys.lastOperatingMode, LowTempRadiantSystem::RadHeatingMode::CoolingMode);
+    EXPECT_EQ(thisRadSys.OperatingMode, LowTempRadiantSystem::RadHeatingMode::NotOperating);
 
     // Test 2: Operating Mode different, beginning of hour-->lastOperatingMode should switch, last parameters should get set appropriately
-    thisRadSys.lastOperatingMode = LowTempRadiantSystem::HeatingMode;
-    thisRadSys.OperatingMode = LowTempRadiantSystem::CoolingMode;
+    thisRadSys.lastOperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
+    thisRadSys.OperatingMode = LowTempRadiantSystem::RadHeatingMode::CoolingMode;
     thisRadSys.lastDayOfSim = resetResult;
     thisRadSys.lastHourOfDay = resetResult;
     thisRadSys.lastTimeStep = resetResult;
@@ -2544,12 +2544,12 @@ TEST_F(LowTempRadiantSystemTest, updateOperatingModeHistoryTest)
     EXPECT_EQ(thisRadSys.lastHourOfDay, expectedResult);
     expectedResult = state->dataGlobal->NumOfTimeStepInHour;
     EXPECT_EQ(thisRadSys.lastTimeStep, expectedResult);
-    EXPECT_EQ(thisRadSys.lastOperatingMode, LowTempRadiantSystem::CoolingMode);
-    EXPECT_EQ(thisRadSys.OperatingMode, LowTempRadiantSystem::NotOperating);
+    EXPECT_EQ(thisRadSys.lastOperatingMode, LowTempRadiantSystem::RadHeatingMode::CoolingMode);
+    EXPECT_EQ(thisRadSys.OperatingMode, LowTempRadiantSystem::RadHeatingMode::NotOperating);
 
     // Test 3: Operating Mode different, beginning of time step-->lastOperatingMode should switch, last parameters should get set appropriately
-    thisRadSys.lastOperatingMode = LowTempRadiantSystem::HeatingMode;
-    thisRadSys.OperatingMode = LowTempRadiantSystem::CoolingMode;
+    thisRadSys.lastOperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
+    thisRadSys.OperatingMode = LowTempRadiantSystem::RadHeatingMode::CoolingMode;
     thisRadSys.lastDayOfSim = resetResult;
     thisRadSys.lastHourOfDay = resetResult;
     thisRadSys.lastTimeStep = resetResult;
@@ -2563,12 +2563,12 @@ TEST_F(LowTempRadiantSystemTest, updateOperatingModeHistoryTest)
     EXPECT_EQ(thisRadSys.lastHourOfDay, expectedResult);
     expectedResult = 4;
     EXPECT_EQ(thisRadSys.lastTimeStep, expectedResult);
-    EXPECT_EQ(thisRadSys.lastOperatingMode, LowTempRadiantSystem::CoolingMode);
-    EXPECT_EQ(thisRadSys.OperatingMode, LowTempRadiantSystem::NotOperating);
+    EXPECT_EQ(thisRadSys.lastOperatingMode, LowTempRadiantSystem::RadHeatingMode::CoolingMode);
+    EXPECT_EQ(thisRadSys.OperatingMode, LowTempRadiantSystem::RadHeatingMode::NotOperating);
 
     // Test 4: Operating Mode different, not beginning of day, hour, or time step-->lastOperatingMode should switch, last parameters should get set appropriately
-    thisRadSys.lastOperatingMode = LowTempRadiantSystem::HeatingMode;
-    thisRadSys.OperatingMode = LowTempRadiantSystem::CoolingMode;
+    thisRadSys.lastOperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
+    thisRadSys.OperatingMode = LowTempRadiantSystem::RadHeatingMode::CoolingMode;
     thisRadSys.lastDayOfSim = resetResult;
     thisRadSys.lastHourOfDay = resetResult;
     thisRadSys.lastTimeStep = resetResult;
@@ -2582,53 +2582,53 @@ TEST_F(LowTempRadiantSystemTest, updateOperatingModeHistoryTest)
     EXPECT_EQ(thisRadSys.lastHourOfDay, expectedResult);
     expectedResult = 5;
     EXPECT_EQ(thisRadSys.lastTimeStep, expectedResult);
-    EXPECT_EQ(thisRadSys.lastOperatingMode, LowTempRadiantSystem::CoolingMode);
-    EXPECT_EQ(thisRadSys.OperatingMode, LowTempRadiantSystem::NotOperating);
+    EXPECT_EQ(thisRadSys.lastOperatingMode, LowTempRadiantSystem::RadHeatingMode::CoolingMode);
+    EXPECT_EQ(thisRadSys.OperatingMode, LowTempRadiantSystem::RadHeatingMode::NotOperating);
 
 }
 
 TEST_F(LowTempRadiantSystemTest, setOperatingModeBasedOnChangeoverDelayTest)
 {
-    int expectedResult;
+    LowTempRadiantSystem::RadHeatingMode expectedResult;
     HydrRadSys.allocate(1);
     auto &thisRadSys (HydrRadSys(1));
     state->dataGlobal->NumOfTimeStepInHour = 6;
     state->dataGlobal->MinutesPerTimeStep = 10.0;
 
     // Test 1: lastOperatingMode is NotOperating-->don't do anything to OperatingMode
-    thisRadSys.lastOperatingMode = LowTempRadiantSystem::NotOperating;
-    thisRadSys.OperatingMode = LowTempRadiantSystem::HeatingMode;
+    thisRadSys.lastOperatingMode = LowTempRadiantSystem::RadHeatingMode::NotOperating;
+    thisRadSys.OperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
     thisRadSys.setOperatingModeBasedOnChangeoverDelay(*state);
-    expectedResult = LowTempRadiantSystem::HeatingMode;
+    expectedResult = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
     EXPECT_EQ(thisRadSys.OperatingMode, expectedResult);
 
     // Test 2: lastOperatingMode is not NotOperating, OperatingMode is NotOperating-->don't do anything to OperatingMode
-    thisRadSys.lastOperatingMode = LowTempRadiantSystem::HeatingMode;
-    thisRadSys.OperatingMode = LowTempRadiantSystem::NotOperating;
+    thisRadSys.lastOperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
+    thisRadSys.OperatingMode = LowTempRadiantSystem::RadHeatingMode::NotOperating;
     thisRadSys.setOperatingModeBasedOnChangeoverDelay(*state);
-    expectedResult = LowTempRadiantSystem::NotOperating;
+    expectedResult = LowTempRadiantSystem::RadHeatingMode::NotOperating;
     EXPECT_EQ(thisRadSys.OperatingMode, expectedResult);
 
     // Test 3: lastOperatingMode and OperatingMode are both the same (and not NotOperating)-->don't do anything to OperatingMode
-    thisRadSys.lastOperatingMode = LowTempRadiantSystem::HeatingMode;
-    thisRadSys.OperatingMode = LowTempRadiantSystem::HeatingMode;
+    thisRadSys.lastOperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
+    thisRadSys.OperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
     thisRadSys.setOperatingModeBasedOnChangeoverDelay(*state);
-    expectedResult = LowTempRadiantSystem::HeatingMode;
+    expectedResult = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
     EXPECT_EQ(thisRadSys.OperatingMode, expectedResult);
 
     // Test 4: lastOperatingMode and OperatingMode are different and neither is not NotOperating plus the schedule index is zero (no delay)-->don't do anything to OperatingMode
-    thisRadSys.lastOperatingMode = LowTempRadiantSystem::HeatingMode;
-    thisRadSys.OperatingMode = LowTempRadiantSystem::CoolingMode;
+    thisRadSys.lastOperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
+    thisRadSys.OperatingMode = LowTempRadiantSystem::RadHeatingMode::CoolingMode;
     thisRadSys.schedPtrChangeoverDelay = 0;
     thisRadSys.setOperatingModeBasedOnChangeoverDelay(*state);
-    expectedResult = LowTempRadiantSystem::CoolingMode;
+    expectedResult = LowTempRadiantSystem::RadHeatingMode::CoolingMode;
     EXPECT_EQ(thisRadSys.OperatingMode, expectedResult);
 
     // Test 5a: lastOperatingMode and OperatingMode are different and neither is not NotOperating, the
     //          schedule index is non-zero and schedule value is non zero, but it hasn't been long enough
     //          to switch over yet-->change OperatingMode to NotOperating
-    thisRadSys.lastOperatingMode = LowTempRadiantSystem::HeatingMode;
-    thisRadSys.OperatingMode = LowTempRadiantSystem::CoolingMode;
+    thisRadSys.lastOperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
+    thisRadSys.OperatingMode = LowTempRadiantSystem::RadHeatingMode::CoolingMode;
     thisRadSys.schedPtrChangeoverDelay = -1;
     state->dataGlobal->DayOfSim = 2;
     state->dataGlobal->HourOfDay = 1;
@@ -2637,14 +2637,14 @@ TEST_F(LowTempRadiantSystemTest, setOperatingModeBasedOnChangeoverDelayTest)
     thisRadSys.lastHourOfDay = 24;
     thisRadSys.lastTimeStep = 2;
     thisRadSys.setOperatingModeBasedOnChangeoverDelay(*state);
-    expectedResult = LowTempRadiantSystem::NotOperating;
+    expectedResult = LowTempRadiantSystem::RadHeatingMode::NotOperating;
     EXPECT_EQ(thisRadSys.OperatingMode, expectedResult);
 
     // Test 6b: lastOperatingMode and OperatingMode are different and neither is not NotOperating, the
     //          schedule index is non-zero and schedule value is non zero, but it has been long enough
     //          to switch over yet-->don't do anything to OperatingMode
-    thisRadSys.lastOperatingMode = LowTempRadiantSystem::HeatingMode;
-    thisRadSys.OperatingMode = LowTempRadiantSystem::CoolingMode;
+    thisRadSys.lastOperatingMode = LowTempRadiantSystem::RadHeatingMode::HeatingMode;
+    thisRadSys.OperatingMode = LowTempRadiantSystem::RadHeatingMode::CoolingMode;
     state->dataGlobal->DayOfSim = 2;
     state->dataGlobal->HourOfDay = 1;
     state->dataGlobal->TimeStep = 4;
@@ -2652,7 +2652,7 @@ TEST_F(LowTempRadiantSystemTest, setOperatingModeBasedOnChangeoverDelayTest)
     thisRadSys.lastHourOfDay = 22;
     thisRadSys.lastTimeStep = 3;
     thisRadSys.setOperatingModeBasedOnChangeoverDelay(*state);
-    expectedResult = LowTempRadiantSystem::CoolingMode;
+    expectedResult = LowTempRadiantSystem::RadHeatingMode::CoolingMode;
     EXPECT_EQ(thisRadSys.OperatingMode, expectedResult);
 }
 

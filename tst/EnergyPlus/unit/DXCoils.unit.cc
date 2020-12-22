@@ -105,7 +105,7 @@ TEST_F(EnergyPlusFixture, DXCoils_Test1)
     DXCoilNumericFields.allocate(NumDXCoils);
     DXCoilNumericFields(2).PerfMode.allocate(1);
     DXCoilNumericFields(2).PerfMode(1).FieldNames.allocate(17);
-    DXCoil(2).DefrostStrategy = Resistive;
+    DXCoil(2).DefrostStrategy = DefrstStrategy::Resistive;
     DXCoil(2).DefrostCapacity = 5000.0;
     DXCoil(2).Name = "DX Heating coil";
     DXCoil(1).NumOfSpeeds = 2;
@@ -298,7 +298,7 @@ TEST_F(EnergyPlusFixture, DXCoils_Test2)
     DXCoilNumericFields.allocate(NumDXCoils);
     DXCoilNumericFields(2).PerfMode.allocate(1);
     DXCoilNumericFields(2).PerfMode(1).FieldNames.allocate(20);
-    DXCoil(2).DefrostStrategy = Resistive;
+    DXCoil(2).DefrostStrategy = DefrstStrategy::Resistive;
     DXCoil(2).DefrostCapacity = 5000.0;
     DXCoil(2).Name = "DX Heating coil";
 
@@ -415,7 +415,7 @@ TEST_F(EnergyPlusFixture, TestMultiSpeedDefrostCOP)
     DXCoilPartLoadRatio.allocate(NumDXCoils);
     DXCoilNumericFields(DXCoilNum).PerfMode.allocate(1);
     DXCoilNumericFields(DXCoilNum).PerfMode(1).FieldNames.allocate(15);
-    Coil.DefrostStrategy = Resistive;
+    Coil.DefrostStrategy = DefrstStrategy::Resistive;
     Coil.Name = "DX Heating coil";
     Coil.NumOfSpeeds = 2;
     DataLoopNode::Node.allocate(1);
@@ -446,7 +446,7 @@ TEST_F(EnergyPlusFixture, TestMultiSpeedDefrostCOP)
     Coil.MinOATCompressor = -73.27777777777779;
     Coil.CrankcaseHeaterCapacity = 0.0;
     Coil.MaxOATDefrost = 0.0;
-    Coil.DefrostStrategy = Resistive;
+    Coil.DefrostStrategy = DefrstStrategy::Resistive;
     Coil.DefrostControl = Timed;
     Coil.DefrostTime = 0.058333;
     Coil.DefrostCapacity = 1000;
@@ -799,7 +799,7 @@ TEST_F(EnergyPlusFixture, TestSingleSpeedDefrostCOP)
     Coil.MinOATCompressor = -73.27777777777779;
     Coil.CrankcaseHeaterCapacity = 0.0;
     Coil.MaxOATDefrost = 0.0;
-    Coil.DefrostStrategy = Resistive;
+    Coil.DefrostStrategy = DefrstStrategy::Resistive;
     Coil.DefrostControl = Timed;
     Coil.DefrostTime = 0.058333;
     Coil.DefrostCapacity = 1000;
@@ -1777,7 +1777,7 @@ TEST_F(EnergyPlusFixture, BlankDefrostEIRCurveInput)
     GetDXCoils(*state);
 
     ASSERT_EQ(1, NumDXCoils);
-    ASSERT_EQ(DXCoil(1).DefrostStrategy, ReverseCycle);
+    ASSERT_EQ(DXCoil(1).DefrostStrategy, DefrstStrategy::ReverseCycle);
     ASSERT_EQ(DXCoil(1).DefrostControl, Timed);
     ASSERT_EQ(DXCoil(1).DefrostEIRFT, 1);
     ASSERT_EQ(DXCoil(1).MaxOATDefrost, 5.0);
