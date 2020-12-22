@@ -126,10 +126,6 @@ namespace HeatRecovery {
     int const Plate(1);
     int const Rotary(2);
 
-    // Economizer lockout operation
-    int const EconoLockOut_No(0);
-    int const EconoLockOut_Yes(1);
-
     static std::string const BlankString;
 
     namespace {
@@ -436,12 +432,12 @@ namespace HeatRecovery {
             {
                 auto const SELECT_CASE_var(cAlphaArgs(4));
                 if (SELECT_CASE_var == "YES") {
-                    ExchCond(ExchNum).EconoLockOut = EconoLockOut_Yes;
+                    ExchCond(ExchNum).EconoLockOut = EconLockoutOp::EconoLockOut_Yes;
                 } else if (SELECT_CASE_var == "NO") {
-                    ExchCond(ExchNum).EconoLockOut = EconoLockOut_No;
+                    ExchCond(ExchNum).EconoLockOut = EconLockoutOp::EconoLockOut_No;
                 } else {
                     if (lAlphaFieldBlanks(4)) {
-                        ExchCond(ExchNum).EconoLockOut = EconoLockOut_Yes;
+                        ExchCond(ExchNum).EconoLockOut = EconLockoutOp::EconoLockOut_Yes;
                     } else {
                         ShowSevereError(state, cCurrentModuleObject + ": incorrect econo lockout: " + cAlphaArgs(4));
                         ErrorsFound = true;
@@ -585,12 +581,12 @@ namespace HeatRecovery {
             {
                 auto const SELECT_CASE_var(cAlphaArgs(10));
                 if (SELECT_CASE_var == "YES") {
-                    ExchCond(ExchNum).EconoLockOut = EconoLockOut_Yes;
+                    ExchCond(ExchNum).EconoLockOut = EconLockoutOp::EconoLockOut_Yes;
                 } else if (SELECT_CASE_var == "NO") {
-                    ExchCond(ExchNum).EconoLockOut = EconoLockOut_No;
+                    ExchCond(ExchNum).EconoLockOut = EconLockoutOp::EconoLockOut_No;
                 } else {
                     if (lAlphaFieldBlanks(10)) {
-                        ExchCond(ExchNum).EconoLockOut = EconoLockOut_Yes;
+                        ExchCond(ExchNum).EconoLockOut = EconLockoutOp::EconoLockOut_Yes;
                     } else {
                         ShowSevereError(state, cCurrentModuleObject + ": incorrect econo lockout: " + cAlphaArgs(10));
                         ErrorsFound = true;
@@ -671,12 +667,12 @@ namespace HeatRecovery {
             {
                 auto const SELECT_CASE_var(cAlphaArgs(9));
                 if (SELECT_CASE_var == "YES") {
-                    ExchCond(ExchNum).EconoLockOut = EconoLockOut_Yes;
+                    ExchCond(ExchNum).EconoLockOut = EconLockoutOp::EconoLockOut_Yes;
                 } else if (SELECT_CASE_var == "NO") {
-                    ExchCond(ExchNum).EconoLockOut = EconoLockOut_No;
+                    ExchCond(ExchNum).EconoLockOut = EconLockoutOp::EconoLockOut_No;
                 } else {
                     if (lAlphaFieldBlanks(9)) {
-                        ExchCond(ExchNum).EconoLockOut = EconoLockOut_No;
+                        ExchCond(ExchNum).EconoLockOut = EconLockoutOp::EconoLockOut_No;
                     } else {
                         ShowSevereError(state, cCurrentModuleObject + ": incorrect econo lockout: " + cAlphaArgs(9));
                         ErrorsFound = true;
@@ -1832,7 +1828,7 @@ namespace HeatRecovery {
             HighHumCtrlActiveFlag = false;
         }
 
-        if ((EconomizerActiveFlag || HighHumCtrlActiveFlag) && ExchCond(ExNum).EconoLockOut == EconoLockOut_Yes) {
+        if ((EconomizerActiveFlag || HighHumCtrlActiveFlag) && ExchCond(ExNum).EconoLockOut == EconLockoutOp::EconoLockOut_Yes) {
             UnitSupMassFlow = 0.0; // set HX supply flow to 0, all supply air will go through supply bypass
             UnitSecMassFlow = 0.0; // set HX secondary flow to 0, all secondary air will got through secondary bypass
             UnitOn = false;        // turn off HX calculations when in economizer mode
@@ -2069,7 +2065,7 @@ namespace HeatRecovery {
         }
 
         // Determine mass flow through heat exchanger and mass flow being bypassed (only flat plate bypasses flow)
-        if (((EconomizerActiveFlag || HighHumCtrlActiveFlag) && ExchCond(ExNum).EconoLockOut == EconoLockOut_Yes) &&
+        if (((EconomizerActiveFlag || HighHumCtrlActiveFlag) && ExchCond(ExNum).EconoLockOut == EconLockoutOp::EconoLockOut_Yes) &&
             ExchCond(ExNum).ExchConfigNum == Plate) {
             ExchCond(ExNum).SupBypassMassFlow = ExchCond(ExNum).SupInMassFlow;
             ExchCond(ExNum).SupOutMassFlow = ExchCond(ExNum).SupInMassFlow;
@@ -2084,7 +2080,7 @@ namespace HeatRecovery {
         // Unit is scheduled OFF, so bypass heat exchange calcs
         if (GetCurrentScheduleValue(state, ExchCond(ExNum).SchedPtr) <= 0.0) UnitOn = false;
         //! Economizer is active, so bypass heat exchange calcs. This applies to both flat plate and rotary HX's
-        if ((EconomizerActiveFlag || HighHumCtrlActiveFlag) && ExchCond(ExNum).EconoLockOut == EconoLockOut_Yes) {
+        if ((EconomizerActiveFlag || HighHumCtrlActiveFlag) && ExchCond(ExNum).EconoLockOut == EconLockoutOp::EconoLockOut_Yes) {
             UnitOn = false;
         }
         // Determine if unit is ON or OFF based on air mass flow through the supply and secondary airstreams and operation flag
@@ -2661,7 +2657,7 @@ namespace HeatRecovery {
         if (ExchCond(ExNum).SecInMassFlow <= SmallMassFlow) UnitOn = false;
         if (HXPartLoadRatio == 0.0) UnitOn = false;
         if (!HXUnitOn) UnitOn = false;
-        if ((EconomizerActiveFlag || HighHumCtrlActiveFlag) && ExchCond(ExNum).EconoLockOut == EconoLockOut_Yes) UnitOn = false;
+        if ((EconomizerActiveFlag || HighHumCtrlActiveFlag) && ExchCond(ExNum).EconoLockOut == EconLockoutOp::EconoLockOut_Yes) UnitOn = false;
 
         if (UnitOn) {
 
