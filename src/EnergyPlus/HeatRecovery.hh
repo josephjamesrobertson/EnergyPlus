@@ -72,7 +72,7 @@ namespace HeatRecovery {
     extern Real64 const SMALL;
 
     // Heat exchanger performance data type
-    extern int const BALANCEDHX_PERFDATATYPE1;
+    int const BALANCEDHX_PERFDATATYPE1(1);
 
     // Heat exchanger configuration types
     enum class HXConfigType {

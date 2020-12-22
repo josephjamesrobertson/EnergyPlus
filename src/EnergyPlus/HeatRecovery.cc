@@ -119,9 +119,6 @@ namespace HeatRecovery {
     Real64 const KELVZERO(273.16);
     Real64 const SMALL(1.e-10);
 
-    // Heat exchanger performance data type
-    int const BALANCEDHX_PERFDATATYPE1(1);
-
     static std::string const BlankString;
 
     namespace {
