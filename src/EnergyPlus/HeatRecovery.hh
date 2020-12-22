@@ -75,8 +75,10 @@ namespace HeatRecovery {
     extern int const BALANCEDHX_PERFDATATYPE1;
 
     // Heat exchanger configuration types
-    extern int const Plate;
-    extern int const Rotary;
+    enum class HXConfigType {
+        Plate,
+        Rotary,
+    };
 
     // Heat exchanger configurations
     enum class HXConfiguration {
@@ -182,7 +184,7 @@ namespace HeatRecovery {
         Real64 CoolEffectLatent75;    // cooling latent effectiveness at 75% rated air flow
         int HeatExchEconoMode;        // generic heat exchanger economize mode option
         // 1 = None, 2 = Bypass, 3 = Stop Rotary HX Rotation
-        int ExchConfigNum; // parameter equivalent of HX configuration, plate or rotary
+        HXConfigType ExchConfigNum; // parameter equivalent of HX configuration, plate or rotary
         // frost control parameters
         std::string FrostControlType;      // type of frost control used if any
         Real64 ThresholdTemperature;       // threshold temperature for frost control
@@ -235,7 +237,7 @@ namespace HeatRecovery {
               SupInTemp(0.0), SupInHumRat(0.0), SupInEnth(0.0), SupInMassFlow(0.0), SecInTemp(0.0), SecInHumRat(0.0), SecInEnth(0.0),
               SecInMassFlow(0.0), PerfDataIndex(0), FaceArea(0.0), UnbalancedWarningFlag(true), HeatEffectSensible100(0.0), HeatEffectSensible75(0.0),
               HeatEffectLatent100(0.0), HeatEffectLatent75(0.0), CoolEffectSensible100(0.0), CoolEffectSensible75(0.0), CoolEffectLatent100(0.0),
-              CoolEffectLatent75(0.0), HeatExchEconoMode(0), ExchConfigNum(0), ThresholdTemperature(0.0), InitialDefrostTime(0.0),
+              CoolEffectLatent75(0.0), HeatExchEconoMode(0), ExchConfigNum(HXConfigType::Plate), ThresholdTemperature(0.0), InitialDefrostTime(0.0),
               RateofDefrostTimeIncrease(0.0), DefrostFraction(0.0), ControlToTemperatureSetPoint(false), SupOutTemp(0.0), SupOutHumRat(0.0),
               SupOutEnth(0.0), SupOutMassFlow(0.0), SecOutTemp(0.0), SecOutHumRat(0.0), SecOutEnth(0.0), SecOutMassFlow(0.0), SensHeatingRate(0.0),
               SensHeatingEnergy(0.0), LatHeatingRate(0.0), LatHeatingEnergy(0.0), TotHeatingRate(0.0), TotHeatingEnergy(0.0), SensCoolingRate(0.0),

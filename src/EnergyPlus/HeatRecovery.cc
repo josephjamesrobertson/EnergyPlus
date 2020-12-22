@@ -122,10 +122,6 @@ namespace HeatRecovery {
     // Heat exchanger performance data type
     int const BALANCEDHX_PERFDATATYPE1(1);
 
-    // Heat exchanger configuration types
-    int const Plate(1);
-    int const Rotary(2);
-
     static std::string const BlankString;
 
     namespace {
@@ -550,12 +546,12 @@ namespace HeatRecovery {
             }
 
             if (UtilityRoutines::SameString(cAlphaArgs(8), "Plate")) {
-                ExchCond(ExchNum).ExchConfigNum = Plate;
+                ExchCond(ExchNum).ExchConfigNum = HXConfigType::Plate;
             } else if (UtilityRoutines::SameString(cAlphaArgs(8), "Rotary")) {
-                ExchCond(ExchNum).ExchConfigNum = Rotary;
+                ExchCond(ExchNum).ExchConfigNum = HXConfigType::Rotary;
             } else {
                 ShowSevereError(state, cCurrentModuleObject + " configuration not found= " + cAlphaArgs(8));
-                ShowContinueError(state, "HX configuration must be either Plate or Rotary");
+                ShowContinueError(state, "HX configuration must be either HXConfigType::Plate or Rotary");
                 ErrorsFound = true;
             }
 
@@ -2066,7 +2062,7 @@ namespace HeatRecovery {
 
         // Determine mass flow through heat exchanger and mass flow being bypassed (only flat plate bypasses flow)
         if (((EconomizerActiveFlag || HighHumCtrlActiveFlag) && ExchCond(ExNum).EconoLockOut == EconLockoutOp::EconoLockOut_Yes) &&
-            ExchCond(ExNum).ExchConfigNum == Plate) {
+            ExchCond(ExNum).ExchConfigNum == HXConfigType::Plate) {
             ExchCond(ExNum).SupBypassMassFlow = ExchCond(ExNum).SupInMassFlow;
             ExchCond(ExNum).SupOutMassFlow = ExchCond(ExNum).SupInMassFlow;
             ExchCond(ExNum).SecBypassMassFlow = ExchCond(ExNum).SecInMassFlow;
@@ -2277,7 +2273,7 @@ namespace HeatRecovery {
                     //     ELSE fully bypass HX to maintain supply outlet temp as high as possible
                     ControlFraction = 0.0;
                 }
-                if (ExchCond(ExNum).ExchConfigNum == Rotary) {
+                if (ExchCond(ExNum).ExchConfigNum == HXConfigType::Rotary) {
                     //       Rotory HX's never get bypassed, rotational speed is modulated
                     ExchCond(ExNum).SensEffectiveness *= ControlFraction;
                     ExchCond(ExNum).LatEffectiveness *= ControlFraction;
@@ -3003,7 +2999,7 @@ namespace HeatRecovery {
 
             DFFraction =
                 max(0.0, min(1.0, SafeDiv((TempThreshold - ExchCond(ExNum).SecOutTemp), (ExchCond(ExNum).SecInTemp - ExchCond(ExNum).SecOutTemp))));
-            if (ExchCond(ExNum).ExchConfigNum == Rotary) {
+            if (ExchCond(ExNum).ExchConfigNum == HXConfigType::Rotary) {
                 ExchCond(ExNum).SensEffectiveness *= (1.0 - DFFraction);
                 ExchCond(ExNum).LatEffectiveness *= (1.0 - DFFraction);
             } else { // HX is a plate heat exchanger, bypass air to eliminate frost
