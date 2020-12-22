@@ -74,15 +74,18 @@ namespace HeatRecovery {
     // Heat exchanger performance data type
     extern int const BALANCEDHX_PERFDATATYPE1;
 
-    // Heat exchanger configurations
-    extern int const Counter_Flow;
-    extern int const Parallel_Flow;
-    extern int const Cross_Flow_Both_Unmixed;
-    extern int const Cross_Flow_Other;
-
     // Heat exchanger configuration types
     extern int const Plate;
     extern int const Rotary;
+
+    // Heat exchanger configurations
+    enum class HXConfiguration {
+        Unassigned,
+        Counter_Flow,
+        Parallel_Flow,
+        Cross_Flow_Both_Unmixed,
+        Cross_Flow_Other,
+    };
 
     // Economizer lockout operation
     extern int const EconoLockOut_No;
@@ -130,7 +133,7 @@ namespace HeatRecovery {
         int HeatExchPerfTypeNum;      // Desiccant balanced heat exchanger performance data type num
         std::string HeatExchPerfName; // Desiccant balanced heat exchanger performance data name
         int SchedPtr;                 // index of schedule
-        int FlowArr;                  // flow Arrangement:
+        HXConfiguration FlowArr;                  // flow Arrangement:
         // 1: COUNTER_FLOW
         // 2: PARALLEL_FLOW
         // 3: CROSS_FLOW_BOTH_UNMIXED
@@ -224,7 +227,7 @@ namespace HeatRecovery {
 
         // Default Constructor
         HeatExchCond()
-            : ExchTypeNum(0), HeatExchPerfTypeNum(0), SchedPtr(0), FlowArr(0), EconoLockOut(0), hARatio(0.0), NomSupAirVolFlow(0.0),
+            : ExchTypeNum(0), HeatExchPerfTypeNum(0), SchedPtr(0), FlowArr(HXConfiguration::Unassigned), EconoLockOut(0), hARatio(0.0), NomSupAirVolFlow(0.0),
               NomSupAirInTemp(0.0), NomSupAirOutTemp(0.0), NomSecAirVolFlow(0.0), NomSecAirInTemp(0.0), NomElecPower(0.0), UA0(0.0), mTSup0(0.0),
               mTSec0(0.0), NomSupAirMassFlow(0.0), NomSecAirMassFlow(0.0), SupInletNode(0), SupOutletNode(0), SecInletNode(0), SecOutletNode(0),
               SupInTemp(0.0), SupInHumRat(0.0), SupInEnth(0.0), SupInMassFlow(0.0), SecInTemp(0.0), SecInHumRat(0.0), SecInEnth(0.0),
@@ -588,7 +591,7 @@ namespace HeatRecovery {
     void CalculateEpsFromNTUandZ(EnergyPlusData &state,
                                  Real64 const NTU,  // number of transfer units
                                  Real64 const Z,    // capacity rate ratio
-                                 int const FlowArr, // flow arrangement
+                                 HXConfiguration FlowArr, // flow arrangement
                                  Real64 &Eps        // heat exchanger effectiveness
     );
 
@@ -596,7 +599,7 @@ namespace HeatRecovery {
                                  Real64 &NTU,       // number of transfer units
                                  int &Err,          // error indicator
                                  Real64 const Z,    // capacity rate ratio
-                                 int const FlowArr, // flow arrangement
+                                 HXConfiguration FlowArr, // flow arrangement
                                  Real64 const Eps   // heat exchanger effectiveness
     );
 

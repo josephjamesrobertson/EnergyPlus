@@ -122,12 +122,6 @@ namespace HeatRecovery {
     // Heat exchanger performance data type
     int const BALANCEDHX_PERFDATATYPE1(1);
 
-    // Heat exchanger configurations
-    int const Counter_Flow(1);
-    int const Parallel_Flow(2);
-    int const Cross_Flow_Both_Unmixed(3);
-    int const Cross_Flow_Other(4);
-
     // Heat exchanger configuration types
     int const Plate(1);
     int const Rotary(2);
@@ -429,11 +423,11 @@ namespace HeatRecovery {
             {
                 auto const SELECT_CASE_var(cAlphaArgs(3));
                 if (SELECT_CASE_var == "COUNTERFLOW") {
-                    ExchCond(ExchNum).FlowArr = Counter_Flow;
+                    ExchCond(ExchNum).FlowArr = HXConfiguration::Counter_Flow;
                 } else if (SELECT_CASE_var == "PARALLELFLOW") {
-                    ExchCond(ExchNum).FlowArr = Parallel_Flow;
+                    ExchCond(ExchNum).FlowArr = HXConfiguration::Parallel_Flow;
                 } else if (SELECT_CASE_var == "CROSSFLOWBOTHUNMIXED") {
-                    ExchCond(ExchNum).FlowArr = Cross_Flow_Both_Unmixed;
+                    ExchCond(ExchNum).FlowArr = HXConfiguration::Cross_Flow_Both_Unmixed;
                 } else {
                     ShowSevereError(state, cCurrentModuleObject + ": incorrect flow arrangement: " + cAlphaArgs(3));
                     ErrorsFound = true;
@@ -3338,7 +3332,7 @@ namespace HeatRecovery {
     void CalculateEpsFromNTUandZ(EnergyPlusData &state,
                                  Real64 const NTU,  // number of transfer units
                                  Real64 const Z,    // capacity rate ratio
-                                 int const FlowArr, // flow arrangement
+                                 HXConfiguration FlowArr, // flow arrangement
                                  Real64 &Eps        // heat exchanger effectiveness
     )
     {
@@ -3399,21 +3393,21 @@ namespace HeatRecovery {
             Eps = 1.0 - std::exp(-NTU);
         } else {
             {
-                auto const SELECT_CASE_var(FlowArr);
-                if (SELECT_CASE_var == Counter_Flow) { // COUNTER FLOW
+                HXConfiguration SELECT_CASE_var(FlowArr);
+                if (SELECT_CASE_var == HXConfiguration::Counter_Flow) { // COUNTER FLOW
                     if (std::abs(Z - 1.0) < SMALL) {
                         Eps = NTU / (NTU + 1.0);
                     } else {
                         Temp = std::exp(-NTU * (1.0 - Z));
                         Eps = (1.0 - Temp) / (1.0 - Z * Temp);
                     }
-                } else if (SELECT_CASE_var == Parallel_Flow) { // PARALLEL FLOW
+                } else if (SELECT_CASE_var == HXConfiguration::Parallel_Flow) { // PARALLEL FLOW
                     Temp = (1.0 + Z);
                     Eps = (1.0 - std::exp(-NTU * Temp)) / Temp;
-                } else if (SELECT_CASE_var == Cross_Flow_Both_Unmixed) { // CROSS FLOW BOTH UNMIXED
+                } else if (SELECT_CASE_var == HXConfiguration::Cross_Flow_Both_Unmixed) { // CROSS FLOW BOTH UNMIXED
                     Temp = Z * std::pow(NTU, -0.22);
                     Eps = 1.0 - std::exp((std::exp(-NTU * Temp) - 1.0) / Temp);
-                } else if (SELECT_CASE_var == Cross_Flow_Other) { // CROSS FLOW, Cmax MIXED, Cmin UNMIXED
+                } else if (SELECT_CASE_var == HXConfiguration::Cross_Flow_Other) { // CROSS FLOW, Cmax MIXED, Cmin UNMIXED
                     Eps = (1.0 - std::exp(-Z * (1.0 - std::exp(-NTU)))) / Z;
                 } else {
                     ShowFatalError(state, format("HeatRecovery: Illegal flow arrangement in CalculateEpsFromNTUandZ, Value={}", FlowArr));
@@ -3426,7 +3420,7 @@ namespace HeatRecovery {
                                  Real64 &NTU,       // number of transfer units
                                  int &Err,          // error indicator
                                  Real64 const Z,    // capacity rate ratio
-                                 int const FlowArr, // flow arrangement
+                                 HXConfiguration FlowArr, // flow arrangement
                                  Real64 const Eps   // heat exchanger effectiveness
     )
     {
@@ -3481,12 +3475,12 @@ namespace HeatRecovery {
             return;
         }
 
-        if (FlowArr == Parallel_Flow) {
+        if (FlowArr == HXConfiguration::Parallel_Flow) {
             if (Eps < 0.0 || Eps > 1.0 / (1.0 + Z)) {
                 Err = 2;
                 return;
             }
-        } else if (FlowArr == Cross_Flow_Other) {
+        } else if (FlowArr == HXConfiguration::Cross_Flow_Other) {
             if (Eps < 0.0 || Eps > (1.0 - std::exp(-Z)) / Z) {
                 Err = 3;
                 return;
@@ -3512,17 +3506,17 @@ namespace HeatRecovery {
             // calculate based on configuration
             {
                 auto const SELECT_CASE_var(FlowArr);
-                if (SELECT_CASE_var == Counter_Flow) { // COUNTER FLOW
+                if (SELECT_CASE_var == HXConfiguration::Counter_Flow) { // COUNTER FLOW
                     if (std::abs(Z - 1.0) < SMALL) {
                         NTU = Eps / (1.0 - Eps);
                     } else {
                         NTU = 1.0 / (Z - 1.0) * std::log((1.0 - Eps) / (1.0 - Eps * Z));
                     }
-                } else if (SELECT_CASE_var == Parallel_Flow) { // PARALLEL FLOW
+                } else if (SELECT_CASE_var == HXConfiguration::Parallel_Flow) { // PARALLEL FLOW
                     NTU = -std::log(-Eps - Eps * Z + 1.0) / (Z + 1.0);
-                } else if (SELECT_CASE_var == Cross_Flow_Both_Unmixed) { // CROSS FLOW BOTH UNMIXED
+                } else if (SELECT_CASE_var == HXConfiguration::Cross_Flow_Both_Unmixed) { // CROSS FLOW BOTH UNMIXED
                     NTU = GetNTUforCrossFlowBothUnmixed(state, Eps, Z);
-                } else if (SELECT_CASE_var == Cross_Flow_Other) { // CROSS FLOW, Cmax MIXED, Cmin UNMIXED
+                } else if (SELECT_CASE_var == HXConfiguration::Cross_Flow_Other) { // CROSS FLOW, Cmax MIXED, Cmin UNMIXED
                     NTU = -std::log(1.0 + std::log(1.0 - Eps * Z) / Z);
                 } else {
                     ShowFatalError(state, format("HeatRecovery: Illegal flow arrangement in CalculateNTUfromEpsAndZ, Value={}", FlowArr));
