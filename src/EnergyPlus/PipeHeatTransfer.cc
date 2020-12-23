@@ -119,16 +119,6 @@ namespace PipeHeatTransfer {
     using DataPlant::TypeOf_PipeInterior;
     using DataPlant::TypeOf_PipeUnderground;
 
-    int const None(0);
-    int const ZoneEnv(1);
-    int const ScheduleEnv(2);
-    int const OutsideAirEnv(3);
-    int const GroundEnv(4);
-
-    int const PreviousTimeIndex(1);
-    int const CurrentTimeIndex(2);
-    int const TentativeTimeIndex(3);
-
     Real64 const InnerDeltaTime(60.0); // one minute time step in seconds
 
     // DERIVED TYPE DEFINITIONS
@@ -201,7 +191,7 @@ namespace PipeHeatTransfer {
         for (int InnerTimeStepCtr = 1; InnerTimeStepCtr <= nsvNumInnerTimeSteps; ++InnerTimeStepCtr) {
             {
                 auto const SELECT_CASE_var(this->EnvironmentPtr);
-                if (SELECT_CASE_var == GroundEnv) {
+                if (SELECT_CASE_var == environmentPtr::GroundEnv) {
                     this->CalcBuriedPipeSoil(state);
                 } else {
                     this->CalcPipesHeatTransfer(state);
@@ -217,14 +207,14 @@ namespace PipeHeatTransfer {
 
     void PipeHTData::PushInnerTimeStepArrays()
     {
-        if (this->EnvironmentPtr == GroundEnv) {
+        if (this->EnvironmentPtr == environmentPtr::GroundEnv) {
             for (int LengthIndex = 2; LengthIndex <= this->NumSections; ++LengthIndex) {
                 for (int DepthIndex = 1; DepthIndex <= this->NumDepthNodes; ++DepthIndex) {
                     for (int WidthIndex = 2; WidthIndex <= this->PipeNodeWidth; ++WidthIndex) {
                         // This will store the old 'current' values as the new 'previous values'  This allows
                         // us to use the previous time array as history terms in the equations
-                        this->T(WidthIndex, DepthIndex, LengthIndex, PreviousTimeIndex) =
-                            this->T(WidthIndex, DepthIndex, LengthIndex, CurrentTimeIndex);
+                        this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::PreviousTimeIndex)) =
+                            this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
                     }
                 }
             }
@@ -354,7 +344,7 @@ namespace PipeHeatTransfer {
                 auto const SELECT_CASE_var(cAlphaArgs(5));
 
                 if (SELECT_CASE_var == "ZONE") {
-                    PipeHT(Item).EnvironmentPtr = ZoneEnv;
+                    PipeHT(Item).EnvironmentPtr = environmentPtr::ZoneEnv;
                     PipeHT(Item).EnvrZone = cAlphaArgs(6);
                     PipeHT(Item).EnvrZonePtr = UtilityRoutines::FindItemInList(cAlphaArgs(6), Zone);
                     if (PipeHT(Item).EnvrZonePtr == 0) {
@@ -364,7 +354,7 @@ namespace PipeHeatTransfer {
                     }
 
                 } else if (SELECT_CASE_var == "SCHEDULE") {
-                    PipeHT(Item).EnvironmentPtr = ScheduleEnv;
+                    PipeHT(Item).EnvironmentPtr = environmentPtr::ScheduleEnv;
                     PipeHT(Item).EnvrSchedule = cAlphaArgs(7);
                     PipeHT(Item).EnvrSchedPtr = GetScheduleIndex(state, PipeHT(Item).EnvrSchedule);
                     PipeHT(Item).EnvrVelSchedule = cAlphaArgs(8);
@@ -468,7 +458,7 @@ namespace PipeHeatTransfer {
 
             // get environmental boundary condition type
             //    PipeHT(Item)%Environment = 'OutdoorAir'
-            PipeHT(Item).EnvironmentPtr = OutsideAirEnv;
+            PipeHT(Item).EnvironmentPtr = environmentPtr::OutsideAirEnv;
 
             PipeHT(Item).EnvrAirNode = cAlphaArgs(5);
             PipeHT(Item).EnvrAirNodeNum = GetOnlySingleNode(state, cAlphaArgs(5),
@@ -571,7 +561,7 @@ namespace PipeHeatTransfer {
 
             TestCompSet(state, cCurrentModuleObject, cAlphaArgs(1), cAlphaArgs(3), cAlphaArgs(4), "Pipe Nodes");
 
-            PipeHT(Item).EnvironmentPtr = GroundEnv;
+            PipeHT(Item).EnvironmentPtr = environmentPtr::GroundEnv;
 
             // Solar inclusion flag
             // A6,  \field Sun Exposure
@@ -644,7 +634,7 @@ namespace PipeHeatTransfer {
             PipeHT(Item).NumSections = NumPipeSections;
 
             // For buried pipes, we need to allocate the cartesian finite difference array
-            PipeHT(Item).T.allocate(PipeHT(Item).PipeNodeWidth, PipeHT(Item).NumDepthNodes, PipeHT(Item).NumSections, TentativeTimeIndex);
+            PipeHT(Item).T.allocate(PipeHT(Item).PipeNodeWidth, PipeHT(Item).NumDepthNodes, PipeHT(Item).NumSections, static_cast<int>(timeIndex::TentativeTimeIndex));
             PipeHT(Item).T = 0.0;
 
         } // PipeUG input loop
@@ -694,7 +684,7 @@ namespace PipeHeatTransfer {
             SetupOutputVariable(state,
                 "Pipe Fluid Heat Transfer Energy", OutputProcessor::Unit::J, PipeHT(Item).FluidHeatLossEnergy, "Plant", "Sum", PipeHT(Item).Name);
 
-            if (PipeHT(Item).EnvironmentPtr == ZoneEnv) {
+            if (PipeHT(Item).EnvironmentPtr == environmentPtr::ZoneEnv) {
                 SetupOutputVariable(state, "Pipe Ambient Heat Transfer Rate",
                                     OutputProcessor::Unit::W,
                                     PipeHT(Item).EnvironmentHeatLossRate,
@@ -886,8 +876,8 @@ namespace PipeHeatTransfer {
         // initialize temperatures by inlet node temp
         if ((state.dataGlobal->BeginSimFlag && this->BeginSimInit) || (state.dataGlobal->BeginEnvrnFlag && this->BeginSimEnvrn)) {
 
-            if (this->EnvironmentPtr == GroundEnv) {
-                for (TimeIndex = PreviousTimeIndex; TimeIndex <= TentativeTimeIndex; ++TimeIndex) {
+            if (this->EnvironmentPtr == environmentPtr::GroundEnv) {
+                for (TimeIndex = static_cast<int>(timeIndex::PreviousTimeIndex); TimeIndex <= static_cast<int>(timeIndex::TentativeTimeIndex); ++TimeIndex) {
                     // Loop through all length, depth, and width of pipe to init soil temperature
                     for (LengthIndex = 1; LengthIndex <= this->NumSections; ++LengthIndex) {
                         for (DepthIndex = 1; DepthIndex <= this->NumDepthNodes; ++DepthIndex) {
@@ -930,10 +920,10 @@ namespace PipeHeatTransfer {
         if ((FirstHVACIteration && this->FirstHVACupdateFlag) || (state.dataGlobal->BeginEnvrnFlag && this->BeginEnvrnupdateFlag)) {
 
             // We need to update boundary conditions here, as well as updating the arrays
-            if (this->EnvironmentPtr == GroundEnv) {
+            if (this->EnvironmentPtr == environmentPtr::GroundEnv) {
 
                 // And then update Ground Boundary Conditions
-                for (TimeIndex = 1; TimeIndex <= TentativeTimeIndex; ++TimeIndex) {
+                for (TimeIndex = 1; TimeIndex <= static_cast<int>(timeIndex::TentativeTimeIndex); ++TimeIndex) {
                     for (LengthIndex = 1; LengthIndex <= this->NumSections; ++LengthIndex) {
                         for (DepthIndex = 1; DepthIndex <= this->NumDepthNodes; ++DepthIndex) {
                             // Farfield boundary
@@ -954,15 +944,15 @@ namespace PipeHeatTransfer {
             // should next choose environment temperature according to coupled with air or ground
             {
                 auto const SELECT_CASE_var(this->EnvironmentPtr);
-                if (SELECT_CASE_var == GroundEnv) {
+                if (SELECT_CASE_var == environmentPtr::GroundEnv) {
                     // EnvironmentTemp = GroundTemp
-                } else if (SELECT_CASE_var == OutsideAirEnv) {
+                } else if (SELECT_CASE_var == environmentPtr::OutsideAirEnv) {
                     nsvEnvironmentTemp = state.dataEnvrn->OutDryBulbTemp;
-                } else if (SELECT_CASE_var == ZoneEnv) {
+                } else if (SELECT_CASE_var == environmentPtr::ZoneEnv) {
                     nsvEnvironmentTemp = MAT(this->EnvrZonePtr);
-                } else if (SELECT_CASE_var == ScheduleEnv) {
+                } else if (SELECT_CASE_var == environmentPtr::ScheduleEnv) {
                     nsvEnvironmentTemp = GetCurrentScheduleValue(state, this->EnvrSchedPtr);
-                } else if (SELECT_CASE_var == None) { // default to outside temp
+                } else if (SELECT_CASE_var == environmentPtr::None) { // default to outside temp
                     nsvEnvironmentTemp = state.dataEnvrn->OutDryBulbTemp;
                 }
             }
@@ -988,14 +978,14 @@ namespace PipeHeatTransfer {
             // If sim time has changed all values from previous runs should have been acceptable.
             // Thus we will now shift the arrays from 2>1 and 3>2 so we can then begin
             // to update 2 and 3 again.
-            if (this->EnvironmentPtr == GroundEnv) {
+            if (this->EnvironmentPtr == environmentPtr::GroundEnv) {
                 for (LengthIndex = 2; LengthIndex <= this->NumSections; ++LengthIndex) {
                     for (DepthIndex = 1; DepthIndex <= this->NumDepthNodes; ++DepthIndex) {
                         for (WidthIndex = 2; WidthIndex <= this->PipeNodeWidth; ++WidthIndex) {
                             // This will essentially 'accept' the tentative values that were calculated last iteration
                             // as the new officially 'current' values
-                            this->T(WidthIndex, DepthIndex, LengthIndex, CurrentTimeIndex) =
-                                this->T(WidthIndex, DepthIndex, LengthIndex, TentativeTimeIndex);
+                            this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex)) =
+                                this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::TentativeTimeIndex));
                         }
                     }
                 }
@@ -1014,8 +1004,8 @@ namespace PipeHeatTransfer {
                 for (DepthIndex = 1; DepthIndex <= this->NumDepthNodes; ++DepthIndex) {
                     for (WidthIndex = 2; WidthIndex <= this->PipeNodeWidth; ++WidthIndex) {
                         // This will essentially erase the past iterations and revert back to the correct values
-                        this->T(WidthIndex, DepthIndex, LengthIndex, TentativeTimeIndex) =
-                            this->T(WidthIndex, DepthIndex, LengthIndex, CurrentTimeIndex);
+                        this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::TentativeTimeIndex)) =
+                            this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
                     }
                 }
             }
@@ -1127,7 +1117,7 @@ namespace PipeHeatTransfer {
         //  AirConvCoef =  OutsidePipeHeatTransCoef(PipeHTNum)
         // Revised by L. Gu by including insulation conductance 6/19/08
 
-        if (this->EnvironmentPtr != GroundEnv) {
+        if (this->EnvironmentPtr != environmentPtr::GroundEnv) {
             AirConvCoef = 1.0 / (1.0 / this->OutsidePipeHeatTransCoef(state) + this->InsulationResistance);
         }
 
@@ -1136,17 +1126,17 @@ namespace PipeHeatTransfer {
         // heat transfer to air or ground
         {
             auto const SELECT_CASE_var(this->EnvironmentPtr);
-            if (SELECT_CASE_var == GroundEnv) {
+            if (SELECT_CASE_var == environmentPtr::GroundEnv) {
                 // Approximate conductance using ground conductivity, (h=k/L), where L is grid spacing
                 // between pipe wall and next closest node.
                 EnvHeatTransCoef = this->SoilConductivity / (this->dSregular - (this->PipeID / 2.0));
-            } else if (SELECT_CASE_var == OutsideAirEnv) {
+            } else if (SELECT_CASE_var == environmentPtr::OutsideAirEnv) {
                 EnvHeatTransCoef = AirConvCoef;
-            } else if (SELECT_CASE_var == ZoneEnv) {
+            } else if (SELECT_CASE_var == environmentPtr::ZoneEnv) {
                 EnvHeatTransCoef = AirConvCoef;
-            } else if (SELECT_CASE_var == ScheduleEnv) {
+            } else if (SELECT_CASE_var == environmentPtr::ScheduleEnv) {
                 EnvHeatTransCoef = AirConvCoef;
-            } else if (SELECT_CASE_var == None) {
+            } else if (SELECT_CASE_var == environmentPtr::None) {
                 EnvHeatTransCoef = 0.0;
             } else {
                 EnvHeatTransCoef = 0.0;
@@ -1183,9 +1173,9 @@ namespace PipeHeatTransfer {
 
             PipeDepth = this->PipeNodeDepth;
             PipeWidth = this->PipeNodeWidth;
-            TempBelow = this->T(PipeWidth, PipeDepth + 1, LengthIndex, CurrentTimeIndex);
-            TempBeside = this->T(PipeWidth - 1, PipeDepth, LengthIndex, CurrentTimeIndex);
-            TempAbove = this->T(PipeWidth, PipeDepth - 1, LengthIndex, CurrentTimeIndex);
+            TempBelow = this->T(PipeWidth, PipeDepth + 1, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+            TempBeside = this->T(PipeWidth - 1, PipeDepth, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+            TempAbove = this->T(PipeWidth, PipeDepth - 1, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
             nsvEnvironmentTemp = (TempBelow + TempBeside + TempAbove) / 3.0;
 
             this->TentativeFluidTemp(LengthIndex) =
@@ -1309,7 +1299,7 @@ namespace PipeHeatTransfer {
             for (LengthIndex = 2; LengthIndex <= this->NumSections; ++LengthIndex) {
                 for (DepthIndex = 1; DepthIndex <= this->NumDepthNodes - 1; ++DepthIndex) {
                     for (WidthIndex = 2; WidthIndex <= this->PipeNodeWidth; ++WidthIndex) {
-                        T_O(WidthIndex, DepthIndex, LengthIndex) = this->T(WidthIndex, DepthIndex, LengthIndex, TentativeTimeIndex);
+                        T_O(WidthIndex, DepthIndex, LengthIndex) = this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::TentativeTimeIndex));
                     }
                 }
             }
@@ -1322,7 +1312,7 @@ namespace PipeHeatTransfer {
                         if (DepthIndex == 1) { // Soil Surface Boundary
 
                             // If on soil boundary, load up local variables and perform calculations
-                            NodePast = this->T(WidthIndex, DepthIndex, LengthIndex, PreviousTimeIndex);
+                            NodePast = this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::PreviousTimeIndex));
                             PastNodeTempAbs = NodePast + DataGlobalConstants::KelvinConv;
                             SkyTempAbs = state.dataEnvrn->SkyTemp + DataGlobalConstants::KelvinConv;
                             TopRoughness = this->SoilRoughness;
@@ -1356,11 +1346,11 @@ namespace PipeHeatTransfer {
                             if (WidthIndex == this->PipeNodeWidth) { // Symmetric centerline boundary
 
                                 //-Coefficients and Temperatures
-                                NodeBelow = this->T(WidthIndex, DepthIndex + 1, LengthIndex, CurrentTimeIndex);
-                                NodeLeft = this->T(WidthIndex - 1, DepthIndex, LengthIndex, CurrentTimeIndex);
+                                NodeBelow = this->T(WidthIndex, DepthIndex + 1, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+                                NodeLeft = this->T(WidthIndex - 1, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
 
                                 //-Update Equation, basically a detailed energy balance at the surface
-                                this->T(WidthIndex, DepthIndex, LengthIndex, TentativeTimeIndex) =
+                                this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::TentativeTimeIndex)) =
                                     (QSolAbsorbed + RadCoef * state.dataEnvrn->SkyTemp + ConvCoef * state.dataEnvrn->OutDryBulbTemp + (kSoil / dS) * (NodeBelow + 2 * NodeLeft) +
                                      (rho * Cp / nsvDeltaTime) * NodePast) /
                                     (RadCoef + ConvCoef + 3 * (kSoil / dS) + (rho * Cp / nsvDeltaTime));
@@ -1368,12 +1358,12 @@ namespace PipeHeatTransfer {
                             } else { // Soil surface, but not on centerline
 
                                 //-Coefficients and Temperatures
-                                NodeBelow = this->T(WidthIndex, DepthIndex + 1, LengthIndex, CurrentTimeIndex);
-                                NodeLeft = this->T(WidthIndex - 1, DepthIndex, LengthIndex, CurrentTimeIndex);
-                                NodeRight = this->T(WidthIndex + 1, DepthIndex, LengthIndex, CurrentTimeIndex);
+                                NodeBelow = this->T(WidthIndex, DepthIndex + 1, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+                                NodeLeft = this->T(WidthIndex - 1, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+                                NodeRight = this->T(WidthIndex + 1, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
 
                                 //-Update Equation
-                                this->T(WidthIndex, DepthIndex, LengthIndex, TentativeTimeIndex) =
+                                this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::TentativeTimeIndex)) =
                                     (QSolAbsorbed + RadCoef * state.dataEnvrn->SkyTemp + ConvCoef * state.dataEnvrn->OutDryBulbTemp +
                                      (kSoil / dS) * (NodeBelow + NodeLeft + NodeRight) + (rho * Cp / nsvDeltaTime) * NodePast) /
                                     (RadCoef + ConvCoef + 3 * (kSoil / dS) + (rho * Cp / nsvDeltaTime));
@@ -1388,20 +1378,20 @@ namespace PipeHeatTransfer {
                                 this->CalcPipesHeatTransfer(state, LengthIndex);
 
                                 //-Update node for cartesian system
-                                this->T(WidthIndex, DepthIndex, LengthIndex, TentativeTimeIndex) = this->PipeTemp(LengthIndex);
+                                this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::TentativeTimeIndex)) = this->PipeTemp(LengthIndex);
 
                             } else if (DepthIndex != 1) { // Not surface node
 
                                 //-Coefficients and Temperatures
-                                NodeLeft = this->T(WidthIndex - 1, DepthIndex, LengthIndex, CurrentTimeIndex);
-                                NodeAbove = this->T(WidthIndex, DepthIndex - 1, LengthIndex, CurrentTimeIndex);
-                                NodeBelow = this->T(WidthIndex, DepthIndex + 1, LengthIndex, CurrentTimeIndex);
-                                NodePast = this->T(WidthIndex, DepthIndex, LengthIndex, CurrentTimeIndex - 1);
+                                NodeLeft = this->T(WidthIndex - 1, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+                                NodeAbove = this->T(WidthIndex, DepthIndex - 1, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+                                NodeBelow = this->T(WidthIndex, DepthIndex + 1, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+                                NodePast = this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex) - 1);
                                 A1 = this->CoefA1;
                                 A2 = this->CoefA2;
 
                                 //-Update Equation
-                                this->T(WidthIndex, DepthIndex, LengthIndex, TentativeTimeIndex) =
+                                this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::TentativeTimeIndex)) =
                                     A1 * (NodeBelow + NodeAbove + 2 * NodeLeft) + A2 * NodePast;
 
                             } // Symmetric centerline node structure
@@ -1411,14 +1401,14 @@ namespace PipeHeatTransfer {
                             //-Coefficients and Temperatures
                             A1 = this->CoefA1;
                             A2 = this->CoefA2;
-                            NodeBelow = this->T(WidthIndex, DepthIndex + 1, LengthIndex, CurrentTimeIndex);
-                            NodeAbove = this->T(WidthIndex, DepthIndex - 1, LengthIndex, CurrentTimeIndex);
-                            NodeRight = this->T(WidthIndex + 1, DepthIndex, LengthIndex, CurrentTimeIndex);
-                            NodeLeft = this->T(WidthIndex - 1, DepthIndex, LengthIndex, CurrentTimeIndex);
-                            NodePast = this->T(WidthIndex, DepthIndex, LengthIndex, CurrentTimeIndex - 1);
+                            NodeBelow = this->T(WidthIndex, DepthIndex + 1, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+                            NodeAbove = this->T(WidthIndex, DepthIndex - 1, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+                            NodeRight = this->T(WidthIndex + 1, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+                            NodeLeft = this->T(WidthIndex - 1, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex));
+                            NodePast = this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::CurrentTimeIndex) - 1);
 
                             //-Update Equation
-                            this->T(WidthIndex, DepthIndex, LengthIndex, TentativeTimeIndex) =
+                            this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::TentativeTimeIndex)) =
                                 A1 * (NodeBelow + NodeAbove + NodeRight + NodeLeft) + A2 * NodePast; // Eq. D1
                         }
                     }
@@ -1429,7 +1419,7 @@ namespace PipeHeatTransfer {
             for (LengthIndex = 2; LengthIndex <= this->NumSections; ++LengthIndex) {
                 for (DepthIndex = 1; DepthIndex <= this->NumDepthNodes - 1; ++DepthIndex) {
                     for (WidthIndex = 2; WidthIndex <= this->PipeNodeWidth; ++WidthIndex) {
-                        Ttemp = this->T(WidthIndex, DepthIndex, LengthIndex, TentativeTimeIndex);
+                        Ttemp = this->T(WidthIndex, DepthIndex, LengthIndex, static_cast<int>(timeIndex::TentativeTimeIndex));
                         if (std::abs(T_O(WidthIndex, DepthIndex, LengthIndex) - Ttemp) > ConvCrit) goto IterationLoop_loop;
                     }
                 }
@@ -1557,7 +1547,7 @@ namespace PipeHeatTransfer {
         this->EnvHeatLossEnergy = this->EnvironmentHeatLossRate * nsvDeltaTime;
 
         // for zone heat gains, we assign the averaged heat rate over all inner time steps
-        if (this->EnvironmentPtr == ZoneEnv) {
+        if (this->EnvironmentPtr == environmentPtr::ZoneEnv) {
             this->ZoneHeatGainRate = this->EnvironmentHeatLossRate;
         }
     }
@@ -1805,11 +1795,11 @@ namespace PipeHeatTransfer {
 
                 {
                     auto const SELECT_CASE_var1(this->EnvironmentPtr);
-                    if (SELECT_CASE_var1 == ScheduleEnv) {
+                    if (SELECT_CASE_var1 == environmentPtr::ScheduleEnv) {
                         AirTemp = GetCurrentScheduleValue(state, this->EnvrSchedPtr);
                         AirVel = GetCurrentScheduleValue(state, this->EnvrVelSchedPtr);
 
-                    } else if (SELECT_CASE_var1 == ZoneEnv) {
+                    } else if (SELECT_CASE_var1 == environmentPtr::ZoneEnv) {
                         AirTemp = MAT(this->EnvrZonePtr);
                         AirVel = RoomAirVel;
                     }
@@ -1819,7 +1809,7 @@ namespace PipeHeatTransfer {
 
                 {
                     auto const SELECT_CASE_var1(this->EnvironmentPtr);
-                    if (SELECT_CASE_var1 == OutsideAirEnv) {
+                    if (SELECT_CASE_var1 == environmentPtr::OutsideAirEnv) {
                         AirTemp = Node(this->EnvrAirNodeNum).Temp;
                         AirVel = state.dataEnvrn->WindSpeed;
                     }

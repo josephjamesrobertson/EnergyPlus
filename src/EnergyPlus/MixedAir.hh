@@ -87,30 +87,32 @@ namespace MixedAir {
     extern int const On;  // normal coil operation
     extern int const Off; // signal coil shouldn't run
     // component types addressed by this module
-    extern int const OAMixer_Num;
-    extern int const Fan_Simple_CV;
-    extern int const Fan_Simple_VAV;
-    extern int const WaterCoil_SimpleCool;
-    extern int const WaterCoil_Cooling;
-    extern int const WaterCoil_SimpleHeat;
-    extern int const SteamCoil_AirHeat;
-    extern int const WaterCoil_DetailedCool;
-    extern int const Coil_ElectricHeat;
-    extern int const Coil_GasHeat;
-    extern int const WaterCoil_CoolingHXAsst;
-    extern int const DXSystem;
-    extern int const HeatXchngr;
-    extern int const Desiccant;
-    extern int const Unglazed_SolarCollector;
-    extern int const EvapCooler;
-    extern int const PVT_AirBased;
-    extern int const Fan_ComponentModel; // cpw22Aug2010 (new)
-    extern int const DXHeatPumpSystem;
-    extern int const Coil_UserDefined;
-    extern int const Humidifier;
-    extern int const Fan_System_Object;
-    extern int const UnitarySystem;
-    extern int const VRFTerminalUnit;
+    enum class componentType : int {
+        OAMixer_Num             = 0,
+        Fan_Simple_CV           = 1,
+        Fan_Simple_VAV          = 2,
+        WaterCoil_SimpleCool    = 3,
+        WaterCoil_Cooling       = 4,
+        WaterCoil_SimpleHeat    = 5,
+        SteamCoil_AirHeat       = 6,
+        WaterCoil_DetailedCool  = 7,
+        Coil_ElectricHeat       = 8,
+        Coil_GasHeat            = 9,
+        WaterCoil_CoolingHXAsst = 10,
+        DXSystem                = 11,
+        HeatXchngr              = 13,
+        Desiccant               = 14,
+        Unglazed_SolarCollector = 15,
+        EvapCooler              = 16,
+        PVT_AirBased            = 17,
+        Fan_ComponentModel      = 18, // cpw22Aug2010 (new)
+        DXHeatPumpSystem        = 19,
+        Coil_UserDefined        = 20,
+        Humidifier              = 21,
+        Fan_System_Object       = 22,
+        UnitarySystem           = 23,
+        VRFTerminalUnit         = 24,
+    };
 
     extern int const ControllerOutsideAir;
     extern int const ControllerStandAloneERV;

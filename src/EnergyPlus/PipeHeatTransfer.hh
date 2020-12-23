@@ -75,16 +75,20 @@ namespace PipeHeatTransfer {
 
     // Data
     // MODULE PARAMETER DEFINITIONS
-
-    extern int const None;
-    extern int const ZoneEnv;
-    extern int const ScheduleEnv;
-    extern int const OutsideAirEnv;
-    extern int const GroundEnv;
-
-    extern int const PreviousTimeIndex;
-    extern int const CurrentTimeIndex;
-    extern int const TentativeTimeIndex;
+    
+    enum class environmentPtr {
+        None,
+        ZoneEnv,
+        ScheduleEnv,
+        OutsideAirEnv,
+        GroundEnv,
+    };
+    
+    enum class timeIndex : int {
+        PreviousTimeIndex    = 1,  //1
+        CurrentTimeIndex     = 2,   //2
+        TentativeTimeIndex   = 3, //3
+    };
 
     extern Real64 const InnerDeltaTime; // one minute time step in seconds
 
@@ -138,7 +142,7 @@ namespace PipeHeatTransfer {
         int TypeOf;                  // Type of pipe
         // derived data
         int ConstructionNum; // construction ref number
-        int EnvironmentPtr;
+        environmentPtr EnvironmentPtr;
         int EnvrSchedPtr;              // pointer to schedule used to set environmental temp
         int EnvrVelSchedPtr;           // pointer to schedule used to set environmental temp
         int EnvrZonePtr;               // pointer to zone number used to set environmental temp
@@ -225,7 +229,7 @@ namespace PipeHeatTransfer {
 
         // Default Constructor
         PipeHTData()
-            : Length(0.0), PipeID(0.0), InletNodeNum(0), OutletNodeNum(0), TypeOf(0), ConstructionNum(0), EnvironmentPtr(0), EnvrSchedPtr(0),
+            : Length(0.0), PipeID(0.0), InletNodeNum(0), OutletNodeNum(0), TypeOf(0), ConstructionNum(0), EnvironmentPtr(environmentPtr::None), EnvrSchedPtr(0),
               EnvrVelSchedPtr(0), EnvrZonePtr(0), EnvrAirNodeNum(0), NumSections(0), FluidSpecHeat(0.0), FluidDensity(0.0), MaxFlowRate(0.0),
               FluidSectionVol(0.0), InsideArea(0.0), OutsideArea(0.0), SectionArea(0.0), PipeHeatCapacity(0.0), PipeOD(0.0), PipeCp(0.0),
               PipeDensity(0.0), PipeConductivity(0.0), InsulationOD(0.0), InsulationCp(0.0), InsulationDensity(0.0), InsulationConductivity(0.0),

@@ -167,31 +167,6 @@ namespace MixedAir {
     // coil operation
     int const On(1);  // normal coil operation
     int const Off(0); // signal coil shouldn't run
-    // component types addressed by this module
-    int const OAMixer_Num(1);
-    int const Fan_Simple_CV(2);
-    int const Fan_Simple_VAV(3);
-    int const WaterCoil_SimpleCool(4);
-    int const WaterCoil_Cooling(5);
-    int const WaterCoil_SimpleHeat(6);
-    int const SteamCoil_AirHeat(7);
-    int const WaterCoil_DetailedCool(8);
-    int const Coil_ElectricHeat(9);
-    int const Coil_GasHeat(10);
-    int const WaterCoil_CoolingHXAsst(11);
-    int const DXSystem(12);
-    int const HeatXchngr(13);
-    int const Desiccant(14);
-    int const Unglazed_SolarCollector(15);
-    int const EvapCooler(16);
-    int const PVT_AirBased(17);
-    int const Fan_ComponentModel(18); // cpw22Aug2010 (new)
-    int const DXHeatPumpSystem(19);
-    int const Coil_UserDefined(20);
-    int const Humidifier(21);
-    int const Fan_System_Object(22);
-    int const UnitarySystemModel(23);
-    int const VRFTerminalUnit(24); // new Jan 2020
 
     int const ControllerOutsideAir(2);
     int const ControllerStandAloneERV(3);
@@ -612,22 +587,22 @@ namespace MixedAir {
         {
             auto const SELECT_CASE_var(CompTypeNum);
 
-            if (SELECT_CASE_var == OAMixer_Num) { // 'OutdoorAir:Mixer'
+            if (SELECT_CASE_var == static_cast<int>(componentType::OAMixer_Num)) { // 'OutdoorAir:Mixer'
                 if (Sim) {
                     SimOAMixer(state, CompName, FirstHVACIteration, CompIndex);
                 }
 
                 // Fan Types
-            } else if (SELECT_CASE_var == Fan_Simple_CV) { // 'Fan:ConstantVolume'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::Fan_Simple_CV)) { // 'Fan:ConstantVolume'
                 if (Sim) {
                     Fans::SimulateFanComponents(state, CompName, FirstHVACIteration, CompIndex);
                 }
-            } else if (SELECT_CASE_var == Fan_Simple_VAV) { // 'Fan:VariableVolume'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::Fan_Simple_VAV)) { // 'Fan:VariableVolume'
                 if (Sim) {
                     Fans::SimulateFanComponents(state, CompName, FirstHVACIteration, CompIndex);
                 }
 
-            } else if (SELECT_CASE_var == Fan_System_Object) { // 'Fan:SystemModel'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::Fan_System_Object)) { // 'Fan:SystemModel'
                 if (CompIndex == 0) {                          // 0 means has not been filled because of 1-based arrays in old fortran
                     CompIndex = HVACFan::getFanObjectVectorIndex(state, CompName) + 1; // + 1 for shift from zero-based vector to 1-based compIndex
                 }
@@ -635,13 +610,13 @@ namespace MixedAir {
                     HVACFan::fanObjs[CompIndex - 1]->simulate(state, _, _, _, _); // vector is 0 based, but CompIndex is 1 based so shift
                 }
                 // cpw22Aug2010 Add Fan:ComponentModel (new num=18)
-            } else if (SELECT_CASE_var == Fan_ComponentModel) { // 'Fan:ComponentModel'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::Fan_ComponentModel)) { // 'Fan:ComponentModel'
                 if (Sim) {
                     Fans::SimulateFanComponents(state, CompName, FirstHVACIteration, CompIndex);
                 }
 
                 // Coil Types
-            } else if (SELECT_CASE_var == WaterCoil_Cooling) { // 'Coil:Cooling:Water'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::WaterCoil_Cooling)) { // 'Coil:Cooling:Water'
                 if (Sim) {
                     // get water coil and controller data if not called previously
                     if (CompIndex == 0) WaterCoils::SimulateWaterCoilComponents(state, CompName, FirstHVACIteration, CompIndex);
@@ -658,7 +633,7 @@ namespace MixedAir {
                     ControllerProps(state.dataWaterCoils->WaterCoil(CompIndex).ControllerIndex).BypassControllerCalc = true;
                 }
                 OACoolingCoil = true;
-            } else if (SELECT_CASE_var == WaterCoil_SimpleHeat) { // 'Coil:Heating:Water')
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::WaterCoil_SimpleHeat)) { // 'Coil:Heating:Water')
                 if (Sim) {
                     // get water coil and controller data if not called previously
                     if (CompIndex == 0) WaterCoils::SimulateWaterCoilComponents(state, CompName, FirstHVACIteration, CompIndex);
@@ -675,12 +650,12 @@ namespace MixedAir {
                     ControllerProps(state.dataWaterCoils->WaterCoil(CompIndex).ControllerIndex).BypassControllerCalc = true;
                 }
                 OAHeatingCoil = true;
-            } else if (SELECT_CASE_var == SteamCoil_AirHeat) { // 'Coil:Heating:Steam'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::SteamCoil_AirHeat)) { // 'Coil:Heating:Steam'
                 if (Sim) {
                     SimulateSteamCoilComponents(state, CompName, FirstHVACIteration, CompIndex, 0.0);
                 }
                 OAHeatingCoil = true;
-            } else if (SELECT_CASE_var == WaterCoil_DetailedCool) { // 'Coil:Cooling:Water:DetailedGeometry'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::WaterCoil_DetailedCool)) { // 'Coil:Cooling:Water:DetailedGeometry'
                 if (Sim) {
                     // get water coil and controller data if not called previously
                     if (CompIndex == 0) WaterCoils::SimulateWaterCoilComponents(state, CompName, FirstHVACIteration, CompIndex);
@@ -697,19 +672,19 @@ namespace MixedAir {
                     ControllerProps(state.dataWaterCoils->WaterCoil(CompIndex).ControllerIndex).BypassControllerCalc = true;
                 }
                 OACoolingCoil = true;
-            } else if (SELECT_CASE_var == Coil_ElectricHeat) { // 'Coil:Heating:Electric'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::Coil_ElectricHeat)) { // 'Coil:Heating:Electric'
                 if (Sim) {
                     //     stand-alone coils are temperature controlled (do not pass QCoilReq in argument list, QCoilReq overrides temp SP)
                     SimulateHeatingCoilComponents(state, CompName, FirstHVACIteration, _, CompIndex);
                 }
                 OAHeatingCoil = true;
-            } else if (SELECT_CASE_var == Coil_GasHeat) { // 'Coil:Heating:Fuel'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::Coil_GasHeat)) { // 'Coil:Heating:Fuel'
                 if (Sim) {
                     //     stand-alone coils are temperature controlled (do not pass QCoilReq in argument list, QCoilReq overrides temp SP)
                     SimulateHeatingCoilComponents(state, CompName, FirstHVACIteration, _, CompIndex);
                 }
                 OAHeatingCoil = true;
-            } else if (SELECT_CASE_var == WaterCoil_CoolingHXAsst) { // 'CoilSystem:Cooling:Water:HeatExchangerAssisted'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::WaterCoil_CoolingHXAsst)) { // 'CoilSystem:Cooling:Water:HeatExchangerAssisted'
                 if (Sim) {
                     // get water coil and controller data if not called previously
                     if (CompIndex == 0) SimHXAssistedCoolingCoil(state, CompName, FirstHVACIteration, On, 0.0, CompIndex, ContFanCycCoil);
@@ -726,12 +701,12 @@ namespace MixedAir {
                     ControllerProps(HXAssistedCoil(CompIndex).ControllerIndex).BypassControllerCalc = true;
                 }
                 OACoolingCoil = true;
-            } else if (SELECT_CASE_var == DXSystem) { // CoilSystem:Cooling:DX  old 'AirLoopHVAC:UnitaryCoolOnly'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::DXSystem)) { // CoilSystem:Cooling:DX  old 'AirLoopHVAC:UnitaryCoolOnly'
                 if (Sim) {
                     SimDXCoolingSystem(state, CompName, FirstHVACIteration, AirLoopNum, CompIndex);
                 }
                 OACoolingCoil = true;
-            } else if (SELECT_CASE_var == UnitarySystemModel) { // AirLoopHVAC:UnitarySystem
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::UnitarySystem)) { // AirLoopHVAC:UnitarySystem
                 if (Sim) {
                     bool HeatingActive = false;
                     bool CoolingActive = false;
@@ -757,7 +732,7 @@ namespace MixedAir {
                     UnitarySystems::UnitarySys::checkUnitarySysCoilInOASysExists(state, CompName, 0);
                     if (Sim) MyOneTimeCheckUnitarySysFlag(OASysNum) = false;
                 }
-            } else if (SELECT_CASE_var == DXHeatPumpSystem) {
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::DXHeatPumpSystem)) {
                 if (Sim) {
                     SimDXHeatPumpSystem(state, CompName, FirstHVACIteration, AirLoopNum, CompIndex);
                 }
@@ -767,7 +742,7 @@ namespace MixedAir {
                     SimCoilUserDefined(state, CompName, CompIndex, AirLoopNum, OAHeatingCoil, OACoolingCoil);
                 }
                 // Heat recovery
-            } else if (SELECT_CASE_var == HeatXchngr) { // 'HeatExchanger:AirToAir:FlatPlate', 'HeatExchanger:AirToAir:SensibleAndLatent',
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::HeatXchngr)) { // 'HeatExchanger:AirToAir:FlatPlate', 'HeatExchanger:AirToAir:SensibleAndLatent',
                 // 'HeatExchanger:Desiccant:BalancedFlow'
                 if (Sim) {
                     if (state.dataAirLoop->OutsideAirSys(OASysNum).AirLoopDOASNum > -1) {
@@ -808,7 +783,7 @@ namespace MixedAir {
                 OAHX = true;
 
                 // Desiccant Dehumidifier
-            } else if (SELECT_CASE_var == Desiccant) { // 'Dehumidifier:Desiccant:NoFans'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::Desiccant)) { // 'Dehumidifier:Desiccant:NoFans'
                 // 'Dehumidifier:Desiccant:System'
                 if (Sim) {
                     SimDesiccantDehumidifier(state, CompName, FirstHVACIteration, CompIndex);
@@ -816,20 +791,20 @@ namespace MixedAir {
                 OAHX = true;
 
                 // Humidifiers
-            } else if (SELECT_CASE_var == Humidifier) { // 'Humidifier:Steam:Electric'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::Humidifier)) { // 'Humidifier:Steam:Electric'
                 // 'Humidifier:Steam:Gas'
                 if (Sim) {
                     SimHumidifier(state, CompName, FirstHVACIteration, CompIndex);
                 }
 
                 // Unglazed Transpired Solar Collector
-            } else if (SELECT_CASE_var == Unglazed_SolarCollector) { // 'SolarCollector:UnglazedTranspired'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::Unglazed_SolarCollector)) { // 'SolarCollector:UnglazedTranspired'
                 if (Sim) {
                     SimTranspiredCollector(state, CompName, CompIndex);
                 }
 
                 // Air-based Photovoltaic-thermal flat plate collector
-            } else if (SELECT_CASE_var == PVT_AirBased) { // 'SolarCollector:FlatPlate:PhotovoltaicThermal'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::PVT_AirBased)) { // 'SolarCollector:FlatPlate:PhotovoltaicThermal'
                 if (Sim) {
                     if (CompIndex == 0) {
                         CompIndex = PhotovoltaicThermalCollectors::getPVTindexFromName(state, CompName);
@@ -838,13 +813,13 @@ namespace MixedAir {
                 }
 
                 // Evaporative Cooler Types
-            } else if (SELECT_CASE_var == EvapCooler) { // 'EvaporativeCooler:Direct:CelDekPad','EvaporativeCooler:Indirect:CelDekPad'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::EvapCooler)) { // 'EvaporativeCooler:Direct:CelDekPad','EvaporativeCooler:Indirect:CelDekPad'
                 // 'EvaporativeCooler:Indirect:WetCoil','EvaporativeCooler:Indirect:ResearchSpecial'
                 if (Sim) {
                     SimEvapCooler(state, CompName, CompIndex);
                 }
 
-            } else if (SELECT_CASE_var == VRFTerminalUnit) { // 'ZoneHVAC:TerminalUnit:VariableRefrigerantFlow'
+            } else if (SELECT_CASE_var == static_cast<int>(componentType::VRFTerminalUnit)) { // 'ZoneHVAC:TerminalUnit:VariableRefrigerantFlow'
                 if (Sim) {
                     int ControlledZoneNum = 0;
                     bool HeatingActive = false;
@@ -1216,45 +1191,45 @@ CurrentModuleObjects(CMO_SysAvailMgrList), AvailManagerListName);
                     auto const SELECT_CASE_var(UtilityRoutines::MakeUPPERCase(state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType(CompNum)));
 
                     if (SELECT_CASE_var == "OUTDOORAIR:MIXER") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = OAMixer_Num;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::OAMixer_Num);
 
                         // Fan Types
                     } else if (SELECT_CASE_var == "FAN:CONSTANTVOLUME") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Fan_Simple_CV;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Fan_Simple_CV);
                     } else if (SELECT_CASE_var == "FAN:VARIABLEVOLUME") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Fan_Simple_VAV;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Fan_Simple_VAV);
                     } else if (SELECT_CASE_var == "FAN:SYSTEMMODEL") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Fan_System_Object;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Fan_System_Object);
                         // construct fan object
                         HVACFan::fanObjs.emplace_back(new HVACFan::FanSystem(state, state.dataAirLoop->OutsideAirSys(OASysNum).ComponentName(CompNum)));
                         state.dataAirLoop->OutsideAirSys(OASysNum).ComponentIndex(CompNum) = HVACFan::fanObjs.size();
                         // cpw22Aug2010 Add Fan:ComponentModel (new)
                     } else if (SELECT_CASE_var == "FAN:COMPONENTMODEL") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Fan_ComponentModel;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Fan_ComponentModel);
 
                         // Coil Types
                     } else if (SELECT_CASE_var == "COIL:COOLING:WATER") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = WaterCoil_Cooling;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::WaterCoil_Cooling);
                     } else if (SELECT_CASE_var == "COIL:HEATING:WATER") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = WaterCoil_SimpleHeat;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::WaterCoil_SimpleHeat);
                     } else if (SELECT_CASE_var == "COIL:HEATING:STEAM") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = SteamCoil_AirHeat;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::SteamCoil_AirHeat);
                     } else if (SELECT_CASE_var == "COIL:COOLING:WATER:DETAILEDGEOMETRY") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = WaterCoil_DetailedCool;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::WaterCoil_DetailedCool);
                     } else if (SELECT_CASE_var == "COIL:HEATING:ELECTRIC") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Coil_ElectricHeat;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Coil_ElectricHeat);
                     } else if (SELECT_CASE_var == "COIL:HEATING:FUEL") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Coil_GasHeat;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Coil_GasHeat);
                     } else if (SELECT_CASE_var == "COILSYSTEM:COOLING:WATER:HEATEXCHANGERASSISTED") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = WaterCoil_CoolingHXAsst;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::WaterCoil_CoolingHXAsst);
                     } else if (SELECT_CASE_var == "COILSYSTEM:COOLING:DX") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = DXSystem;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::DXSystem);
                         // set the data for 100% DOAS DX cooling coil
                         CheckDXCoolingCoilInOASysExists(state, state.dataAirLoop->OutsideAirSys(OASysNum).ComponentName(CompNum));
                     } else if (SELECT_CASE_var == "COILSYSTEM:HEATING:DX") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = DXHeatPumpSystem;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::DXHeatPumpSystem);
                     } else if (SELECT_CASE_var == "AIRLOOPHVAC:UNITARYSYSTEM") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = UnitarySystemModel;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::UnitarySystem);
                         state.dataAirLoop->OutsideAirSys(OASysNum).ComponentIndex(CompNum) = CompNum;
                         UnitarySystems::UnitarySys thisSys;
                         state.dataAirLoop->OutsideAirSys(OASysNum).compPointer[CompNum] =
@@ -1263,43 +1238,43 @@ CurrentModuleObjects(CMO_SysAvailMgrList), AvailManagerListName);
                         state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Coil_UserDefined;
                         // Heat recovery
                     } else if (SELECT_CASE_var == "HEATEXCHANGER:AIRTOAIR:FLATPLATE") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = HeatXchngr;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::HeatXchngr);
                     } else if (SELECT_CASE_var == "HEATEXCHANGER:AIRTOAIR:SENSIBLEANDLATENT") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = HeatXchngr;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::HeatXchngr);
                     } else if (SELECT_CASE_var == "HEATEXCHANGER:DESICCANT:BALANCEDFLOW") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = HeatXchngr;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::HeatXchngr);
 
                         // Desiccant Dehumidifier
                     } else if (SELECT_CASE_var == "DEHUMIDIFIER:DESICCANT:NOFANS") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Desiccant;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Desiccant);
                     } else if (SELECT_CASE_var == "DEHUMIDIFIER:DESICCANT:SYSTEM") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Desiccant;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Desiccant);
                         // Humidifiers: Humidifier:Steam:Electric and Humidifier:Steam:Gas
                     } else if (SELECT_CASE_var == "HUMIDIFIER:STEAM:ELECTRIC") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Humidifier;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Humidifier);
                     } else if (SELECT_CASE_var == "HUMIDIFIER:STEAM:GAS") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Humidifier;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Humidifier);
 
                         // Unglazed Transpired Solar Collector
                     } else if (SELECT_CASE_var == "SOLARCOLLECTOR:UNGLAZEDTRANSPIRED") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = Unglazed_SolarCollector;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::Unglazed_SolarCollector);
 
                         // PVT air heater
                     } else if (SELECT_CASE_var == "SOLARCOLLECTOR:FLATPLATE:PHOTOVOLTAICTHERMAL") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = PVT_AirBased;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::PVT_AirBased);
                         // Evaporative Cooler Types
                     } else if (SELECT_CASE_var == "EVAPORATIVECOOLER:DIRECT:CELDEKPAD") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = EvapCooler;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::EvapCooler);
                     } else if (SELECT_CASE_var == "EVAPORATIVECOOLER:INDIRECT:CELDEKPAD") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = EvapCooler;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::EvapCooler);
                     } else if (SELECT_CASE_var == "EVAPORATIVECOOLER:INDIRECT:WETCOIL") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = EvapCooler;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::EvapCooler);
                     } else if (SELECT_CASE_var == "EVAPORATIVECOOLER:INDIRECT:RESEARCHSPECIAL") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = EvapCooler;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::EvapCooler);
                     } else if (SELECT_CASE_var == "EVAPORATIVECOOLER:DIRECT:RESEARCHSPECIAL") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = EvapCooler;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::EvapCooler);
                     } else if (SELECT_CASE_var == "ZONEHVAC:TERMINALUNIT:VARIABLEREFRIGERANTFLOW") {
-                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = VRFTerminalUnit;
+                        state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = static_cast<int>(componentType::VRFTerminalUnit);
                     } else {
                         ShowSevereError(state, CurrentModuleObject + " = \"" + AlphArray(1) + "\" invalid Outside Air Component=\"" +
                                         state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType(CompNum) + "\".");
@@ -5758,7 +5733,7 @@ CurrentModuleObjects(CMO_SysAvailMgrList), AvailManagerListName);
         auto const &componentType_Num = state.dataAirLoop->OutsideAirSys(OASysNumber).ComponentType_Num;
         for (CompNum = 1, CompNum_end = state.dataAirLoop->OutsideAirSys(OASysNumber).NumComponents; CompNum <= CompNum_end; ++CompNum) {
             int const componentTypeNum = componentType_Num(CompNum);
-            if (HeatXchngr == componentTypeNum || Desiccant == componentTypeNum) {
+            if (static_cast<int>(componentType::HeatXchngr) == componentTypeNum || static_cast<int>(componentType::Desiccant) == componentTypeNum) {
                 ++NumHX;
             }
         }
