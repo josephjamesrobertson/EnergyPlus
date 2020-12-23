@@ -150,15 +150,6 @@ namespace HVACMultiSpeedHeatPump {
     // Data
     // MODULE PARAMETER DEFINITIONS
 
-    // Heating coil types
-    int const MultiSpeedHeatingCoil(1); // COIL:DX:MultiSpeed:Heating
-    // Cooling coil types
-    int const MultiSpeedCoolingCoil(2); // COIL:DX:MultiSpeed:Cooling
-    // Supplymental heating coil types
-    int const SuppHeatingCoilGas(1);  // Supplymental heating coil type: COIL:GAS:HEATING
-    int const SuppHeatingCoilElec(2); // Supplymental heating coil type: COIL:ELECTRIC:HEATING
-    int const SuppHeatingCoilRec(3);  // Supplymental heating coil type: COIL:ENGINEHEATRECOVERY:HEATING
-
     // Curve Types
     enum class CurveType {
         Linear,      // Linear curve type
@@ -1126,7 +1117,7 @@ namespace HVACMultiSpeedHeatPump {
             // Get supplemental heating coil data
             MSHeatPump(MSHPNum).SuppHeatCoilName = Alphas(15);
             if (UtilityRoutines::SameString(Alphas(14), "Coil:Heating:Fuel")) {
-                MSHeatPump(MSHPNum).SuppHeatCoilType = SuppHeatingCoilGas;
+                MSHeatPump(MSHPNum).SuppHeatCoilType = SupplementalHeatingCoilType::SuppHeatingCoilGas;
                 errFlag = false;
                 MSHeatPump(MSHPNum).SuppHeatCoilNum = GetHeatingCoilIndex(state, "Coil:Heating:Fuel", Alphas(15), errFlag);
                 if (MSHeatPump(MSHPNum).SuppHeatCoilNum <= 0 || errFlag) {
@@ -1168,7 +1159,7 @@ namespace HVACMultiSpeedHeatPump {
                               "UNDEFINED");
             }
             if (UtilityRoutines::SameString(Alphas(14), "Coil:Heating:Electric")) {
-                MSHeatPump(MSHPNum).SuppHeatCoilType = SuppHeatingCoilElec;
+                MSHeatPump(MSHPNum).SuppHeatCoilType = SupplementalHeatingCoilType::SuppHeatingCoilElec;
                 errFlag = false;
                 MSHeatPump(MSHPNum).SuppHeatCoilNum = GetHeatingCoilIndex(state, "Coil:Heating:Electric", Alphas(15), errFlag);
                 if (MSHeatPump(MSHPNum).SuppHeatCoilNum <= 0 || errFlag) {
@@ -1212,7 +1203,7 @@ namespace HVACMultiSpeedHeatPump {
             }
 
             if (UtilityRoutines::SameString(Alphas(14), "Coil:Heating:Water")) {
-                MSHeatPump(MSHPNum).SuppHeatCoilType = Coil_HeatingWater;
+                MSHeatPump(MSHPNum).SuppHeatCoilType = static_cast<SupplementalHeatingCoilType>(Coil_HeatingWater);
                 ValidateComponent(state, Alphas(14), MSHeatPump(MSHPNum).SuppHeatCoilName, IsNotOK, CurrentModuleObject);
                 if (IsNotOK) {
                     ShowContinueError(state, "...occurs in " + CurrentModuleObject + " = " + Alphas(1));
@@ -1263,7 +1254,7 @@ namespace HVACMultiSpeedHeatPump {
                 }
             }
             if (UtilityRoutines::SameString(Alphas(14), "Coil:Heating:Steam")) {
-                MSHeatPump(MSHPNum).SuppHeatCoilType = Coil_HeatingSteam;
+                MSHeatPump(MSHPNum).SuppHeatCoilType = static_cast<SupplementalHeatingCoilType>(Coil_HeatingSteam);
                 ValidateComponent(state, Alphas(14), MSHeatPump(MSHPNum).SuppHeatCoilName, IsNotOK, CurrentModuleObject);
                 if (IsNotOK) {
                     ShowContinueError(state, "...occurs in " + CurrentModuleObject + " = " + MSHeatPump(MSHPNum).Name);
@@ -1323,7 +1314,7 @@ namespace HVACMultiSpeedHeatPump {
                 }
             }
 
-            if (MSHeatPump(MSHPNum).SuppHeatCoilType == 0) {
+            if (static_cast<int>(MSHeatPump(MSHPNum).SuppHeatCoilType) == 0) {
                 ShowSevereError(state, CurrentModuleObject + ", \"" + MSHeatPump(MSHPNum).Name + "\", " + cAlphaFields(14) +
                                 " is not allowed = " + Alphas(14));
                 ShowContinueError(state, "Valid choices are Coil:Heating:Fuel,Coil:Heating:Electric,Coil:Heating:Steam,or Coil:Heating:Water");
@@ -1949,7 +1940,7 @@ namespace HVACMultiSpeedHeatPump {
                                                                .NodeNumOut;
                 MSHeatPump(MSHeatPumpNum).MyPlantScantFlag = false;
             }
-            if (MSHeatPump(MSHeatPumpNum).SuppHeatCoilType == Coil_HeatingWater) {
+            if (static_cast<int>(MSHeatPump(MSHeatPumpNum).SuppHeatCoilType) == Coil_HeatingWater) {
                 errFlag = false;
                 ScanPlantLoopsForObject(state,
                                         MSHeatPump(MSHeatPumpNum).SuppHeatCoilName,
@@ -1986,7 +1977,7 @@ namespace HVACMultiSpeedHeatPump {
                                                                    .NodeNumOut;
                 MSHeatPump(MSHeatPumpNum).MyPlantScantFlag = false;
 
-            } else if (MSHeatPump(MSHeatPumpNum).SuppHeatCoilType == Coil_HeatingSteam) {
+            } else if (static_cast<int>(MSHeatPump(MSHeatPumpNum).SuppHeatCoilType) == Coil_HeatingSteam) {
                 errFlag = false;
                 ScanPlantLoopsForObject(state,
                                         MSHeatPump(MSHeatPumpNum).SuppHeatCoilName,
@@ -2194,7 +2185,7 @@ namespace HVACMultiSpeedHeatPump {
             }
             if (MSHeatPump(MSHeatPumpNum).SuppCoilControlNode > 0) {
                 if (MSHeatPump(MSHeatPumpNum).MaxSuppCoilFluidFlow == AutoSize) {
-                    if (MSHeatPump(MSHeatPumpNum).SuppHeatCoilType == Coil_HeatingWater) {
+                    if (static_cast<int>(MSHeatPump(MSHeatPumpNum).SuppHeatCoilType) == Coil_HeatingWater) {
                         SimulateWaterCoilComponents(
                             state, MSHeatPump(MSHeatPumpNum).SuppHeatCoilName, FirstHVACIteration, MSHeatPump(MSHeatPumpNum).SuppHeatCoilNum);
 
@@ -2216,7 +2207,7 @@ namespace HVACMultiSpeedHeatPump {
                                            MSHeatPump(MSHeatPumpNum).SuppBranchNum,
                                            MSHeatPump(MSHeatPumpNum).SuppCompNum);
                     }
-                    if (MSHeatPump(MSHeatPumpNum).SuppHeatCoilType == Coil_HeatingSteam) {
+                    if (static_cast<int>(MSHeatPump(MSHeatPumpNum).SuppHeatCoilType) == Coil_HeatingSteam) {
 
                         SimulateSteamCoilComponents(state,
                                                     MSHeatPump(MSHeatPumpNum).SuppHeatCoilName,
@@ -2641,7 +2632,7 @@ namespace HVACMultiSpeedHeatPump {
                                             QActual); // QCoilReq, simulate any load > 0 to get max capacity of steam coil
 
             } // from IF(MSHeatPump(MSHeatPumpNum)%HeatCoilType == Coil_HeatingSteam) THEN
-            if (MSHeatPump(MSHeatPumpNum).SuppHeatCoilType == Coil_HeatingWater) {
+            if (static_cast<int>(MSHeatPump(MSHeatPumpNum).SuppHeatCoilType) == Coil_HeatingWater) {
                 //     set air-side and steam-side mass flow rates
                 Node(MSHeatPump(MSHeatPumpNum).SuppCoilAirInletNode).MassFlowRate = CompOnMassFlow;
                 mdot = MSHeatPump(MSHeatPumpNum).MaxSuppCoilFluidFlow;
@@ -2659,7 +2650,7 @@ namespace HVACMultiSpeedHeatPump {
 
             } // from IF(MSHeatPump(MSHeatPumpNum)%SuppHeatCoilType == Coil_HeatingWater) THEN
 
-            if (MSHeatPump(MSHeatPumpNum).SuppHeatCoilType == Coil_HeatingSteam) {
+            if (static_cast<int>(MSHeatPump(MSHeatPumpNum).SuppHeatCoilType) == Coil_HeatingSteam) {
 
                 //     set air-side and steam-side mass flow rates
                 Node(MSHeatPump(MSHeatPumpNum).SuppCoilAirInletNode).MassFlowRate = CompOnMassFlow;
@@ -2830,7 +2821,7 @@ namespace HVACMultiSpeedHeatPump {
 
         if (MSHeatPump(MSHeatPumpNum).SuppMaxAirTemp == AutoSize) {
             if (CurSysNum > 0) {
-                if (MSHeatPump(MSHeatPumpNum).SuppHeatCoilType == 1) { // Gas
+                if (static_cast<int>(MSHeatPump(MSHeatPumpNum).SuppHeatCoilType) == 1) { // Gas
                     CheckZoneSizing(state, "Coil:Heating:Fuel", MSHeatPump(MSHeatPumpNum).Name);
                 } else {
                     CheckZoneSizing(state, "Coil:Heating:Electric", MSHeatPump(MSHeatPumpNum).Name);
@@ -2845,7 +2836,7 @@ namespace HVACMultiSpeedHeatPump {
 
         if (MSHeatPump(MSHeatPumpNum).DesignSuppHeatingCapacity == AutoSize) {
             if (CurSysNum > 0) {
-                if (MSHeatPump(MSHeatPumpNum).SuppHeatCoilType == 1) { // Gas
+                if (static_cast<int>(MSHeatPump(MSHeatPumpNum).SuppHeatCoilType) == 1) { // Gas
                     CheckSysSizing(state, "Coil:Heating:Fuel", MSHeatPump(MSHeatPumpNum).Name);
                 } else {
                     CheckSysSizing(state, "Coil:Heating:Electric", MSHeatPump(MSHeatPumpNum).Name);
@@ -4407,7 +4398,7 @@ namespace HVACMultiSpeedHeatPump {
             BranchNum = MSHeatPump(MSHeatPumpNum).BranchNum;
             CompNum = MSHeatPump(MSHeatPumpNum).CompNum;
         } else {
-            HeatCoilType = MSHeatPump(MSHeatPumpNum).SuppHeatCoilType;
+            HeatCoilType = static_cast<int>(MSHeatPump(MSHeatPumpNum).SuppHeatCoilType);
             HeatCoilName = MSHeatPump(MSHeatPumpNum).SuppHeatCoilName;
             HeatCoilNum = MSHeatPump(MSHeatPumpNum).SuppHeatCoilNum;
             MaxCoilFluidFlow = MSHeatPump(MSHeatPumpNum).MaxSuppCoilFluidFlow;
@@ -4432,7 +4423,7 @@ namespace HVACMultiSpeedHeatPump {
 
             {
                 auto const SELECT_CASE_var(HeatCoilType);
-                if ((SELECT_CASE_var == SuppHeatingCoilGas) || (SELECT_CASE_var == SuppHeatingCoilElec)) {
+                if ((SELECT_CASE_var == static_cast<int>(SupplementalHeatingCoilType::SuppHeatingCoilGas)) || (SELECT_CASE_var == static_cast<int>(SupplementalHeatingCoilType::SuppHeatingCoilElec))) {
                     SimulateHeatingCoilComponents(state, HeatCoilName, FirstHVACIteration, HeatingLoad, HeatCoilNum, QCoilActual, true, FanMode);
                 } else if (SELECT_CASE_var == Coil_HeatingWater) {
                     if (present(PartLoadFrac)) {
@@ -4510,7 +4501,7 @@ namespace HVACMultiSpeedHeatPump {
 
             {
                 auto const SELECT_CASE_var(HeatCoilType);
-                if ((SELECT_CASE_var == SuppHeatingCoilGas) || (SELECT_CASE_var == SuppHeatingCoilElec)) {
+                if ((SELECT_CASE_var == static_cast<int>(SupplementalHeatingCoilType::SuppHeatingCoilGas)) || (SELECT_CASE_var == static_cast<int>(SupplementalHeatingCoilType::SuppHeatingCoilElec))) {
                     SimulateHeatingCoilComponents(state, HeatCoilName, FirstHVACIteration, HeatingLoad, HeatCoilNum, QCoilActual, true, FanMode);
                 } else if (SELECT_CASE_var == Coil_HeatingWater) {
                     mdot = 0.0;

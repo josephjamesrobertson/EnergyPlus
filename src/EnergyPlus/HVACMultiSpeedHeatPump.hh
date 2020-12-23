@@ -69,14 +69,19 @@ namespace HVACMultiSpeedHeatPump {
     // Data
     // MODULE PARAMETER DEFINITIONS
 
+    enum coilType {
     // Heating coil types
-    extern int const MultiSpeedHeatingCoil; // COIL:DX:MultiSpeed:Heating
+    MultiSpeedHeatingCoil, // COIL:DX:MultiSpeed:Heating
     // Cooling coil types
-    extern int const MultiSpeedCoolingCoil; // COIL:DX:MultiSpeed:Cooling
+    MultiSpeedCoolingCoil, // COIL:DX:MultiSpeed:Cooling
+    };
+
     // Supplymental heating coil types
-    extern int const SuppHeatingCoilGas;  // Supplymental heating coil type: COIL:GAS:HEATING
-    extern int const SuppHeatingCoilElec; // Supplymental heating coil type: COIL:ELECTRIC:HEATING
-    extern int const SuppHeatingCoilRec;  // Supplymental heating coil type: COIL:ENGINEHEATRECOVERY:HEATING
+    enum class SupplementalHeatingCoilType : int{
+        SuppHeatingCoilGas      = 0,  // Supplymental heating coil type: COIL:GAS:HEATING
+        SuppHeatingCoilElec     = 1, // Supplymental heating coil type: COIL:ELECTRIC:HEATING
+        SuppHeatingCoilRec      = 2,  // Supplymental heating coil type: COIL:ENGINEHEATRECOVERY:HEATING
+    };
 
     // Mode of operation
     enum class ModeOfOperation {
@@ -135,7 +140,7 @@ namespace HVACMultiSpeedHeatPump {
         int CoolCoilType;                   // Cooling coil type: 1 COIL:DX:MultiSpeed:Cooling only
         int DXCoolCoilIndex;                // DX cooling coil index number
         std::string SuppHeatCoilName;       // Supplymental heating coil name
-        int SuppHeatCoilType;               // Supplymental heating coil type: 1 Gas; 2 Electric; 3 Recovery
+        SupplementalHeatingCoilType SuppHeatCoilType;               // Supplymental heating coil type: 1 Gas; 2 Electric; 3 Recovery
         int SuppHeatCoilNum;                // Supplymental heating coil number
         Real64 DesignSuppHeatingCapacity;   // Supplemental heating coil design capacity
         Real64 SuppMaxAirTemp;              // Maximum supply air temperature from supplemental heater
@@ -240,7 +245,7 @@ namespace HVACMultiSpeedHeatPump {
             : AvaiSchedPtr(0), AirInletNodeNum(0), AirOutletNodeNum(0), ControlZoneNum(0), ZoneSequenceCoolingNum(0), ZoneSequenceHeatingNum(0),
               NodeNumOfControlledZone(0), FlowFraction(0.0), FanType(0), FanNum(0), FanPlaceType(0), FanInletNode(0), FanOutletNode(0),
               FanVolFlow(0.0), FanSchedPtr(0), OpMode(0), HeatCoilType(0), HeatCoilNum(0), DXHeatCoilIndex(0), HeatCoilIndex(0), CoolCoilType(0),
-              DXCoolCoilIndex(0), SuppHeatCoilType(0), SuppHeatCoilNum(0), DesignSuppHeatingCapacity(0.0), SuppMaxAirTemp(0.0), SuppMaxOATemp(0.0),
+              DXCoolCoilIndex(0), SuppHeatCoilType(SupplementalHeatingCoilType::SuppHeatingCoilGas), SuppHeatCoilNum(0), DesignSuppHeatingCapacity(0.0), SuppMaxAirTemp(0.0), SuppMaxOATemp(0.0),
               AuxOnCyclePower(0.0), AuxOffCyclePower(0.0), DesignHeatRecFlowRate(0.0), HeatRecActive(false), HeatRecInletNodeNum(0),
               HeatRecOutletNodeNum(0), MaxHeatRecOutletTemp(0.0), DesignHeatRecMassFlowRate(0.0), HRLoopNum(0), HRLoopSideNum(0), HRBranchNum(0),
               HRCompNum(0), AuxElecPower(0.0), IdleVolumeAirRate(0.0), IdleMassFlowRate(0.0), IdleSpeedRatio(0.0), NumOfSpeedCooling(0),
