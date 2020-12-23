@@ -159,10 +159,6 @@ namespace HVACMultiSpeedHeatPump {
         Cubic,       // Cubic curve type
     };
 
-    // Compressor operation
-    int const On(1);  // normal compressor operation
-    int const Off(0); // signal DXCoil that compressor shouldn't run
-
     static std::string const fluidNameSteam("STEAM");
 
     // DERIVED TYPE DEFINITIONS
@@ -349,7 +345,7 @@ namespace HVACMultiSpeedHeatPump {
         int ZoneNum;         // Controlled zone number
         Real64 QTotUnitOut;
         int SpeedNum;            // Speed number
-        int CompOp;              // compressor operation; 1=on, 0=off
+        compressorOperation CompOp;              // compressor operation; 1=on, 0=off
         Real64 SaveMassFlowRate; // saved inlet air mass flow rate [kg/s]
 
         // zero the fan, DX coils, and supplemental electric heater electricity consumption
@@ -365,7 +361,7 @@ namespace HVACMultiSpeedHeatPump {
         AirMassFlow = Node(InletNode).MassFlowRate;
         OpMode = MSHeatPump(MSHeatPumpNum).OpMode;
         ZoneNum = MSHeatPump(MSHeatPumpNum).ControlZoneNum;
-        CompOp = On;
+        CompOp = compressorOperation::On;
 
         // set the on/off flags
         if (MSHeatPump(MSHeatPumpNum).OpMode == CycFanCycCoil) {
@@ -385,7 +381,7 @@ namespace HVACMultiSpeedHeatPump {
         SaveMassFlowRate = Node(InletNode).MassFlowRate;
         if (!FirstHVACIteration && MSHeatPump(MSHeatPumpNum).OpMode == CycFanCycCoil && QZnReq < 0.0 && state.dataAirLoop->AirLoopControlInfo(AirLoopNum).EconoActive) {
             // for cycling fan, cooling load, check whether furnace can meet load with compressor off
-            CompOp = Off;
+            CompOp = compressorOperation::Off;
             ControlMSHPOutput(state,
                               MSHeatPumpNum,
                               FirstHVACIteration,
@@ -401,7 +397,7 @@ namespace HVACMultiSpeedHeatPump {
             if (SpeedNum == MSHeatPump(MSHeatPumpNum).NumOfSpeedCooling && SpeedRatio == 1.0) {
                 // compressor on (reset inlet air mass flow rate to starting value)
                 Node(InletNode).MassFlowRate = SaveMassFlowRate;
-                CompOp = On;
+                CompOp = compressorOperation::On;
                 ControlMSHPOutput(state,
                                   MSHeatPumpNum,
                                   FirstHVACIteration,
@@ -2540,7 +2536,7 @@ namespace HVACMultiSpeedHeatPump {
         MSHeatPumpReport(MSHeatPumpNum).SpeedRatio = 0.0;
         MSHeatPumpReport(MSHeatPumpNum).SpeedNum = 0;
 
-        CalcMSHeatPump(state, MSHeatPumpNum, FirstHVACIteration, On, 1, 0.0, PartLoadFrac, QSensUnitOut, QZnReq, OnOffAirFlowRatio, SupHeaterLoad);
+        CalcMSHeatPump(state, MSHeatPumpNum, FirstHVACIteration, compressorOperation::On, 1, 0.0, PartLoadFrac, QSensUnitOut, QZnReq, OnOffAirFlowRatio, SupHeaterLoad);
 
         auto &e = MSHeatPump(MSHeatPumpNum);
         {
@@ -2862,7 +2858,7 @@ namespace HVACMultiSpeedHeatPump {
     void ControlMSHPOutput(EnergyPlusData &state,
                            int const MSHeatPumpNum,       // Unit index of engine driven heat pump
                            bool const FirstHVACIteration, // flag for 1st HVAC iteration in the time step
-                           int const CompOp,              // compressor operation; 1=on, 0=off
+                           compressorOperation CompOp,              // compressor operation; 1=on, 0=off
                            int const OpMode,              // operating mode: CycFanCycCoil | ContFanCycCoil
                            Real64 const QZnReq,           // cooling or heating output needed by zone [W]
                            int const ZoneNum,             // Index to zone number
@@ -3167,7 +3163,7 @@ namespace HVACMultiSpeedHeatPump {
                 Par(5) = QZnReq;
                 Par(6) = OnOffAirFlowRatio;
                 Par(7) = SupHeaterLoad;
-                Par(9) = CompOp;
+                Par(9) = static_cast<int>(CompOp);
                 // Check whether the low speed coil can meet the load or not
                 CalcMSHeatPump(state, MSHeatPumpNum, FirstHVACIteration, CompOp, 1, 0.0, 1.0, LowOutput, QZnReq, OnOffAirFlowRatio, SupHeaterLoad);
                 if ((QZnReq > 0.0 && QZnReq <= LowOutput) || (QZnReq < 0.0 && QZnReq >= LowOutput)) {
@@ -3274,7 +3270,7 @@ namespace HVACMultiSpeedHeatPump {
                     Par(5) = QZnReq;
                     Par(6) = OnOffAirFlowRatio;
                     Par(7) = SupHeaterLoad;
-                    Par(9) = CompOp;
+                    Par(9) = static_cast<int>(CompOp);
                     SpeedNum = std::abs(MSHeatPump(MSHeatPumpNum).StageNum);
                     Par(8) = SpeedNum;
                     if (SpeedNum == 1) {
@@ -3429,7 +3425,7 @@ namespace HVACMultiSpeedHeatPump {
     void CalcMSHeatPump(EnergyPlusData &state,
                         int const MSHeatPumpNum,       // Engine driven heat pump number
                         bool const FirstHVACIteration, // Flag for 1st HVAC iteration
-                        int const CompOp,              // Compressor on/off; 1=on, 0=off
+                        compressorOperation CompOp,              // Compressor on/off; 1=on, 0=off
                         int const SpeedNum,            // Speed number
                         Real64 const SpeedRatio,       // Compressor speed ratio
                         Real64 const PartLoadFrac,     // Compressor part load fraction
@@ -3528,7 +3524,8 @@ namespace HVACMultiSpeedHeatPump {
                                         MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex,
                                         SpeedNum,
                                         MSHeatPump(MSHeatPumpNum).OpMode,
-                                        CompOp);
+                                        static_cast<int>(CompOp)
+                    );
                     SavePartloadRatio = PartLoadFrac;
                     SaveSpeedRatio = SpeedRatio;
                 } else {
@@ -3539,7 +3536,7 @@ namespace HVACMultiSpeedHeatPump {
                                         MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex,
                                         SpeedNum,
                                         MSHeatPump(MSHeatPumpNum).OpMode,
-                                        CompOp);
+                                        static_cast<int>(CompOp));
                 }
                 SaveCompressorPLR = DXCoilPartLoadRatio(MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex);
             } else {
@@ -3550,7 +3547,7 @@ namespace HVACMultiSpeedHeatPump {
                                     MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex,
                                     SpeedNum,
                                     MSHeatPump(MSHeatPumpNum).OpMode,
-                                    CompOp);
+                                    static_cast<int>(CompOp));
             }
             if (MSHeatPump(MSHeatPumpNum).HeatCoilType == MultiSpeedHeatingCoil) {
                 if (QZnReq > SmallLoad) {
@@ -3562,7 +3559,7 @@ namespace HVACMultiSpeedHeatPump {
                                             MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex,
                                             SpeedNum,
                                             MSHeatPump(MSHeatPumpNum).OpMode,
-                                            CompOp);
+                                            static_cast<int>(CompOp));
                         SavePartloadRatio = PartLoadFrac;
                         SaveSpeedRatio = SpeedRatio;
                     } else {
@@ -3573,7 +3570,7 @@ namespace HVACMultiSpeedHeatPump {
                                             MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex,
                                             SpeedNum,
                                             MSHeatPump(MSHeatPumpNum).OpMode,
-                                            CompOp);
+                                            static_cast<int>(CompOp));
                     }
                     SaveCompressorPLR = DXCoilPartLoadRatio(MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex);
                 } else {
@@ -3584,7 +3581,7 @@ namespace HVACMultiSpeedHeatPump {
                                         MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex,
                                         SpeedNum,
                                         MSHeatPump(MSHeatPumpNum).OpMode,
-                                        CompOp);
+                                        static_cast<int>(CompOp));
                 }
             } else if (MSHeatPump(MSHeatPumpNum).HeatCoilType == Coil_HeatingElectric_MultiStage ||
                        MSHeatPump(MSHeatPumpNum).HeatCoilType == Coil_HeatingGas_MultiStage) {
@@ -3627,7 +3624,7 @@ namespace HVACMultiSpeedHeatPump {
                                         MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex,
                                         SpeedNum,
                                         MSHeatPump(MSHeatPumpNum).OpMode,
-                                        CompOp);
+                                        static_cast<int>(CompOp));
                     SavePartloadRatio = PartLoadFrac;
                     SaveSpeedRatio = SpeedRatio;
                 } else {
@@ -3638,7 +3635,7 @@ namespace HVACMultiSpeedHeatPump {
                                         MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex,
                                         SpeedNum,
                                         MSHeatPump(MSHeatPumpNum).OpMode,
-                                        CompOp);
+                                        static_cast<int>(CompOp));
                 }
                 SaveCompressorPLR = DXCoilPartLoadRatio(MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex);
             } else {
@@ -3649,7 +3646,7 @@ namespace HVACMultiSpeedHeatPump {
                                     MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex,
                                     SpeedNum,
                                     MSHeatPump(MSHeatPumpNum).OpMode,
-                                    CompOp);
+                                    static_cast<int>(CompOp));
             }
             if (MSHeatPump(MSHeatPumpNum).HeatCoilType == MultiSpeedHeatingCoil) {
                 if (QZnReq > SmallLoad) {
@@ -3661,7 +3658,7 @@ namespace HVACMultiSpeedHeatPump {
                                             MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex,
                                             SpeedNum,
                                             MSHeatPump(MSHeatPumpNum).OpMode,
-                                            CompOp);
+                                            static_cast<int>(CompOp));
                         SavePartloadRatio = PartLoadFrac;
                         SaveSpeedRatio = SpeedRatio;
                     } else {
@@ -3672,7 +3669,7 @@ namespace HVACMultiSpeedHeatPump {
                                             MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex,
                                             SpeedNum,
                                             MSHeatPump(MSHeatPumpNum).OpMode,
-                                            CompOp);
+                                            static_cast<int>(CompOp));
                     }
                     SaveCompressorPLR = DXCoilPartLoadRatio(MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex);
                 } else {
@@ -3683,7 +3680,7 @@ namespace HVACMultiSpeedHeatPump {
                                         MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex,
                                         SpeedNum,
                                         MSHeatPump(MSHeatPumpNum).OpMode,
-                                        CompOp);
+                                        static_cast<int>(CompOp));
                 }
             } else if (MSHeatPump(MSHeatPumpNum).HeatCoilType == Coil_HeatingElectric_MultiStage ||
                        MSHeatPump(MSHeatPumpNum).HeatCoilType == Coil_HeatingGas_MultiStage) {
@@ -3729,7 +3726,7 @@ namespace HVACMultiSpeedHeatPump {
                                         MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex,
                                         SpeedNum,
                                         MSHeatPump(MSHeatPumpNum).OpMode,
-                                        CompOp);
+                                        static_cast<int>(CompOp));
                     SavePartloadRatio = PartLoadFrac;
                     SaveSpeedRatio = SpeedRatio;
                 } else {
@@ -3740,7 +3737,7 @@ namespace HVACMultiSpeedHeatPump {
                                         MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex,
                                         SpeedNum,
                                         MSHeatPump(MSHeatPumpNum).OpMode,
-                                        CompOp);
+                                        static_cast<int>(CompOp));
                 }
                 SaveCompressorPLR = DXCoilPartLoadRatio(MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex);
             } else {
@@ -3751,7 +3748,7 @@ namespace HVACMultiSpeedHeatPump {
                                     MSHeatPump(MSHeatPumpNum).DXCoolCoilIndex,
                                     SpeedNum,
                                     MSHeatPump(MSHeatPumpNum).OpMode,
-                                    CompOp);
+                                    static_cast<int>(CompOp));
             }
             if (MSHeatPump(MSHeatPumpNum).HeatCoilType == MultiSpeedHeatingCoil) {
                 if (QZnReq > SmallLoad) {
@@ -3763,7 +3760,7 @@ namespace HVACMultiSpeedHeatPump {
                                             MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex,
                                             SpeedNum,
                                             MSHeatPump(MSHeatPumpNum).OpMode,
-                                            CompOp);
+                                            static_cast<int>(CompOp));
                         SavePartloadRatio = PartLoadFrac;
                         SaveSpeedRatio = SpeedRatio;
                     } else {
@@ -3774,7 +3771,7 @@ namespace HVACMultiSpeedHeatPump {
                                             MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex,
                                             SpeedNum,
                                             MSHeatPump(MSHeatPumpNum).OpMode,
-                                            CompOp);
+                                            static_cast<int>(CompOp));
                     }
                     SaveCompressorPLR = DXCoilPartLoadRatio(MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex);
                 } else {
@@ -3785,7 +3782,7 @@ namespace HVACMultiSpeedHeatPump {
                                         MSHeatPump(MSHeatPumpNum).DXHeatCoilIndex,
                                         SpeedNum,
                                         MSHeatPump(MSHeatPumpNum).OpMode,
-                                        CompOp);
+                                        static_cast<int>(CompOp));
                 }
             } else if (MSHeatPump(MSHeatPumpNum).HeatCoilType == Coil_HeatingElectric_MultiStage ||
                        MSHeatPump(MSHeatPumpNum).HeatCoilType == Coil_HeatingGas_MultiStage) {
@@ -3909,7 +3906,7 @@ namespace HVACMultiSpeedHeatPump {
         CompOp = int(Par(9));
 
         CalcMSHeatPump(
-            state, MSHeatPumpNum, FirstHVACIteration, CompOp, 1, 0.0, PartLoadFrac, ActualOutput, QZnReq, OnOffAirFlowRatio, SupHeaterLoad);
+            state, MSHeatPumpNum, FirstHVACIteration, static_cast<compressorOperation>(CompOp), 1, 0.0, PartLoadFrac, ActualOutput, QZnReq, OnOffAirFlowRatio, SupHeaterLoad);
 
         MSHPCyclingResidual = (ActualOutput - QZnReq) / QZnReq;
         return MSHPCyclingResidual;
@@ -3991,7 +3988,7 @@ namespace HVACMultiSpeedHeatPump {
         CompOp = int(Par(9));
 
         CalcMSHeatPump(
-            state, MSHeatPumpNum, FirstHVACIteration, CompOp, SpeedNum, SpeedRatio, 1.0, ActualOutput, QZnReq, OnOffAirFlowRatio, SupHeaterLoad);
+            state, MSHeatPumpNum, FirstHVACIteration, static_cast<compressorOperation>(CompOp), SpeedNum, SpeedRatio, 1.0, ActualOutput, QZnReq, OnOffAirFlowRatio, SupHeaterLoad);
 
         MSHPVarSpeedResidual = (ActualOutput - QZnReq) / QZnReq;
         return MSHPVarSpeedResidual;

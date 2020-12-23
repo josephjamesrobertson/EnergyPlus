@@ -96,10 +96,12 @@ namespace HVACMultiSpeedHeatPump {
         UseCompressorOnFlow,  // set compressor OFF air flow rate equal to compressor ON air flow rate
         UseCompressorOffFlow, // set compressor OFF air flow rate equal to user defined value
     };
-
-    // Compressor operation
-    extern int const On;  // normal compressor operation
-    extern int const Off; // signal DXCoil that compressor shouldn't run
+    
+    enum class compressorOperation : int {
+        // Compressor operation
+        On      = 1,  // normal compressor operation
+        Off     = 0, // signal DXCoil that compressor shouldn't run
+    };
 
     // Types
 
@@ -331,7 +333,7 @@ namespace HVACMultiSpeedHeatPump {
     void ControlMSHPOutput(EnergyPlusData &state,
                            int const MSHeatPumpNum,       // Unit index of engine driven heat pump
                            bool const FirstHVACIteration, // flag for 1st HVAC iteration in the time step
-                           int const CompOp,              // compressor operation; 1=on, 0=off
+                           compressorOperation CompOp,              // compressor operation; 1=on, 0=off
                            int const OpMode,              // operating mode: CycFanCycCoil | ContFanCycCoil
                            Real64 const QZnReq,           // cooling or heating output needed by zone [W]
                            int const ZoneNum,             // Index to zone number
@@ -346,7 +348,7 @@ namespace HVACMultiSpeedHeatPump {
 
     void CalcMSHeatPump(EnergyPlusData &state, int const MSHeatPumpNum,       // Engine driven heat pump number
                         bool const FirstHVACIteration, // Flag for 1st HVAC iteration
-                        int const CompOp,              // Compressor on/off; 1=on, 0=off
+                        compressorOperation CompOp,              // Compressor on/off; 1=on, 0=off
                         int const SpeedNum,            // Speed number
                         Real64 const SpeedRatio,       // Compressor speed ratio
                         Real64 const PartLoadFrac,     // Compressor part load fraction
