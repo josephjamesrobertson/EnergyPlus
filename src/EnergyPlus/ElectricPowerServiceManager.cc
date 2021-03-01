@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2020, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-2021, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Sustainable Energy, LLC, and other
@@ -56,17 +56,16 @@
 #include <EnergyPlus/CTElectricGenerator.hh>
 #include <EnergyPlus/CurveManager.hh>
 #include <EnergyPlus/Data/EnergyPlusData.hh>
+#include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataGlobalConstants.hh>
-#include <EnergyPlus/DataGlobals.hh>
 #include <EnergyPlus/DataHVACGlobals.hh>
 #include <EnergyPlus/DataHeatBalance.hh>
+#include <EnergyPlus/DataHeatBalFanSys.hh>
 #include <EnergyPlus/DataIPShortCuts.hh>
-#include <EnergyPlus/Plant/DataPlant.hh>
 #include <EnergyPlus/DataPrecisionGlobals.hh>
 #include <EnergyPlus/EMSManager.hh>
 #include <EnergyPlus/ElectricPowerServiceManager.hh>
 #include <EnergyPlus/FuelCellElectricGenerator.hh>
-#include <EnergyPlus/General.hh>
 #include <EnergyPlus/HeatBalanceInternalHeatGains.hh>
 #include <EnergyPlus/ICEngineElectricGenerator.hh>
 #include <EnergyPlus/InputProcessing/InputProcessor.hh>
@@ -76,6 +75,7 @@
 #include <EnergyPlus/OutputReportPredefined.hh>
 #include <EnergyPlus/PVWatts.hh>
 #include <EnergyPlus/Photovoltaics.hh>
+#include <EnergyPlus/Plant/DataPlant.hh>
 #include <EnergyPlus/Plant/PlantLocation.hh>
 #include <EnergyPlus/PlantUtilities.hh>
 #include <EnergyPlus/ScheduleManager.hh>
@@ -131,15 +131,15 @@ void ElectricPowerServiceManager::manageElectricPowerService(EnergyPlusData &sta
     if (!state.dataGlobal->BeginEnvrnFlag) newEnvironmentFlag_ = true;
 
     // retrieve data from meters for demand and production
-    totalBldgElecDemand_ = GetInstantMeterValue(elecFacilityIndex_, OutputProcessor::TimeStepType::TimeStepZone) / state.dataGlobal->TimeStepZoneSec;
-    totalHVACElecDemand_ = GetInstantMeterValue(elecFacilityIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+    totalBldgElecDemand_ = GetInstantMeterValue(state, elecFacilityIndex_, OutputProcessor::TimeStepType::TimeStepZone) / state.dataGlobal->TimeStepZoneSec;
+    totalHVACElecDemand_ = GetInstantMeterValue(state, elecFacilityIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
     totalElectricDemand_ = totalBldgElecDemand_ + totalHVACElecDemand_;
-    elecProducedPVRate_ = GetInstantMeterValue(elecProducedPVIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
-    elecProducedWTRate_ = GetInstantMeterValue(elecProducedWTIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
-    elecProducedStorageRate_ = GetInstantMeterValue(elecProducedStorageIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
-    elecProducedCoGenRate_ = GetInstantMeterValue(elecProducedCoGenIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+    elecProducedPVRate_ = GetInstantMeterValue(state, elecProducedPVIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
+    elecProducedWTRate_ = GetInstantMeterValue(state, elecProducedWTIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
+    elecProducedStorageRate_ = GetInstantMeterValue(state, elecProducedStorageIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
+    elecProducedCoGenRate_ = GetInstantMeterValue(state, elecProducedCoGenIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
     elecProducedPowerConversionRate_ =
-        GetInstantMeterValue(elecProducedPowerConversionIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+        GetInstantMeterValue(state, elecProducedPowerConversionIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
 
     wholeBldgRemainingLoad_ = totalElectricDemand_;
 
@@ -244,7 +244,7 @@ void ElectricPowerServiceManager::getPowerManagerInput(EnergyPlusData &state)
 
         // if user input did not include an Electric Load center, create a simple default one here for reporting purposes
         //   but only if there are any other electricity components set up (yet) for metering
-        int anyElectricityPresent = GetMeterIndex("ELECTRICITY:FACILITY");
+        int anyElectricityPresent = GetMeterIndex(state, "ELECTRICITY:FACILITY");
         int anyPlantLoadProfilePresent = inputProcessor->getNumObjectsFound(state, "LoadProfile:Plant");
         if (anyElectricityPresent > 0 || anyPlantLoadProfilePresent > 0) {
             elecLoadCenterObjs.emplace_back(new ElectPowerLoadCenter(state, 0));
@@ -356,7 +356,7 @@ void ElectricPowerServiceManager::getPowerManagerInput(EnergyPlusData &state)
         SetupOutputVariable(state, "Facility Total Produced Electricity Rate", OutputProcessor::Unit::W, electProdRate_, "System", "Average", name_);
         SetupOutputVariable(state, "Facility Total Produced Electricity Energy", OutputProcessor::Unit::J, electricityProd_, "System", "Sum", name_);
 
-        reportPVandWindCapacity();
+        reportPVandWindCapacity(state);
 
         sumUpNumberOfStorageDevices();
 
@@ -366,12 +366,12 @@ void ElectricPowerServiceManager::getPowerManagerInput(EnergyPlusData &state)
 
 void ElectricPowerServiceManager::setupMeterIndices(EnergyPlusData &state)
 {
-    elecFacilityIndex_ = EnergyPlus::GetMeterIndex("Electricity:Facility");
-    elecProducedCoGenIndex_ = EnergyPlus::GetMeterIndex("Cogeneration:ElectricityProduced");
-    elecProducedPVIndex_ = EnergyPlus::GetMeterIndex("Photovoltaic:ElectricityProduced");
-    elecProducedWTIndex_ = EnergyPlus::GetMeterIndex("WindTurbine:ElectricityProduced");
-    elecProducedStorageIndex_ = EnergyPlus::GetMeterIndex("ElectricStorage:ElectricityProduced");
-    elecProducedPowerConversionIndex_ = EnergyPlus::GetMeterIndex("PowerConversion:ElectricityProduced");
+    elecFacilityIndex_ = EnergyPlus::GetMeterIndex(state, "Electricity:Facility");
+    elecProducedCoGenIndex_ = EnergyPlus::GetMeterIndex(state, "Cogeneration:ElectricityProduced");
+    elecProducedPVIndex_ = EnergyPlus::GetMeterIndex(state, "Photovoltaic:ElectricityProduced");
+    elecProducedWTIndex_ = EnergyPlus::GetMeterIndex(state, "WindTurbine:ElectricityProduced");
+    elecProducedStorageIndex_ = EnergyPlus::GetMeterIndex(state, "ElectricStorage:ElectricityProduced");
+    elecProducedPowerConversionIndex_ = EnergyPlus::GetMeterIndex(state, "PowerConversion:ElectricityProduced");
 
     if (numLoadCenters_ > 0) {
         for (auto &e : elecLoadCenterObjs) {
@@ -426,18 +426,18 @@ void ElectricPowerServiceManager::updateWholeBuildingRecords(EnergyPlusData &sta
 {
 
     // main panel balancing.
-    totalBldgElecDemand_ = GetInstantMeterValue(elecFacilityIndex_, OutputProcessor::TimeStepType::TimeStepZone) / state.dataGlobal->TimeStepZoneSec;
-    totalHVACElecDemand_ = GetInstantMeterValue(elecFacilityIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+    totalBldgElecDemand_ = GetInstantMeterValue(state, elecFacilityIndex_, OutputProcessor::TimeStepType::TimeStepZone) / state.dataGlobal->TimeStepZoneSec;
+    totalHVACElecDemand_ = GetInstantMeterValue(state, elecFacilityIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
     totalElectricDemand_ = totalBldgElecDemand_ + totalHVACElecDemand_;
-    elecProducedPVRate_ = GetInstantMeterValue(elecProducedPVIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
-    elecProducedWTRate_ = GetInstantMeterValue(elecProducedWTIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
-    elecProducedStorageRate_ = GetInstantMeterValue(elecProducedStorageIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
-    elecProducedCoGenRate_ = GetInstantMeterValue(elecProducedCoGenIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+    elecProducedPVRate_ = GetInstantMeterValue(state, elecProducedPVIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
+    elecProducedWTRate_ = GetInstantMeterValue(state, elecProducedWTIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
+    elecProducedStorageRate_ = GetInstantMeterValue(state, elecProducedStorageIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
+    elecProducedCoGenRate_ = GetInstantMeterValue(state, elecProducedCoGenIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
     elecProducedPowerConversionRate_ =
-        GetInstantMeterValue(elecProducedPowerConversionIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+        GetInstantMeterValue(state, elecProducedPowerConversionIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
 
     electProdRate_ = elecProducedCoGenRate_ + elecProducedPVRate_ + elecProducedWTRate_ + elecProducedStorageRate_ + elecProducedPowerConversionRate_;
-    electricityProd_ = electProdRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour(); // whole building
+    electricityProd_ = electProdRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour; // whole building
 
     // Report the Total Electric Power Purchased [W], If negative then there is extra power to be sold or stored.
     electPurchRate_ = totalElectricDemand_ - electProdRate_;
@@ -446,22 +446,22 @@ void ElectricPowerServiceManager::updateWholeBuildingRecords(EnergyPlusData &sta
     if (electPurchRate_ < 0.0) electPurchRate_ = 0.0; // don't want negative purchased...
 
     // Report the Total Electric Energy Purchased [J]
-    electricityPurch_ = electPurchRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+    electricityPurch_ = electPurchRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
 
     // report the total electric surplus....
     electSurplusRate_ = electProdRate_ - totalElectricDemand_;
     if (std::abs(electSurplusRate_) < 0.0001) electSurplusRate_ = 0.0;
     if (electSurplusRate_ < 0.0) electSurplusRate_ = 0.0; // don't want negative surplus
 
-    electricitySurplus_ = electSurplusRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+    electricitySurplus_ = electSurplusRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
 
     // report the net electricity , + is purchased, - is surplus
     electricityNetRate_ = totalElectricDemand_ - electProdRate_;
 
-    electricityNet_ = electricityNetRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+    electricityNet_ = electricityNetRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
 }
 
-void ElectricPowerServiceManager::reportPVandWindCapacity()
+void ElectricPowerServiceManager::reportPVandWindCapacity(EnergyPlusData &state)
 {
     // LEED report
     pvTotalCapacity_ = 0.0;
@@ -479,8 +479,8 @@ void ElectricPowerServiceManager::reportPVandWindCapacity()
         }
     }
     // put in total capacity for PV and Wind for LEED report
-    OutputReportPredefined::PreDefTableEntry(OutputReportPredefined::pdchLeedRenRatCap, "Photovoltaic", pvTotalCapacity_ / 1000, 2);
-    OutputReportPredefined::PreDefTableEntry(OutputReportPredefined::pdchLeedRenRatCap, "Wind", windTotalCapacity_ / 1000, 2);
+    OutputReportPredefined::PreDefTableEntry(state, state.dataOutRptPredefined->pdchLeedRenRatCap, "Photovoltaic", pvTotalCapacity_ / 1000, 2);
+    OutputReportPredefined::PreDefTableEntry(state, state.dataOutRptPredefined->pdchLeedRenRatCap, "Wind", windTotalCapacity_ / 1000, 2);
 
     // future work: this legacy approach is relying on the correct power output to have been placed in the Generator list.  There could be a
     // difference between this control input and the actual size of the systems as defined in the generator objects themselves.  This method should be
@@ -945,6 +945,10 @@ ElectPowerLoadCenter::ElectPowerLoadCenter(EnergyPlusData &state, int const obje
                 } else {
                     PVWatts::PVWattsGenerator &pvwGen = PVWatts::GetOrCreatePVWattsGenerator(state, generatorController->name);
                     totalDCCapacity += pvwGen.getDCSystemCapacity();
+
+                    // Pass the inverter properties to the PVWatts generator class
+                    pvwGen.setDCtoACRatio(inverterObj->pvWattsDCtoACSizeRatio());
+                    pvwGen.setInverterEfficiency(inverterObj->pvWattsInverterEfficiency());
                 }
             }
             if (!errorsFound) {
@@ -1003,8 +1007,8 @@ ElectPowerLoadCenter::ElectPowerLoadCenter(EnergyPlusData &state, int const obje
     SetupOutputVariable(state, "Electric Load Center Requested Electricity Rate", OutputProcessor::Unit::W, totalPowerRequest_, "System", "Average", name_);
 
     if (state.dataGlobal->AnyEnergyManagementSystemInModel && storagePresent_) {
-        SetupEMSActuator("Electrical Storage", name_, "Power Draw Rate", "[W]", eMSOverridePelFromStorage_, eMSValuePelFromStorage_);
-        SetupEMSActuator("Electrical Storage", name_, "Power Charge Rate", "[W]", eMSOverridePelIntoStorage_, eMSValuePelIntoStorage_);
+        SetupEMSActuator(state, "Electrical Storage", name_, "Power Draw Rate", "[W]", eMSOverridePelFromStorage_, eMSValuePelFromStorage_);
+        SetupEMSActuator(state, "Electrical Storage", name_, "Power Charge Rate", "[W]", eMSOverridePelIntoStorage_, eMSValuePelIntoStorage_);
     }
 
     if (errorsFound) {
@@ -1273,8 +1277,8 @@ void ElectPowerLoadCenter::dispatchGenerators(EnergyPlusData &state, bool const 
         // The TRACK CUSTOM METER scheme tries to have the generators meet all of the
         //   electrical demand from a meter, it can also be a user-defined Custom Meter
         //   and PV is ignored.
-        customMeterDemand = GetInstantMeterValue(demandMeterPtr_, OutputProcessor::TimeStepType::TimeStepZone) / state.dataGlobal->TimeStepZoneSec +
-                            GetInstantMeterValue(demandMeterPtr_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+        customMeterDemand = GetInstantMeterValue(state, demandMeterPtr_, OutputProcessor::TimeStepType::TimeStepZone) / state.dataGlobal->TimeStepZoneSec +
+                            GetInstantMeterValue(state, demandMeterPtr_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
 
         remainingLoad = customMeterDemand;
         loadCenterElectricLoad = remainingLoad;
@@ -1463,7 +1467,7 @@ void ElectPowerLoadCenter::dispatchGenerators(EnergyPlusData &state, bool const 
     genElectricProd = 0.0;
     for (auto &g : elecGenCntrlObj) {
         genElectProdRate += g->electProdRate;
-        g->electricityProd = g->electProdRate * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+        g->electricityProd = g->electProdRate * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
         genElectricProd += g->electricityProd;
     }
 }
@@ -1510,8 +1514,8 @@ void ElectPowerLoadCenter::dispatchStorage(EnergyPlusData &state, Real64 const o
     }
     case StorageOpScheme::meterDemandStoreExcessOnSite: {
         // Get meter rate
-        subpanelFeedInRequest = GetInstantMeterValue(trackStorageOpMeterIndex_, OutputProcessor::TimeStepType::TimeStepZone) / state.dataGlobal->TimeStepZoneSec +
-                                GetInstantMeterValue(trackStorageOpMeterIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+        subpanelFeedInRequest = GetInstantMeterValue(state, trackStorageOpMeterIndex_, OutputProcessor::TimeStepType::TimeStepZone) / state.dataGlobal->TimeStepZoneSec +
+                                GetInstantMeterValue(state, trackStorageOpMeterIndex_, OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
         subpanelDrawRequest = 0.0;
         break;
     }
@@ -1741,14 +1745,14 @@ void ElectPowerLoadCenter::dispatchStorage(EnergyPlusData &state, Real64 const o
 
 void ElectPowerLoadCenter::setupLoadCenterMeterIndices(EnergyPlusData &state)
 {
-    demandMeterPtr_ = EnergyPlus::GetMeterIndex(demandMeterName_);
+    demandMeterPtr_ = EnergyPlus::GetMeterIndex(state, demandMeterName_);
     if ((demandMeterPtr_ == 0) && (genOperationScheme_ == GeneratorOpScheme::trackMeter)) { // throw error
         ShowFatalError(state, "ElectPowerLoadCenter::setupLoadCenterMeterIndices  Did not find Meter named: " + demandMeterName_ +
                        " in ElectricLoadCenter:Distribution named " + name_);
     }
 
     if (storageScheme_ == StorageOpScheme::meterDemandStoreExcessOnSite) {
-        trackStorageOpMeterIndex_ = EnergyPlus::GetMeterIndex(trackSorageOpMeterName_);
+        trackStorageOpMeterIndex_ = EnergyPlus::GetMeterIndex(state, trackSorageOpMeterName_);
         if (trackStorageOpMeterIndex_ == 0) { //
             ShowFatalError(state, "ElectPowerLoadCenter::setupLoadCenterMeterIndices  Did not find Meter named: " + trackSorageOpMeterName_ +
                            " in ElectricLoadCenter:Distribution named " + name_);
@@ -1961,7 +1965,7 @@ Real64 ElectPowerLoadCenter::calcLoadCenterThermalLoad(EnergyPlusData &state)
     Real64 thermalLoad = 0.0;
     for (auto &g : elecGenCntrlObj) {
         if (g->plantInfoFound) {
-            thermalLoad += DataPlant::PlantLoop(g->cogenLocation.loopNum)
+            thermalLoad += state.dataPlnt->PlantLoop(g->cogenLocation.loopNum)
                                .LoopSide(g->cogenLocation.loopSideNum)
                                .Branch(g->cogenLocation.branchNum)
                                .Comp(g->cogenLocation.compNum)
@@ -2037,7 +2041,7 @@ GeneratorController::GeneratorController(EnergyPlusData &state,
 
     availSched = availSchedName;
     if (availSched.empty()) {
-        availSchedPtr = DataGlobalConstants::ScheduleAlwaysOn();
+        availSchedPtr = DataGlobalConstants::ScheduleAlwaysOn;
     } else {
         availSchedPtr = ScheduleManager::GetScheduleIndex(state, availSchedName);
         if (availSchedPtr <= 0) {
@@ -2080,7 +2084,7 @@ GeneratorController::GeneratorController(EnergyPlusData &state,
     if (state.dataGlobal->AnyEnergyManagementSystemInModel) {
         SetupEMSInternalVariable(state, "Generator Nominal Maximum Power", objectName, "[W]", maxPowerOut);
         SetupEMSInternalVariable(state, "Generator Nominal Thermal To Electric Ratio", objectName, "[ratio]", nominalThermElectRatio);
-        SetupEMSActuator("On-Site Generator Control", objectName, "Requested Power", "[W]", eMSRequestOn, eMSPowerRequest);
+        SetupEMSActuator(state, "On-Site Generator Control", objectName, "Requested Power", "[W]", eMSRequestOn, eMSPowerRequest);
     }
 }
 
@@ -2177,7 +2181,7 @@ void GeneratorController::simGeneratorGetPowerOutput(EnergyPlusData &state,
         // simulate
         dynamic_cast<MicroCHPElectricGenerator::MicroCHPDataStruct*> (thisMCHP)->InitMicroCHPNoNormalizeGenerators(state);
 
-        if (!DataPlant::PlantFirstSizeCompleted) break;
+        if (!state.dataPlnt->PlantFirstSizeCompleted) break;
 
         dynamic_cast<MicroCHPElectricGenerator::MicroCHPDataStruct*> (thisMCHP)->CalcMicroCHPNoNormalizeGeneratorModel(state,
                                                                                                                        runFlag,
@@ -2313,13 +2317,13 @@ DCtoACInverter::DCtoACInverter(EnergyPlusData &state, std::string const &objectN
         // how to verify names are unique across objects? add to GlobalNames?
 
         if (modelType_ == InverterModelType::pvWatts) {
-            availSchedPtr_ = DataGlobalConstants::ScheduleAlwaysOn();
+            availSchedPtr_ = DataGlobalConstants::ScheduleAlwaysOn;
             zoneNum_ = 0;
             heatLossesDestination_ = ThermalLossDestination::lostToOutside;
             zoneRadFract_ = 0;
         } else {
             if (DataIPShortCuts::lAlphaFieldBlanks(2)) {
-                availSchedPtr_ = DataGlobalConstants::ScheduleAlwaysOn();
+                availSchedPtr_ = DataGlobalConstants::ScheduleAlwaysOn;
             } else {
                 availSchedPtr_ = ScheduleManager::GetScheduleIndex(state, DataIPShortCuts::cAlphaArgs(2));
                 if (availSchedPtr_ == 0) {
@@ -2505,6 +2509,16 @@ Real64 DCtoACInverter::pvWattsDCCapacity()
     return ratedPower_ * pvWattsDCtoACSizeRatio_;
 }
 
+Real64 DCtoACInverter::pvWattsInverterEfficiency()
+{
+    return pvWattsInverterEfficiency_;
+}
+
+Real64 DCtoACInverter::pvWattsDCtoACSizeRatio()
+{
+    return pvWattsDCtoACSizeRatio_;
+}
+
 Real64 DCtoACInverter::thermLossRate() const
 {
     return thermLossRate_;
@@ -2603,6 +2617,9 @@ void DCtoACInverter::calcEfficiency(EnergyPlusData &state)
         break;
     }
     case InverterModelType::pvWatts: {
+        // This code is lifted from ssc cmod_pvwatts5.cpp:powerout() method.
+        // It was easier to do this calculation here because we have a many to one relationship between inverter
+        // and generator whereas theirs is one to one.
         Real64 const etaref = 0.9637;
         Real64 const A = -0.0162;
         Real64 const B = -0.0059;
@@ -2619,6 +2636,8 @@ void DCtoACInverter::calcEfficiency(EnergyPlusData &state)
                 // clipping
                 ac = ratedPower_;
             }
+            // make sure no negative AC values (no parasitic nighttime losses calculated)
+            if (ac < 0) ac = 0;
             efficiency_ = ac / dCPowerIn_;
         } else {
             efficiency_ = 0.0;
@@ -2636,17 +2655,17 @@ void DCtoACInverter::calcEfficiency(EnergyPlusData &state)
 void DCtoACInverter::simulate(EnergyPlusData &state, Real64 const powerIntoInverter)
 {
     dCPowerIn_ = powerIntoInverter;
-    dCEnergyIn_ = dCPowerIn_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+    dCEnergyIn_ = dCPowerIn_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
     // check availability schedule
     if (ScheduleManager::GetCurrentScheduleValue(state, availSchedPtr_) > 0.0) {
 
         // now calculate Inverter based on model type
         calcEfficiency(state);
         aCPowerOut_ = efficiency_ * dCPowerIn_;
-        aCEnergyOut_ = aCPowerOut_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+        aCEnergyOut_ = aCPowerOut_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
 
         if (aCPowerOut_ == 0.0) {
-            ancillACuseEnergy_ = standbyPower_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+            ancillACuseEnergy_ = standbyPower_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
             ancillACuseRate_ = standbyPower_;
         } else {
             ancillACuseRate_ = 0.0;
@@ -2661,10 +2680,10 @@ void DCtoACInverter::simulate(EnergyPlusData &state, Real64 const powerIntoInver
     }
     // update report variables
     conversionLossPower_ = dCPowerIn_ - aCPowerOut_;
-    conversionLossEnergy_ = conversionLossPower_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+    conversionLossEnergy_ = conversionLossPower_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
     conversionLossEnergyDecrement_ = -1.0 * conversionLossEnergy_;
     thermLossRate_ = dCPowerIn_ - aCPowerOut_ + ancillACuseRate_;
-    thermLossEnergy_ = thermLossRate_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+    thermLossEnergy_ = thermLossRate_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
     qdotConvZone_ = thermLossRate_ * (1.0 - zoneRadFract_);
     qdotRadZone_ = thermLossRate_ * zoneRadFract_;
 }
@@ -2707,7 +2726,7 @@ ACtoDCConverter::ACtoDCConverter(EnergyPlusData &state, std::string const &objec
         // need a new general approach for verify names are unique across objects,  next gen GlobalNames
 
         if (DataIPShortCuts::lAlphaFieldBlanks(2)) {
-            availSchedPtr_ = DataGlobalConstants::ScheduleAlwaysOn();
+            availSchedPtr_ = DataGlobalConstants::ScheduleAlwaysOn;
         } else {
             availSchedPtr_ = ScheduleManager::GetScheduleIndex(state, DataIPShortCuts::cAlphaArgs(2));
             if (availSchedPtr_ == 0) {
@@ -2892,7 +2911,7 @@ void ACtoDCConverter::simulate(EnergyPlusData &state, Real64 const powerOutFromC
             dCPowerOut_ = aCPowerIn_ * efficiency_;
 
         if (dCPowerOut_ == 0.0) {
-            ancillACuseEnergy_ = standbyPower_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+            ancillACuseEnergy_ = standbyPower_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
             ancillACuseRate_ = standbyPower_;
         } else {
             ancillACuseRate_ = 0.0;
@@ -2907,13 +2926,13 @@ void ACtoDCConverter::simulate(EnergyPlusData &state, Real64 const powerOutFromC
     }
 
     // update and report
-    aCEnergyIn_ = aCPowerIn_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
-    dCEnergyOut_ = dCPowerOut_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+    aCEnergyIn_ = aCPowerIn_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
+    dCEnergyOut_ = dCPowerOut_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
     conversionLossPower_ = aCPowerIn_ - dCPowerOut_;
-    conversionLossEnergy_ = conversionLossPower_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+    conversionLossEnergy_ = conversionLossPower_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
     conversionLossEnergyDecrement_ = -1.0 * conversionLossEnergy_;
     thermLossRate_ = aCPowerIn_ - dCPowerOut_ + ancillACuseRate_;
-    thermLossEnergy_ = thermLossRate_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+    thermLossEnergy_ = thermLossRate_ * (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
     qdotConvZone_ = thermLossRate_ * (1.0 - zoneRadFract_);
     qdotRadZone_ = thermLossRate_ * zoneRadFract_;
 }
@@ -2926,11 +2945,14 @@ ElectricStorage::ElectricStorage( // main constructor
       energeticEfficCharge_(0.0), energeticEfficDischarge_(0.0), maxPowerDraw_(0.0), maxPowerStore_(0.0), maxEnergyCapacity_(0.0), parallelNum_(0),
       seriesNum_(0), numBattery_(0), chargeCurveNum_(0), dischargeCurveNum_(0), cycleBinNum_(0), startingSOC_(0.0), maxAhCapacity_(0.0),
       availableFrac_(0.0), chargeConversionRate_(0.0), chargedOCV_(0.0), dischargedOCV_(0.0), internalR_(0.0), maxDischargeI_(0.0), cutoffV_(0.0),
-      maxChargeRate_(0.0), lifeCalculation_(BatteyDegredationModelType::degredationNotSet), lifeCurveNum_(0), thisTimeStepStateOfCharge_(0.0),
-      lastTimeStepStateOfCharge_(0.0), pelNeedFromStorage_(0.0), pelFromStorage_(0.0), pelIntoStorage_(0.0), qdotConvZone_(0.0), qdotRadZone_(0.0),
-      timeElapsed_(0.0), thisTimeStepAvailable_(0.0), thisTimeStepBound_(0.0), lastTimeStepAvailable_(0.0), lastTimeStepBound_(0.0),
-      lastTwoTimeStepAvailable_(0.0), lastTwoTimeStepBound_(0.0), count0_(0), electEnergyinStorage_(0.0), thermLossRate_(0.0), thermLossEnergy_(0.0),
-      storageMode_(0), absoluteSOC_(0.0), fractionSOC_(0.0), batteryCurrent_(0.0), batteryVoltage_(0.0), batteryDamage_(0.0)
+      maxChargeRate_(0.0), lifeCalculation_(BatteryDegradationModelType::degredationNotSet), lifeCurveNum_(0),
+      liIon_dcToDcChargingEff_(0.0), liIon_mass_(0.0), liIon_surfaceArea_(0.0), liIon_Cp_(0.0), liIon_heatTransferCoef_(0.0), liIon_Vfull_(0.0),
+      liIon_Vexp_(0.0), liIon_Vnom_(0.0), liIon_Vnom_default_(0.0), liIon_Qfull_(0.0), liIon_Qexp_(0.0), liIon_Qnom_(0.0), liIon_C_rate_(0.0),
+      thisTimeStepStateOfCharge_(0.0), lastTimeStepStateOfCharge_(0.0), pelNeedFromStorage_(0.0), pelFromStorage_(0.0), pelIntoStorage_(0.0),
+      qdotConvZone_(0.0), qdotRadZone_(0.0), timeElapsed_(0.0), thisTimeStepAvailable_(0.0), thisTimeStepBound_(0.0), lastTimeStepAvailable_(0.0),
+      lastTimeStepBound_(0.0), lastTwoTimeStepAvailable_(0.0), lastTwoTimeStepBound_(0.0), count0_(0), electEnergyinStorage_(0.0),
+      thermLossRate_(0.0), thermLossEnergy_(0.0), storageMode_(0), absoluteSOC_(0.0), fractionSOC_(0.0), batteryCurrent_(0.0), batteryVoltage_(0.0),
+      batteryDamage_(0.0), batteryTemperature_(0.0)
 {
 
     std::string const routineName = "ElectricStorage constructor ";
@@ -2943,20 +2965,21 @@ ElectricStorage::ElectricStorage( // main constructor
     int testStorageIndex = 0;
     int storageIDFObjectNum = 0;
 
-    testStorageIndex = inputProcessor->getObjectItemNum(state, "ElectricLoadCenter:Storage:Simple", objectName);
-    if (testStorageIndex > 0) {
-        foundStorage = true;
-        storageIDFObjectNum = testStorageIndex;
-        DataIPShortCuts::cCurrentModuleObject = "ElectricLoadCenter:Storage:Simple";
-        storageModelMode_ = StorageModelType::simpleBucketStorage;
-    }
+    const std::array<std::pair<std::string, StorageModelType>, 3> storageTypes{{
+        {"ElectricLoadCenter:Storage:Simple", StorageModelType::simpleBucketStorage},
+        {"ElectricLoadCenter:Storage:Battery", StorageModelType::kiBaMBattery},
+        {"ElectricLoadCenter:Storage:LiIonNMCBattery", StorageModelType::liIonNmcBattery}
+    }};
 
-    testStorageIndex = inputProcessor->getObjectItemNum(state, "ElectricLoadCenter:Storage:Battery", objectName);
-    if (testStorageIndex > 0) {
-        foundStorage = true;
-        storageIDFObjectNum = testStorageIndex;
-        DataIPShortCuts::cCurrentModuleObject = "ElectricLoadCenter:Storage:Battery";
-        storageModelMode_ = StorageModelType::kiBaMBattery;
+    for (auto &item : storageTypes) {
+        testStorageIndex = inputProcessor->getObjectItemNum(state, item.first, objectName);
+        if (testStorageIndex > 0) {
+            foundStorage = true;
+            storageIDFObjectNum = testStorageIndex;
+            DataIPShortCuts::cCurrentModuleObject = item.first;
+            storageModelMode_ = item.second;
+            break;
+        }
     }
 
     if (foundStorage) {
@@ -2977,7 +3000,7 @@ ElectricStorage::ElectricStorage( // main constructor
         // how to verify names are unique across objects? add to GlobalNames?
 
         if (DataIPShortCuts::lAlphaFieldBlanks(2)) {
-            availSchedPtr_ = DataGlobalConstants::ScheduleAlwaysOn();
+            availSchedPtr_ = DataGlobalConstants::ScheduleAlwaysOn;
         } else {
             availSchedPtr_ = ScheduleManager::GetScheduleIndex(state, DataIPShortCuts::cAlphaArgs(2));
             if (availSchedPtr_ == 0) {
@@ -3059,17 +3082,17 @@ ElectricStorage::ElectricStorage( // main constructor
             }
 
             if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(6), "Yes")) {
-                lifeCalculation_ = BatteyDegredationModelType::lifeCalculationYes;
+                lifeCalculation_ = BatteryDegradationModelType::lifeCalculationYes;
             } else if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(6), "No")) {
-                lifeCalculation_ = BatteyDegredationModelType::lifeCalculationNo;
+                lifeCalculation_ = BatteryDegradationModelType::lifeCalculationNo;
             } else {
                 ShowWarningError(state, routineName + DataIPShortCuts::cCurrentModuleObject + "=\"" + DataIPShortCuts::cAlphaArgs(1) + "\", invalid entry.");
                 ShowContinueError(state, "Invalid " + DataIPShortCuts::cAlphaFieldNames(6) + " = " + DataIPShortCuts::cAlphaArgs(6));
                 ShowContinueError(state, "Yes or No should be selected. Default value No is used to continue simulation");
-                lifeCalculation_ = BatteyDegredationModelType::lifeCalculationNo;
+                lifeCalculation_ = BatteryDegradationModelType::lifeCalculationNo;
             }
 
-            if (lifeCalculation_ == BatteyDegredationModelType::lifeCalculationYes) {
+            if (lifeCalculation_ == BatteryDegradationModelType::lifeCalculationYes) {
                 lifeCurveNum_ = CurveManager::GetCurveIndex(state, DataIPShortCuts::cAlphaArgs(7)); // Battery life calculation
                 if (lifeCurveNum_ == 0 && !DataIPShortCuts::lAlphaFieldBlanks(7)) {
                     ShowSevereError(state, routineName + DataIPShortCuts::cCurrentModuleObject + "=\"" + DataIPShortCuts::cAlphaArgs(1) +
@@ -3117,6 +3140,119 @@ ElectricStorage::ElectricStorage( // main constructor
             cutoffV_ = DataIPShortCuts::rNumericArgs(12);
             maxChargeRate_ = DataIPShortCuts::rNumericArgs(13);
 
+            break;
+        }
+        case StorageModelType::liIonNmcBattery: {
+            if (UtilityRoutines::SameString(DataIPShortCuts::cAlphaArgs(4), "KandlerSmith") or DataIPShortCuts::lAlphaFieldBlanks(4)) {
+                lifeCalculation_ = BatteryDegradationModelType::lifeCalculationYes;
+            } else {
+                lifeCalculation_ = BatteryDegradationModelType::lifeCalculationNo;
+            }
+            seriesNum_ = static_cast<int>(DataIPShortCuts::rNumericArgs(2));
+            parallelNum_ = static_cast<int>(DataIPShortCuts::rNumericArgs(3));
+            startingSOC_ = DataIPShortCuts::lNumericFieldBlanks(4) ? 0.5 : DataIPShortCuts::rNumericArgs(4);
+            liIon_dcToDcChargingEff_ = DataIPShortCuts::lNumericFieldBlanks(5) ? 0.95 : DataIPShortCuts::rNumericArgs(5);
+            liIon_mass_ = DataIPShortCuts::rNumericArgs(6);
+            liIon_surfaceArea_ = DataIPShortCuts::rNumericArgs(7);
+            liIon_Cp_ = DataIPShortCuts::lNumericFieldBlanks(8) ? 1500.0 : DataIPShortCuts::rNumericArgs(8);
+            liIon_heatTransferCoef_ = DataIPShortCuts::lNumericFieldBlanks(9) ? 7.5 : DataIPShortCuts::rNumericArgs(9);
+            liIon_Vfull_ = DataIPShortCuts::lNumericFieldBlanks(10) ? 4.2 : DataIPShortCuts::rNumericArgs(10);
+            liIon_Vexp_ = DataIPShortCuts::lNumericFieldBlanks(11) ? 3.53 : DataIPShortCuts::rNumericArgs(11);
+            liIon_Vnom_ = DataIPShortCuts::lNumericFieldBlanks(12) ? 3.342 : DataIPShortCuts::rNumericArgs(12);
+            if (liIon_Vfull_ < liIon_Vexp_ or liIon_Vexp_ < liIon_Vnom_) {
+                ShowSevereError(state, routineName + DataIPShortCuts::cCurrentModuleObject + "=\"" + DataIPShortCuts::cAlphaArgs(1) + "\", invalid entry.");
+                ShowContinueError(state, DataIPShortCuts::cNumericFieldNames(10) + " must be greater than " + DataIPShortCuts::cNumericFieldNames(11) + ",");
+                ShowContinueError(state, "which must be greater than " + DataIPShortCuts::cNumericFieldNames(12) + ".");
+                for (int i = 10; i <= 12; ++i) {
+                    ShowContinueError(state, format("{} = {:.3R}", DataIPShortCuts::cNumericFieldNames(i), DataIPShortCuts::rNumericArgs(i)));
+                }
+                errorsFound = true;
+            }
+            liIon_Vnom_default_ = DataIPShortCuts::lNumericFieldBlanks(13) ? 3.342 : DataIPShortCuts::rNumericArgs(13);
+            liIon_Qfull_ = DataIPShortCuts::lNumericFieldBlanks(14) ? 3.2 : DataIPShortCuts::rNumericArgs(14);
+            liIon_Qexp_ = DataIPShortCuts::lNumericFieldBlanks(15) ? 0.8075 * liIon_Qfull_ : DataIPShortCuts::rNumericArgs(15) * liIon_Qfull_;
+            liIon_Qnom_ = DataIPShortCuts::lNumericFieldBlanks(16) ? 0.976875 * liIon_Qfull_ : DataIPShortCuts::rNumericArgs(16) * liIon_Qfull_;
+            if (liIon_Qexp_ >= liIon_Qnom_) {
+                ShowSevereError(state, routineName + DataIPShortCuts::cCurrentModuleObject + "=\"" + DataIPShortCuts::cAlphaArgs(1) + "\", invalid entry.");
+                ShowContinueError(state, DataIPShortCuts::cNumericFieldNames(16) + " must be greater than " + DataIPShortCuts::cNumericFieldNames(15) + ".");
+                for (int i = 15; i <= 16; ++i) {
+                    ShowContinueError(state, format("{} = {:.3R}", DataIPShortCuts::cNumericFieldNames(i), DataIPShortCuts::rNumericArgs(i)));
+                }
+                errorsFound = true;
+            }
+            liIon_C_rate_ = DataIPShortCuts::lNumericFieldBlanks(17) ? 1.0 : DataIPShortCuts::rNumericArgs(17);
+            internalR_ = DataIPShortCuts::lNumericFieldBlanks(18) ? 0.09 : DataIPShortCuts::rNumericArgs(18);
+
+            maxAhCapacity_ = liIon_Qfull_ * parallelNum_;
+
+            if (!errorsFound) {
+                // Set the Lifetime model in SSC
+                // I'm using a raw pointer here because the the battery_t constructor expects it.
+                // The pointer is then passed into the battery_t where it is converted into a unique_ptr and persists along with that object.
+                // Therefore I am not deleting this pointer here because that will be handled by the battery_t class.
+                lifetime_t* battLifetime;
+                if (lifeCalculation_ == BatteryDegradationModelType::lifeCalculationYes) {
+                    battLifetime = new lifetime_nmc_t(DataHVACGlobals::TimeStepSys);
+                } else {
+                    // This sets a lifetime model where the capacity is always 100%.
+                    std::vector<double> tblVals{{20, 0, 100, 20, 5000, 100, 20, 10000, 100, 80, 0, 100, 80, 1000, 100, 80, 2000, 100}};
+                    util::matrix_t<double> battLifetimeMatrix(6, 3, &tblVals);
+                    battLifetime = new lifetime_calendar_cycle_t(battLifetimeMatrix, DataHVACGlobals::TimeStepSys);
+                }
+
+                // Create the SSC battery object
+                ssc_battery_ = std::unique_ptr<battery_t>(
+                    new battery_t(
+                        DataHVACGlobals::TimeStepSys,
+                        battery_params::CHEM::LITHIUM_ION,
+                        new capacity_lithium_ion_t(
+                            maxAhCapacity_,  // Capacity of the whole battery
+                            startingSOC_ * 100.0,
+                            100.0,  // Reset later
+                            0.0,  // Reset later
+                            DataHVACGlobals::TimeStepSys
+                        ),
+                        new voltage_dynamic_t(
+                            seriesNum_,
+                            parallelNum_,
+                            liIon_Vnom_default_,
+                            liIon_Vfull_,
+                            liIon_Vexp_,
+                            liIon_Vnom_,
+                            liIon_Qfull_,  // Capacity of one cell
+                            liIon_Qexp_,
+                            liIon_Qnom_,
+                            liIon_C_rate_,
+                            internalR_,
+                            DataHVACGlobals::TimeStepSys
+                        ),
+                        battLifetime,
+                        new thermal_t(
+                            DataHVACGlobals::TimeStepSys,
+                            liIon_mass_,
+                            liIon_surfaceArea_,
+                            internalR_ * seriesNum_ / parallelNum_,  // Electric resistance of the whole battery
+                            liIon_Cp_,
+                            liIon_heatTransferCoef_,
+                            20.0  // Picking a temperature for now, will reset before each run.
+                        ),
+                        nullptr
+                    )
+                );
+                ssc_lastBatteryState_ = std::unique_ptr<battery_state>(new battery_state(ssc_battery_->get_state()));
+                ssc_initBatteryState_ = std::unique_ptr<battery_state>(new battery_state(ssc_battery_->get_state()));
+            }
+
+            break;
+        }
+        case StorageModelType::storageTypeNotSet: {
+            // do nothing
+            break;
+        }
+
+        } // switch storage model type
+
+        if (storageModelMode_ == StorageModelType::kiBaMBattery or storageModelMode_ == StorageModelType::liIonNmcBattery) {
             SetupOutputVariable(state, "Electric Storage Operating Mode Index", OutputProcessor::Unit::None, storageMode_, "System", "Average", name_);
             SetupOutputVariable(state, "Electric Storage Battery Charge State",
                                 OutputProcessor::Unit::Ah,
@@ -3128,17 +3264,10 @@ ElectricStorage::ElectricStorage( // main constructor
             SetupOutputVariable(state, "Electric Storage Total Current", OutputProcessor::Unit::A, batteryCurrent_, "System", "Average", name_);
             SetupOutputVariable(state, "Electric Storage Total Voltage", OutputProcessor::Unit::V, batteryVoltage_, "System", "Average", name_);
 
-            if (lifeCalculation_ == BatteyDegredationModelType::lifeCalculationYes) {
+            if (lifeCalculation_ == BatteryDegradationModelType::lifeCalculationYes) {
                 SetupOutputVariable(state, "Electric Storage Degradation Fraction", OutputProcessor::Unit::None, batteryDamage_, "System", "Average", name_);
             }
-            break;
         }
-        case StorageModelType::storageTypeNotSet: {
-            // do nothing
-            break;
-        }
-
-        } // switch storage model type
 
         SetupOutputVariable(state, "Electric Storage Charge Power", OutputProcessor::Unit::W, storedPower_, "System", "Average", name_);
         SetupOutputVariable(state, "Electric Storage Charge Energy", OutputProcessor::Unit::J, storedEnergy_, "System", "Sum", name_);
@@ -3174,6 +3303,9 @@ ElectricStorage::ElectricStorage( // main constructor
                 SetupEMSInternalVariable(state, "Electrical Storage Battery Maximum Capacity", name_, "[Ah]", maxAhCapacity_);
             }
         }
+        if (storageModelMode_ == StorageModelType::liIonNmcBattery) {
+            SetupOutputVariable(state, "Electric Storage Battery Temperature", OutputProcessor::Unit::C, batteryTemperature_, "System", "Average", name_);
+        }
 
         if (zoneNum_ > 0) {
             switch (storageModelMode_) {
@@ -3192,6 +3324,16 @@ ElectricStorage::ElectricStorage( // main constructor
                                       "ElectricLoadCenter:Storage:Battery",
                                       name_,
                                       DataHeatBalance::IntGainTypeOf_ElectricLoadCenterStorageBattery,
+                                      &qdotConvZone_,
+                                      nullptr,
+                                      &qdotRadZone_);
+                break;
+            }
+            case StorageModelType::liIonNmcBattery: {
+                SetupZoneInternalGain(state, zoneNum_,
+                                      "ElectricLoadCenter:Storage:LiIonNMCBattery",
+                                      name_,
+                                      DataHeatBalance::IntGainTypeOf_ElectricLoadCenterStorageLiIonNmcBattery,
                                       &qdotConvZone_,
                                       nullptr,
                                       &qdotRadZone_);
@@ -3240,7 +3382,7 @@ void ElectricStorage::reinitAtBeginEnvironment()
         lastTimeStepBound_ = initialCharge * (1.0 - availableFrac_);
         thisTimeStepAvailable_ = initialCharge * availableFrac_;
         thisTimeStepBound_ = initialCharge * (1.0 - availableFrac_);
-        if (lifeCalculation_ == BatteyDegredationModelType::lifeCalculationYes) {
+        if (lifeCalculation_ == BatteryDegradationModelType::lifeCalculationYes) {
             count0_ = 1;            // Index 0 is for initial SOC, so new input starts from index 1.
             b10_[0] = startingSOC_; // the initial fractional SOC is stored as the reference
             x0_[0] = 0.0;
@@ -3254,6 +3396,10 @@ void ElectricStorage::reinitAtBeginEnvironment()
             }
             batteryDamage_ = 0.0;
         }
+    } else if (storageModelMode_ == StorageModelType::liIonNmcBattery) {
+        // Copy the initial battery state to the last battery state
+        *ssc_lastBatteryState_ = *ssc_initBatteryState_;
+        ssc_battery_->set_state(*ssc_lastBatteryState_);
     }
     myWarmUpFlag_ = true;
 }
@@ -3277,7 +3423,7 @@ void ElectricStorage::reinitAtEndWarmup()
         lastTimeStepBound_ = initialCharge * (1.0 - availableFrac_);
         thisTimeStepAvailable_ = initialCharge * availableFrac_;
         thisTimeStepBound_ = initialCharge * (1.0 - availableFrac_);
-        if (lifeCalculation_ == BatteyDegredationModelType::lifeCalculationYes) {
+        if (lifeCalculation_ == BatteryDegradationModelType::lifeCalculationYes) {
             count0_ = 1;            // Index 0 is for initial SOC, so new input starts from index 1.
             b10_[0] = startingSOC_; // the initial fractional SOC is stored as the reference
             x0_[0] = 0.0;
@@ -3291,6 +3437,10 @@ void ElectricStorage::reinitAtEndWarmup()
             }
             batteryDamage_ = 0.0;
         }
+    } else if (storageModelMode_ == StorageModelType::liIonNmcBattery) {
+        // Copy the initial battery state to the last battery state
+        *ssc_lastBatteryState_ = *ssc_initBatteryState_;
+        ssc_battery_->set_state(*ssc_lastBatteryState_);
     }
     myWarmUpFlag_ = false;
 }
@@ -3304,7 +3454,7 @@ void ElectricStorage::timeCheckAndUpdate(EnergyPlusData &state)
 
     Real64 timeElapsedLoc = state.dataGlobal->HourOfDay + state.dataGlobal->TimeStep * state.dataGlobal->TimeStepZone + DataHVACGlobals::SysTimeElapsed;
     if (timeElapsed_ != timeElapsedLoc) { // time changed, update last with "current" result from previous time
-        if (storageModelMode_ == StorageModelType::kiBaMBattery && lifeCalculation_ == BatteyDegredationModelType::lifeCalculationYes) {
+        if (storageModelMode_ == StorageModelType::kiBaMBattery && lifeCalculation_ == BatteryDegradationModelType::lifeCalculationYes) {
             //    At this point, the current values, last time step values and last two time step values have not been updated, hence:
             //    "ThisTimeStep*" actually points to the previous one time step
             //    "LastTimeStep*" actually points to the previous two time steps
@@ -3344,6 +3494,8 @@ void ElectricStorage::timeCheckAndUpdate(EnergyPlusData &state)
                     batteryDamage_ += oneNmb0_[binNum] / CurveManager::CurveValue(state, lifeCurveNum_, (double(binNum) / double(cycleBinNum_)));
                 }
             }
+        } else if ( storageModelMode_ == StorageModelType::liIonNmcBattery ) {
+            *ssc_lastBatteryState_ = ssc_battery_->get_state();
         }
 
         lastTimeStepStateOfCharge_ = thisTimeStepStateOfCharge_;
@@ -3375,7 +3527,9 @@ void ElectricStorage::simulate(EnergyPlusData &state,
     if (storageModelMode_ == StorageModelType::simpleBucketStorage) {
         simulateSimpleBucketModel(powerCharge, powerDischarge, charging, discharging, controlSOCMaxFracLimit, controlSOCMinFracLimit);
     } else if (storageModelMode_ == StorageModelType::kiBaMBattery) {
-        simulateKineticBatteryModel(state,powerCharge, powerDischarge, charging, discharging, controlSOCMaxFracLimit, controlSOCMinFracLimit);
+        simulateKineticBatteryModel(state, powerCharge, powerDischarge, charging, discharging, controlSOCMaxFracLimit, controlSOCMinFracLimit);
+    } else if (storageModelMode_ == StorageModelType::liIonNmcBattery) {
+        simulateLiIonNmcBatteryModel(state, powerCharge, powerDischarge, charging, discharging, controlSOCMaxFracLimit, controlSOCMinFracLimit);
     }
 }
 
@@ -3406,10 +3560,10 @@ void ElectricStorage::simulateSimpleBucketModel(Real64 &powerCharge,
         }
 
         // now check to see if charge would exceed capacity, and modify to just fill physical storage cap
-        if ((lastTimeStepStateOfCharge_ + powerCharge * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour() * energeticEfficCharge_) >=
+        if ((lastTimeStepStateOfCharge_ + powerCharge * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour * energeticEfficCharge_) >=
             (maxEnergyCapacity_ * controlSOCMaxFracLimit)) {
             powerCharge = ((maxEnergyCapacity_ * controlSOCMaxFracLimit) - lastTimeStepStateOfCharge_) /
-                          (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour() * energeticEfficCharge_);
+                          (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour * energeticEfficCharge_);
         }
     } // charging
 
@@ -3424,10 +3578,10 @@ void ElectricStorage::simulateSimpleBucketModel(Real64 &powerCharge,
             powerDischarge = maxPowerDraw_;
         }
         // now check if will empty this timestep, power draw is amplified by energetic effic
-        if ((lastTimeStepStateOfCharge_ - powerDischarge * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour() / energeticEfficDischarge_) <=
+        if ((lastTimeStepStateOfCharge_ - powerDischarge * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour / energeticEfficDischarge_) <=
             (maxEnergyCapacity_ * controlSOCMinFracLimit)) {
             powerDischarge = (lastTimeStepStateOfCharge_ - (maxEnergyCapacity_ * controlSOCMinFracLimit)) * energeticEfficDischarge_ /
-                             (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+                             (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
         }
     }
 
@@ -3440,25 +3594,25 @@ void ElectricStorage::simulateSimpleBucketModel(Real64 &powerCharge,
         pelIntoStorage_ = powerCharge;
         pelFromStorage_ = 0.0;
         thisTimeStepStateOfCharge_ =
-            lastTimeStepStateOfCharge_ + powerCharge * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour() * energeticEfficCharge_;
+            lastTimeStepStateOfCharge_ + powerCharge * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour * energeticEfficCharge_;
     }
     if (discharging) {
         pelIntoStorage_ = 0.0;
         pelFromStorage_ = powerDischarge;
         thisTimeStepStateOfCharge_ =
-            lastTimeStepStateOfCharge_ - powerDischarge * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour() / energeticEfficDischarge_;
+            lastTimeStepStateOfCharge_ - powerDischarge * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour / energeticEfficDischarge_;
         thisTimeStepStateOfCharge_ = max(thisTimeStepStateOfCharge_, 0.0);
     }
 
     // updates and reports
     electEnergyinStorage_ = thisTimeStepStateOfCharge_; //[J]
     storedPower_ = pelIntoStorage_;
-    storedEnergy_ = pelIntoStorage_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+    storedEnergy_ = pelIntoStorage_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
     decrementedEnergyStored_ = -1.0 * storedEnergy_;
     drawnPower_ = pelFromStorage_;
-    drawnEnergy_ = pelFromStorage_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+    drawnEnergy_ = pelFromStorage_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
     thermLossRate_ = max(storedPower_ * (1.0 - energeticEfficCharge_), drawnPower_ * (1.0 - energeticEfficDischarge_));
-    thermLossEnergy_ = thermLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+    thermLossEnergy_ = thermLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
 
     if (zoneNum_ > 0) { // set values for zone heat gains
         qdotConvZone_ = (1.0 - zoneRadFract_) * thermLossRate_;
@@ -3650,7 +3804,7 @@ void ElectricStorage::simulateKineticBatteryModel(EnergyPlusData &state,
     if (TotalSOC > q0) {
         storageMode_ = 2;
         storedPower_ = -1.0 * Volt * I0 * numBattery_; // Issue #5303, fix sign issue
-        storedEnergy_ = -1.0 * Volt * I0 * numBattery_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+        storedEnergy_ = -1.0 * Volt * I0 * numBattery_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
         decrementedEnergyStored_ = -1.0 * storedEnergy_;
         drawnPower_ = 0.0;
         drawnEnergy_ = 0.0;
@@ -3661,7 +3815,7 @@ void ElectricStorage::simulateKineticBatteryModel(EnergyPlusData &state,
         storedEnergy_ = 0.0;
         decrementedEnergyStored_ = 0.0;
         drawnPower_ = Volt * I0 * numBattery_;
-        drawnEnergy_ = Volt * I0 * numBattery_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+        drawnEnergy_ = Volt * I0 * numBattery_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
 
     } else {
         storageMode_ = 0;
@@ -3677,7 +3831,7 @@ void ElectricStorage::simulateKineticBatteryModel(EnergyPlusData &state,
     batteryCurrent_ = I0 * parallelNum_;
     batteryVoltage_ = Volt * seriesNum_;
     thermLossRate_ = internalR_ * pow_2(I0) * numBattery_;
-    thermLossEnergy_ = internalR_ * pow_2(I0) * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour() * numBattery_;
+    thermLossEnergy_ = internalR_ * pow_2(I0) * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour * numBattery_;
 
     if (zoneNum_ > 0) { // set values for zone heat gains
         qdotConvZone_ = ((1.0 - zoneRadFract_) * thermLossRate_) * numBattery_;
@@ -3686,6 +3840,88 @@ void ElectricStorage::simulateKineticBatteryModel(EnergyPlusData &state,
 
     powerCharge = storedPower_;
     powerDischarge = drawnPower_;
+}
+
+void ElectricStorage::simulateLiIonNmcBatteryModel(EnergyPlusData &state,
+                                                   Real64 &powerCharge,
+                                                   Real64 &powerDischarge,
+                                                   bool &charging,
+                                                   bool &discharging,
+                                                   Real64 const controlSOCMaxFracLimit,
+                                                   Real64 const controlSOCMinFracLimit)
+{
+
+    // Copy the battery state from the end of last timestep
+    battery_state battState = *ssc_lastBatteryState_;
+
+    // Set the temperature the battery sees
+    if (zoneNum_ > 0) {
+        // If in a zone, use the zone temperature
+        battState.thermal->T_room = DataHeatBalFanSys::ZT(zoneNum_);
+    } else {
+        // If outside, use outdoor temperature
+        battState.thermal->T_room = state.dataEnvrn->OutDryBulbTemp;
+    }
+    ssc_battery_->set_state(battState);
+
+    // Set the SOC limits
+    ssc_battery_->changeSOCLimits(controlSOCMinFracLimit * 100.0, controlSOCMaxFracLimit * 100.0);
+
+    // Set the current timestep length
+    ssc_battery_->ChangeTimestep(DataHVACGlobals::TimeStepSys);
+
+    // Run the battery
+    // SAM uses negative values for charging, positive for discharging
+    // E+ power/energy outputs are positive
+    double power{0.0};  // Using double instead of Real64 because SSC is expecting a double
+    if (charging) {
+        power = - powerCharge;
+    } else if (discharging) {
+        power = powerDischarge;
+    }
+    power *= 0.001;  // Convert to kW
+    ssc_battery_->runPower(power);
+
+    // Store outputs
+    const battery_state& battState2{ssc_battery_->get_state()};
+    if (battState2.P < 0.0) { // negative for charging
+        storageMode_ = 2;
+        powerCharge = fabs(battState2.P) * 1000.0;  // kW -> W
+        powerDischarge = 0.0;
+        charging = true;
+        discharging = false;
+    } else if (battState2.P > 0.0) { // positive for discharging
+        storageMode_ = 1;
+        powerCharge = 0.0;
+        powerDischarge = fabs(battState2.P) * 1000.0;  // kW -> W
+        charging = false;
+        discharging = true;
+    } else {
+        storageMode_ = 0;
+        powerCharge = 0.0;
+        powerDischarge = 0.0;
+        charging = false;
+        discharging = false;
+    }
+    absoluteSOC_ = ssc_battery_->charge_total();
+    fractionSOC_ = ssc_battery_->SOC() * 0.01;  // % -> fraction
+    batteryCurrent_ = ssc_battery_->I();
+    batteryVoltage_ = ssc_battery_->V();
+    batteryDamage_ = 1.0 - (ssc_battery_->charge_maximum_lifetime() / maxAhCapacity_);
+    storedPower_ = powerCharge;
+    storedEnergy_ = storedPower_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
+    drawnPower_ = powerDischarge;
+    drawnEnergy_ = drawnPower_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
+    decrementedEnergyStored_ = - storedEnergy_;
+    thermLossRate_ = battState2.thermal->heat_dissipated * 1000.0;  // kW -> W
+    thermLossEnergy_ = thermLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
+    batteryTemperature_ = battState2.thermal->T_batt;
+
+    // Zone Heat Gains
+    if (zoneNum_ > 0) { // set values for zone heat gains
+        qdotConvZone_ = (1.0 - zoneRadFract_) * thermLossRate_;
+        qdotRadZone_ = (zoneRadFract_) * thermLossRate_;
+    }
 }
 
 Real64 ElectricStorage::drawnPower() const
@@ -3706,6 +3942,17 @@ Real64 ElectricStorage::drawnEnergy() const
 Real64 ElectricStorage::storedEnergy() const
 {
     return storedEnergy_;
+}
+
+Real64 ElectricStorage::stateOfChargeFraction() const
+{
+    return fractionSOC_;
+}
+
+Real64 ElectricStorage::batteryTemperature() const
+{
+    assert(storageModelMode_ == StorageModelType::liIonNmcBattery);
+    return batteryTemperature_;
 }
 
 bool ElectricStorage::determineCurrentForBatteryDischarge(EnergyPlusData &state,
@@ -3942,7 +4189,7 @@ ElectricTransformer::ElectricTransformer(EnergyPlusData &state, std::string cons
         name_ = DataIPShortCuts::cAlphaArgs(1);
         // how to verify names are unique across objects? add to GlobalNames?
         if (DataIPShortCuts::lAlphaFieldBlanks(2)) {
-            availSchedPtr_ = DataGlobalConstants::ScheduleAlwaysOn();
+            availSchedPtr_ = DataGlobalConstants::ScheduleAlwaysOn;
         } else {
             availSchedPtr_ = ScheduleManager::GetScheduleIndex(state, DataIPShortCuts::cAlphaArgs(2));
             if (availSchedPtr_ == 0) {
@@ -4183,11 +4430,11 @@ void ElectricTransformer::manageTransformers(EnergyPlusData &state, Real64 const
 
             if (state.dataGlobal->MetersHaveBeenInitialized) {
 
-                elecLoad += GetInstantMeterValue(wiredMeterPtrs_[meterNum], OutputProcessor::TimeStepType::TimeStepZone) / state.dataGlobal->TimeStepZoneSec +
-                            GetInstantMeterValue(wiredMeterPtrs_[meterNum], OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour());
+                elecLoad += GetInstantMeterValue(state, wiredMeterPtrs_[meterNum], OutputProcessor::TimeStepType::TimeStepZone) / state.dataGlobal->TimeStepZoneSec +
+                            GetInstantMeterValue(state, wiredMeterPtrs_[meterNum], OutputProcessor::TimeStepType::TimeStepSystem) / (DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour);
                 // PastElecLoad store the metered value in the previous time step. This value will be used to check whether
                 // a transformer is overloaded or not.
-                pastElecLoad += GetCurrentMeterValue(wiredMeterPtrs_[meterNum]) / state.dataGlobal->TimeStepZoneSec;
+                pastElecLoad += GetCurrentMeterValue(state, wiredMeterPtrs_[meterNum]) / state.dataGlobal->TimeStepZoneSec;
             } else {
                 elecLoad = 0.0;
                 pastElecLoad = 0.0;
@@ -4274,14 +4521,14 @@ void ElectricTransformer::manageTransformers(EnergyPlusData &state, Real64 const
         // are considered in utility cost. If transformer losses are not considered in utility cost, 0 is assigned
         // to the variable "%ElecUseUtility".
         if (considerLosses_) {
-            elecUseMeteredUtilityLosses_ = totalLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+            elecUseMeteredUtilityLosses_ = totalLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
         } else {
             elecUseMeteredUtilityLosses_ = 0.0;
         }
 
         // Transformer has two modes.If it works in one mode, the variable for meter output in the other mode
         // is assigned 0
-        totalLossEnergy_ = totalLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+        totalLossEnergy_ = totalLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
 
         break;
     }
@@ -4292,7 +4539,7 @@ void ElectricTransformer::manageTransformers(EnergyPlusData &state, Real64 const
 
         if (powerOut_ < 0) powerOut_ = 0.0;
 
-        powerConversionMeteredLosses_ = -1.0 * totalLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+        powerConversionMeteredLosses_ = -1.0 * totalLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
 
         // Transformer has two modes.If it works in one mode, the variable for meter output in the other mode
         // is assigned 0
@@ -4311,16 +4558,16 @@ void ElectricTransformer::manageTransformers(EnergyPlusData &state, Real64 const
     } else {
         efficiency_ = powerOut_ / powerIn_;
     }
-    noLoadLossEnergy_ = noLoadLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
-    loadLossEnergy_ = loadLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+    noLoadLossEnergy_ = noLoadLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
+    loadLossEnergy_ = loadLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
 
-    energyIn_ = powerIn_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
-    energyOut_ = powerOut_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+    energyIn_ = powerIn_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
+    energyOut_ = powerOut_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
 
     //   Thermal loss rate may not be equal to Total loss rate. This is the case when surplus power is less than the
     //    calculated total loss rate for a cogeneration transformer. That is why "PowerIn - PowerOut" is used below.
     thermalLossRate_ = powerIn_ - powerOut_;
-    thermalLossEnergy_ = thermalLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour();
+    thermalLossEnergy_ = thermalLossRate_ * DataHVACGlobals::TimeStepSys * DataGlobalConstants::SecInHour;
 
     if (zoneNum_ > 0) { // set values for zone heat gains
         qdotConvZone_ = (1.0 - zoneRadFrac_) * thermalLossRate_;
@@ -4333,13 +4580,13 @@ void ElectricTransformer::setupMeterIndices(EnergyPlusData &state)
     if (usageMode_ == TransformerUse::powerInFromGrid) {
         for (std::size_t meterNum = 0; meterNum < wiredMeterNames_.size(); ++meterNum) {
 
-            wiredMeterPtrs_[meterNum] = GetMeterIndex(wiredMeterNames_[meterNum]);
+            wiredMeterPtrs_[meterNum] = GetMeterIndex(state, wiredMeterNames_[meterNum]);
 
             // Check whether the meter is an electricity meter
             // Index function is used here because some resource types are not Electricity but strings containing
             // Electricity such as ElectricityPurchased and ElectricityProduced.
             // It is not proper to have this check in GetInput routine because the meter index may have not been defined
-            if (!has(GetMeterResourceType(wiredMeterPtrs_[meterNum]), "Electricity")) {
+            if (!has(GetMeterResourceType(state, wiredMeterPtrs_[meterNum]), "Electricity")) {
                 EnergyPlus::ShowFatalError(state, "Non-electricity meter used for " + name_);
             }
         }

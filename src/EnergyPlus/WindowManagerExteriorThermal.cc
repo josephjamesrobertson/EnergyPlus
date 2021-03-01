@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2020, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-2021, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Sustainable Energy, LLC, and other
@@ -58,7 +58,8 @@
 // Windows library headers
 #include <WCETarcog.hpp>
 
-#include "WindowManagerExteriorThermal.hh"
+// EnergyPlus headers
+#include <EnergyPlus/WindowManagerExteriorThermal.hh>
 
 namespace EnergyPlus {
 
@@ -109,9 +110,7 @@ namespace WindowManager {
 
         // Interior and exterior shading layers have gas between them and IGU but that gas
         // was not part of construction so it needs to be increased by one
-        if (SurfWinShadingFlag(SurfNum) == IntShadeOn || SurfWinShadingFlag(SurfNum) == ExtShadeOn || SurfWinShadingFlag(SurfNum) == IntBlindOn ||
-            SurfWinShadingFlag(SurfNum) == ExtBlindOn || SurfWinShadingFlag(SurfNum) == ExtScreenOn || SurfWinShadingFlag(SurfNum) == BGShadeOn ||
-            SurfWinShadingFlag(SurfNum) == BGBlindOn) {
+        if (ANY_SHADE_SCREEN(SurfWinShadingFlag(SurfNum)) || ANY_BLIND(SurfWinShadingFlag(SurfNum))) {
             ++totSolidLayers;
         }
 
@@ -135,12 +134,12 @@ namespace WindowManager {
                 aTemp = aLayer->getTemperature(aSide);
                 state.dataWindowManager->thetas(i) = aTemp;
                 if (i == 1) {
-                    SurfOutsideTemp = aTemp - DataGlobalConstants::KelvinConv();
+                    SurfOutsideTemp = aTemp - DataGlobalConstants::KelvinConv;
                 }
                 ++i;
             }
-            SurfInsideTemp = aTemp - DataGlobalConstants::KelvinConv();
-            if (SurfWinShadingFlag(SurfNum) == IntShadeOn || SurfWinShadingFlag(SurfNum) == IntBlindOn) {
+            SurfInsideTemp = aTemp - DataGlobalConstants::KelvinConv;
+            if (ANY_INTERIOR_SHADE_BLIND(SurfWinShadingFlag(SurfNum))) {
                 auto EffShBlEmiss = InterpSlatAng(SurfWinSlatAngThisTS(SurfNum), SurfWinMovableSlats(SurfNum), window.EffShBlindEmiss);
                 auto EffGlEmiss = InterpSlatAng(SurfWinSlatAngThisTS(SurfNum), SurfWinMovableSlats(SurfNum), window.EffGlassEmiss);
                 SurfWinEffInsSurfTemp(SurfNum) =
@@ -149,7 +148,7 @@ namespace WindowManager {
         }
 
         HConvIn(SurfNum) = aSystem->getHc(Environment::Indoor);
-        if (SurfWinShadingFlag(SurfNum) == IntShadeOn || SurfWinShadingFlag(SurfNum) == IntBlindOn || aFactory.isInteriorShade()) {
+        if (ANY_INTERIOR_SHADE_BLIND(SurfWinShadingFlag(SurfNum))|| aFactory.isInteriorShade()) {
             // It is not clear why EnergyPlus keeps this interior calculations separately for interior shade. This does create different
             // solution from heat transfer from tarcog itself. Need to confirm with LBNL team about this approach. Note that heat flow
             // through shade (consider case when openings are zero) is different from heat flow obtained by these equations. Will keep
@@ -174,7 +173,7 @@ namespace WindowManager {
             auto NetIRHeatGainShade = ShadeArea * EpsShIR2 * (state.dataWindowManager->sigma * pow(state.dataWindowManager->thetas(state.dataWindowManager->nglfacep), 4) - rmir) +
                                       EpsShIR1 * (state.dataWindowManager->sigma * pow(state.dataWindowManager->thetas(state.dataWindowManager->nglfacep - 1), 4) - rmir) * RhoGlIR2 * TauShIR / ShGlReflFacIR;
             auto NetIRHeatGainGlass = ShadeArea * (glassEmiss * TauShIR / ShGlReflFacIR) * (state.dataWindowManager->sigma * pow(state.dataWindowManager->thetas(state.dataWindowManager->nglface), 4) - rmir);
-            auto tind = surface.getInsideAirTemperature(state, SurfNum) + DataGlobalConstants::KelvinConv();
+            auto tind = surface.getInsideAirTemperature(state, SurfNum) + DataGlobalConstants::KelvinConv;
             auto ConvHeatGainFrZoneSideOfShade = ShadeArea * HConvIn(SurfNum) * (state.dataWindowManager->thetas(state.dataWindowManager->nglfacep) - tind);
             SurfWinHeatGain(SurfNum) = SurfWinTransSolar(SurfNum) + ConvHeatGainFrZoneSideOfShade + NetIRHeatGainGlass + NetIRHeatGainShade;
             SurfWinHeatTransfer(SurfNum) = SurfWinHeatGain(SurfNum);
@@ -191,7 +190,7 @@ namespace WindowManager {
 
             auto glassTemperature = aGlassLayer->getSurface(Side::Back)->getTemperature();
             SurfWinEffInsSurfTemp(SurfNum) =
-                (EffShBlEmiss * SurfInsideTemp + EffGlEmiss * (glassTemperature - DataGlobalConstants::KelvinConv())) / (EffShBlEmiss + EffGlEmiss);
+                (EffShBlEmiss * SurfInsideTemp + EffGlEmiss * (glassTemperature - DataGlobalConstants::KelvinConv)) / (EffShBlEmiss + EffGlEmiss);
 
         } else {
             // Another adoptation to old source that looks suspicious. Check if heat flow through
@@ -229,8 +228,8 @@ namespace WindowManager {
             SurfaceWindow(SurfNum).ThetaFace(2 * k) = state.dataWindowManager->thetas(2 * k);
 
             // temperatures for reporting
-            SurfWinFenLaySurfTempFront(k, SurfNum) = state.dataWindowManager->thetas(2 * k - 1) - DataGlobalConstants::KelvinConv();
-            SurfWinFenLaySurfTempBack(k, SurfNum) = state.dataWindowManager->thetas(2 * k) - DataGlobalConstants::KelvinConv();
+            SurfWinFenLaySurfTempFront(k, SurfNum) = state.dataWindowManager->thetas(2 * k - 1) - DataGlobalConstants::KelvinConv;
+            SurfWinFenLaySurfTempBack(k, SurfNum) = state.dataWindowManager->thetas(2 * k) - DataGlobalConstants::KelvinConv;
         }
     }
 
@@ -247,23 +246,22 @@ namespace WindowManager {
         m_ConstructionNumber = m_Surface.Construction;
         m_ShadePosition = ShadePosition::NoShade;
 
-        if (ShadeFlag == IntShadeOn || ShadeFlag == ExtShadeOn || ShadeFlag == IntBlindOn || ShadeFlag == ExtBlindOn || ShadeFlag == BGShadeOn ||
-            ShadeFlag == BGBlindOn || ShadeFlag == ExtScreenOn) {
+        if (ANY_SHADE_SCREEN(ShadeFlag) || ANY_BLIND(ShadeFlag)) {
             m_ConstructionNumber = m_Surface.activeShadedConstruction;
             if (SurfWinStormWinFlag(t_SurfNum) > 0) m_ConstructionNumber = m_Surface.activeStormWinShadedConstruction;
         }
 
         m_TotLay = getNumOfLayers(state);
 
-        if (ShadeFlag == IntShadeOn || ShadeFlag == IntBlindOn) {
+        if (ANY_INTERIOR_SHADE_BLIND(ShadeFlag)) {
             m_ShadePosition = ShadePosition::Interior;
         }
 
-        if (ShadeFlag == ExtShadeOn || ShadeFlag == ExtBlindOn || ShadeFlag == ExtScreenOn) {
+        if (ANY_EXTERIOR_SHADE_BLIND_SCREEN(ShadeFlag)) {
             m_ShadePosition = ShadePosition::Exterior;
         }
 
-        if (ShadeFlag == BGShadeOn || ShadeFlag == BGBlindOn) {
+        if (ANY_BETWEENGLASS_SHADE_BLIND(ShadeFlag)) {
             m_ShadePosition = ShadePosition::Between;
         }
     }
@@ -302,16 +300,14 @@ namespace WindowManager {
     {
         auto ConstrNum = m_Surface.Construction;
 
-        if (SurfWinShadingFlag(m_SurfNum) == IntShadeOn || SurfWinShadingFlag(m_SurfNum) == ExtShadeOn || SurfWinShadingFlag(m_SurfNum) == IntBlindOn ||
-            SurfWinShadingFlag(m_SurfNum) == ExtBlindOn || SurfWinShadingFlag(m_SurfNum) == BGShadeOn || SurfWinShadingFlag(m_SurfNum) == BGBlindOn ||
-            SurfWinShadingFlag(m_SurfNum) == ExtScreenOn) {
+        if (ANY_SHADE_SCREEN(SurfWinShadingFlag(m_SurfNum)) || ANY_BLIND(SurfWinShadingFlag(m_SurfNum))) {
             ConstrNum = m_Surface.activeShadedConstruction;
             if (SurfWinStormWinFlag(m_SurfNum) > 0) ConstrNum = m_Surface.activeStormWinShadedConstruction;
         }
 
         auto &construction(state.dataConstruction->Construct(ConstrNum));
         auto LayPtr = construction.LayerPoint(t_Index);
-        return &dataMaterial.Material(LayPtr);
+        return &state.dataMaterial->Material(LayPtr);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -330,7 +326,7 @@ namespace WindowManager {
         } else if (matGroup == WindowGas || matGroup == WindowGasMixture) {
             aLayer = getGapLayer(*material);
         } else if (matGroup == ComplexWindowGap) {
-            aLayer = getComplexGapLayer(*material);
+            aLayer = getComplexGapLayer(state, *material);
         }
 
         return aLayer;
@@ -498,10 +494,10 @@ namespace WindowManager {
         auto aGas = getAir();
         auto thickness = 0.0;
 
-        if (SurfWinShadingFlag(m_SurfNum) == IntBlindOn || SurfWinShadingFlag(m_SurfNum) == ExtBlindOn) {
+        if (SurfWinShadingFlag(m_SurfNum) == WinShadingType::IntBlind || SurfWinShadingFlag(m_SurfNum) == WinShadingType::ExtBlind) {
             thickness = Blind(SurfWinBlindNumber(m_SurfNum)).BlindToGlassDist;
         }
-        if (SurfWinShadingFlag(m_SurfNum) == IntShadeOn || SurfWinShadingFlag(m_SurfNum) == ExtShadeOn || SurfWinShadingFlag(m_SurfNum) == ExtScreenOn) {
+        if (SurfWinShadingFlag(m_SurfNum) == WinShadingType::IntShade || SurfWinShadingFlag(m_SurfNum) == WinShadingType::ExtShade || SurfWinShadingFlag(m_SurfNum) == WinShadingType::ExtScreen) {
             auto material = getLayerMaterial(state, t_Index);
             thickness = material->WinShadeToGlassDist;
         }
@@ -510,7 +506,7 @@ namespace WindowManager {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
-    std::shared_ptr<CBaseIGULayer> CWCEHeatTransferFactory::getComplexGapLayer(Material::MaterialProperties const &material) const
+    std::shared_ptr<CBaseIGULayer> CWCEHeatTransferFactory::getComplexGapLayer(EnergyPlusData &state, Material::MaterialProperties const &material) const
     {
         // SUBROUTINE INFORMATION:
         //       AUTHOR         Simon Vidanovic
@@ -523,7 +519,7 @@ namespace WindowManager {
         auto const pres = 1e5; // Old code uses this constant pressure
         auto thickness = material.Thickness;
         auto gasPointer = material.GasPointer;
-        auto &gasMaterial(dataMaterial.Material(gasPointer));
+        auto &gasMaterial(state.dataMaterial->Material(gasPointer));
         auto aGas = getGas(gasMaterial);
         std::shared_ptr<CBaseIGULayer> aLayer = std::make_shared<CIGUGapLayer>(thickness, pres, aGas);
         return aLayer;
@@ -591,7 +587,7 @@ namespace WindowManager {
 
         // PURPOSE OF THIS SUBROUTINE:
         // Creates indoor environment object from surface properties in EnergyPlus
-        auto tin = m_Surface.getInsideAirTemperature(state, m_SurfNum) + DataGlobalConstants::KelvinConv();
+        auto tin = m_Surface.getInsideAirTemperature(state, m_SurfNum) + DataGlobalConstants::KelvinConv;
         auto hcin = HConvIn(m_SurfNum);
 
         auto IR = m_Surface.getInsideIR(m_SurfNum);
@@ -613,7 +609,7 @@ namespace WindowManager {
 
         // PURPOSE OF THIS SUBROUTINE:
         // Creates outdoor environment object from surface properties in EnergyPlus
-        double tout = m_Surface.getOutsideAirTemperature(state, m_SurfNum) + DataGlobalConstants::KelvinConv();
+        double tout = m_Surface.getOutsideAirTemperature(state, m_SurfNum) + DataGlobalConstants::KelvinConv;
         double IR = m_Surface.getOutsideIR(state, m_SurfNum);
         // double dirSolRad = QRadSWOutIncident( t_SurfNum ) + QS( Surface( t_SurfNum ).Zone );
         double swRadiation = m_Surface.getSWIncident(m_SurfNum);

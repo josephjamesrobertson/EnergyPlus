@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2020, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-2021, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Sustainable Energy, LLC, and other
@@ -417,7 +417,7 @@ namespace EnergyPlus::DaylightingManager {
         int ISA;
         int ISlatAngle;
 
-        // FLOW:
+
         if (state.dataDaylightingManager->CalcDayltghCoefficients_firstTime) {
             GetDaylightingParametersInput(state);
             CheckTDDsAndLightShelvesInDaylitZones(state);
@@ -510,7 +510,7 @@ namespace EnergyPlus::DaylightingManager {
                 state.dataDaylightingManager->GILSU = 0.0;
                 for (IHR = 1; IHR <= 24; ++IHR) {
                     if (SUNCOSHR(IHR, 3) < DataEnvironment::SunIsUpValue) continue; // Skip if sun is below horizon //Autodesk SUNCOSHR was uninitialized here
-                    state.dataDaylightingManager->PHSUN = DataGlobalConstants::PiOvr2() - std::acos(SUNCOSHR(IHR, 3));
+                    state.dataDaylightingManager->PHSUN = DataGlobalConstants::PiOvr2 - std::acos(SUNCOSHR(IHR, 3));
                     state.dataDaylightingManager->PHSUNHR(IHR) = state.dataDaylightingManager->PHSUN;
                     state.dataDaylightingManager->SPHSUNHR(IHR) = std::sin(state.dataDaylightingManager->PHSUN);
                     state.dataDaylightingManager->CPHSUNHR(IHR) = std::cos(state.dataDaylightingManager->PHSUN);
@@ -535,7 +535,7 @@ namespace EnergyPlus::DaylightingManager {
             state.dataDaylightingManager->GILSK(state.dataGlobal->HourOfDay, {1, 4}) = 0.0;
             state.dataDaylightingManager->GILSU(state.dataGlobal->HourOfDay) = 0.0;
             if (!(SUNCOSHR(state.dataGlobal->HourOfDay, 3) < DataEnvironment::SunIsUpValue)) { // Skip if sun is below horizon
-                state.dataDaylightingManager->PHSUN = DataGlobalConstants::PiOvr2() - std::acos(SUNCOSHR(state.dataGlobal->HourOfDay, 3));
+                state.dataDaylightingManager->PHSUN = DataGlobalConstants::PiOvr2 - std::acos(SUNCOSHR(state.dataGlobal->HourOfDay, 3));
                 state.dataDaylightingManager->PHSUNHR(state.dataGlobal->HourOfDay) = state.dataDaylightingManager->PHSUN;
                 state.dataDaylightingManager->SPHSUNHR(state.dataGlobal->HourOfDay) = std::sin(state.dataDaylightingManager->PHSUN);
                 state.dataDaylightingManager->CPHSUNHR(state.dataGlobal->HourOfDay) = std::cos(state.dataDaylightingManager->PHSUN);
@@ -863,7 +863,7 @@ namespace EnergyPlus::DaylightingManager {
         int IWin;        // Window counter
         int IWin2;       // Secondary window counter (for TDD:DOME object, if exists)
         int InShelfSurf; // Inside daylighting shelf surface number
-        int ShType;      // Window shading type
+        WinShadingType ShType;      // Window shading type
         int BlNum;       // Window Blind Number
         int LSHCAL;      // Interior shade calculation flag: 0=not yet
         //  calculated, 1=already calculated
@@ -909,7 +909,7 @@ namespace EnergyPlus::DaylightingManager {
         }
 
         // Azimuth of view vector in absolute coord sys
-        AZVIEW = (state.dataDaylightingData->ZoneDaylight(ZoneNum).ViewAzimuthForGlare + Zone(ZoneNum).RelNorth + BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians();
+        AZVIEW = (state.dataDaylightingData->ZoneDaylight(ZoneNum).ViewAzimuthForGlare + Zone(ZoneNum).RelNorth + BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians;
         // View vector components in absolute coord sys
         VIEWVC(1) = std::sin(AZVIEW);
         VIEWVC(2) = std::cos(AZVIEW);
@@ -1262,7 +1262,7 @@ namespace EnergyPlus::DaylightingManager {
         int IWin;        // Window counter
         int IWin2;       // Secondary window counter (for TDD:DOME object, if exists)
         int InShelfSurf; // Inside daylighting shelf surface number
-        int ShType;      // Window shading type
+        WinShadingType ShType;      // Window shading type
         int BlNum;       // Window Blind Number
         int LSHCAL;      // Interior shade calculation flag: 0=not yet
         //  calculated, 1=already calculated
@@ -1312,7 +1312,7 @@ namespace EnergyPlus::DaylightingManager {
         }
 
         // Azimuth of view vector in absolute coord sys
-        AZVIEW = (state.dataDaylightingData->ZoneDaylight(ZoneNum).ViewAzimuthForGlare + Zone(ZoneNum).RelNorth + BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians();
+        AZVIEW = (state.dataDaylightingData->ZoneDaylight(ZoneNum).ViewAzimuthForGlare + Zone(ZoneNum).RelNorth + BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians;
         // View vector components in absolute coord sys
         VIEWVC(1) = std::sin(AZVIEW);
         VIEWVC(2) = std::cos(AZVIEW);
@@ -1612,7 +1612,7 @@ namespace EnergyPlus::DaylightingManager {
                                                   int &LSHCAL,      // Interior shade calculation flag:  0=not yet calculated, 1=already calculated
                                                   int &InShelfSurf, // Inside daylighting shelf surface number
                                                   int &ICtrl,       // Window control counter
-                                                  int &ShType,      // Window shading type
+                                                  WinShadingType &ShType,      // Window shading type
                                                   int &BlNum,       // Window blind number
                                                   Vector3<Real64> &WNORM2, // Unit vector normal to window
                                                   DataDaylighting::iExtWinType &ExtWinType,         // Exterior window type (InZoneExtWin, AdjZoneExtWin, NotInOrAdjZoneExtWin)
@@ -1740,7 +1740,7 @@ namespace EnergyPlus::DaylightingManager {
         }
 
         ICtrl = Surface(IWin).activeWindowShadingControl;
-        ShType = WSC_ST_NoShade; // 'NOSHADE'
+        ShType = WinShadingType::NoShade; // 'NOSHADE'
         BlNum = 0;
         //		ScNum = 0; //Unused Set but never used
         if (Surface(IWin).HasShadeControl) ShType = WindowShadingControl(ICtrl).ShadingType;
@@ -1781,7 +1781,7 @@ namespace EnergyPlus::DaylightingManager {
         // incidence for fully switched (dark) state to that of unswitched state
         SurfWinVisTransRatio(IWin) = 1.0;
         if (ICtrl > 0) {
-            if (ShType == WSC_ST_SwitchableGlazing) {
+            if (ShType == WinShadingType::SwitchableGlazing) {
                 IConstShaded = Surface(IWin).activeShadedConstruction;
                 SurfWinVisTransRatio(IWin) =
                     SafeDivide(POLYF(1.0, state.dataConstruction->Construct(IConstShaded).TransVisBeamCoef), POLYF(1.0, state.dataConstruction->Construct(IConst).TransVisBeamCoef));
@@ -2452,7 +2452,7 @@ namespace EnergyPlus::DaylightingManager {
         DWX = Surface(IWin).Width / NWX;
         DWY = Surface(IWin).Height / NWY;
 
-        AZVIEW = (state.dataDaylightingData->ZoneDaylight(ZoneNum).ViewAzimuthForGlare + Zone(ZoneNum).RelNorth + BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians();
+        AZVIEW = (state.dataDaylightingData->ZoneDaylight(ZoneNum).ViewAzimuthForGlare + Zone(ZoneNum).RelNorth + BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians;
 
         // Perform necessary calculations for window coordinates and vectors.  This will be used to calculate centroids for
         // each window element
@@ -3073,7 +3073,7 @@ namespace EnergyPlus::DaylightingManager {
 
                 elPos = DaylghtAltAndAzimuth(V);
 
-                XR = std::tan(std::abs(DataGlobalConstants::PiOvr2() - AZVIEW - elPos.Azimuth) + 0.001);
+                XR = std::tan(std::abs(DataGlobalConstants::PiOvr2 - AZVIEW - elPos.Azimuth) + 0.001);
                 YR = std::tan(elPos.Altitude + 0.001);
                 RefPointMap.RefPtIntPosFac(iTrnRay) = DayltgGlarePositionFactor(XR, YR);
             }
@@ -3136,8 +3136,8 @@ namespace EnergyPlus::DaylightingManager {
 
         assert(AzimSteps <= AzimAngStepsForSolReflCalc);
 
-        DPhi = DataGlobalConstants::PiOvr2() / (AltSteps / 2.0);
-        DTheta = DataGlobalConstants::Pi() / AzimSteps;
+        DPhi = DataGlobalConstants::PiOvr2 / (AltSteps / 2.0);
+        DTheta = DataGlobalConstants::Pi / AzimSteps;
         SkyGndObs = 0.0;
         SkyGndUnObs = 0.0;
 
@@ -3171,7 +3171,7 @@ namespace EnergyPlus::DaylightingManager {
             dOmegaGnd = CPhi * DTheta * DPhi;
             // Cosine of angle of incidence of ground ray on ground plane
             CosIncAngURay = SPhi;
-            IncAngSolidAngFac = CosIncAngURay * dOmegaGnd / DataGlobalConstants::Pi();
+            IncAngSolidAngFac = CosIncAngURay * dOmegaGnd / DataGlobalConstants::Pi;
             // Azimuth loop
             for (int ITheta = 1; ITheta <= 2 * AzimSteps; ++ITheta) {
                 URay(1) = CPhi * cos_Theta(ITheta);
@@ -3246,7 +3246,7 @@ namespace EnergyPlus::DaylightingManager {
         Real64 const TVISB,   // Visible transmittance of window for COSB angle of incidence (times light well efficiency, if appropriate)
         Real64 const DOMEGA,  // Solid angle subtended by window element wrt reference point (steradians)
         int const ICtrl,      // Window control counter
-        int const ShType,     // Window shading type
+        WinShadingType const ShType,     // Window shading type
         int const BlNum,      // Window blind number
         Real64 const THRAY,   // Azimuth of ray from reference point to window element (radians)
         Vector3<Real64> const &WNORM2, // Unit vector normal to window
@@ -3438,7 +3438,7 @@ namespace EnergyPlus::DaylightingManager {
                     // Exterior building surface is nearest hit
                     if (!state.dataConstruction->Construct(ObsConstrNum).TypeIsWindow) {
                         // Obstruction is not a window, i.e., is an opaque surface
-                        ObsVisRefl = 1.0 - dataMaterial.Material(state.dataConstruction->Construct(ObsConstrNum).LayerPoint(1)).AbsorpVisible;
+                        ObsVisRefl = 1.0 - state.dataMaterial->Material(state.dataConstruction->Construct(ObsConstrNum).LayerPoint(1)).AbsorpVisible;
                     } else {
                         // Obstruction is a window; assume it is bare
                         if (SurfWinStormWinFlag(NearestHitSurfNum) == 1) ObsConstrNum = Surface(NearestHitSurfNum).StormWinConstruction;
@@ -3463,10 +3463,10 @@ namespace EnergyPlus::DaylightingManager {
                     if (dot(Ray, Surface(NearestHitSurfNum).OutNormVec) > 0.0) NearestHitSurfNumX = NearestHitSurfNum + 1;
                 }
                 if (!DetailedSkyDiffuseAlgorithm || !ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing) {
-                    SkyReflVisLum = ObsVisRefl * Surface(NearestHitSurfNumX).ViewFactorSky * DifShdgRatioIsoSky(NearestHitSurfNumX) / DataGlobalConstants::Pi();
+                    SkyReflVisLum = ObsVisRefl * Surface(NearestHitSurfNumX).ViewFactorSky * DifShdgRatioIsoSky(NearestHitSurfNumX) / DataGlobalConstants::Pi;
                 } else {
                     SkyReflVisLum =
-                        ObsVisRefl * Surface(NearestHitSurfNumX).ViewFactorSky * DifShdgRatioIsoSkyHRTS(1, iHour, NearestHitSurfNumX) / DataGlobalConstants::Pi();
+                        ObsVisRefl * Surface(NearestHitSurfNumX).ViewFactorSky * DifShdgRatioIsoSkyHRTS(1, iHour, NearestHitSurfNumX) / DataGlobalConstants::Pi;
                 }
                 assert(equal_dimensions(state.dataDaylightingManager->AVWLSK, state.dataDaylightingManager->EDIRSK));
                 auto l2(state.dataDaylightingManager->GILSK.index(iHour, 1));
@@ -3524,9 +3524,9 @@ namespace EnergyPlus::DaylightingManager {
                         GroundHitPt(2) = RWIN2(2);
                     }
                 }
-                Real64 const GILSK_mult((state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi()) * ObTrans * SkyObstructionMult);
+                Real64 const GILSK_mult((state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi) * ObTrans * SkyObstructionMult);
                 Real64 const TVISB_ObTrans(TVISB * ObTrans);
-                Real64 const AVWLSU_add(TVISB_ObTrans * state.dataDaylightingManager->GILSU(iHour) * (state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi()));
+                Real64 const AVWLSU_add(TVISB_ObTrans * state.dataDaylightingManager->GILSU(iHour) * (state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi));
                 Vector3<Real64> const SUNCOS_iHour(SUNCOSHR(iHour, {1, 3}));
                 assert(equal_dimensions(state.dataDaylightingManager->EDIRSK, state.dataDaylightingManager->AVWLSK));
                 auto l(state.dataDaylightingManager->EDIRSK.index(iHour, 1, 1));
@@ -3675,15 +3675,15 @@ namespace EnergyPlus::DaylightingManager {
                         state.dataDaylightingManager->EDIRSUdisk(iHour, 1) = RAYCOS(3) * TVISS * ObTransDisk; // Bare window
 
                         TransBmBmMult = 0.0;
-                        if (ShType == WSC_ST_ExteriorBlind || ShType == WSC_ST_InteriorBlind || ShType == WSC_ST_BetweenGlassBlind) {
+                        if (ANY_BLIND(ShType)) {
                             ProfileAngle(IWin, RAYCOS, Blind(BlNum).SlatOrientation, ProfAng);
                             // Contribution of beam passing through slats and reaching reference point
                             for (JB = 1; JB <= MaxSlatAngs; ++JB) {
                                 // IF (.NOT.SurfaceWindow(IWin)%MovableSlats .AND. JB > 1) EXIT
                                 if (SurfWinMovableSlats(IWin)) {
-                                    SlatAng = (JB - 1) * DataGlobalConstants::Pi() / (MaxSlatAngs - 1);
+                                    SlatAng = (JB - 1) * DataGlobalConstants::Pi / (MaxSlatAngs - 1);
                                 } else {
-                                    SlatAng = Blind(BlNum).SlatAngle * DataGlobalConstants::DegToRadians();
+                                    SlatAng = Blind(BlNum).SlatAngle * DataGlobalConstants::DegToRadians;
                                 }
                                 TransBmBmMult(JB) = BlindBeamBeamTrans(
                                     ProfAng, SlatAng, Blind(BlNum).SlatWidth, Blind(BlNum).SlatSeparation, Blind(BlNum).SlatThickness);
@@ -3692,7 +3692,7 @@ namespace EnergyPlus::DaylightingManager {
                                 // do this only once for fixed slat blinds
                                 if (!SurfWinMovableSlats(IWin)) break;
                             }
-                        } else if (ShType == WSC_ST_ExteriorScreen) {
+                        } else if (ShType == WinShadingType::ExtScreen) {
                             //                          pass angle from sun to window normal here using PHSUN and THSUN from above and surface angles
                             //                          SunAltitudeToWindowNormalAngle = PHSUN - SurfaceWindow(IWin)%Phi
                             //                          SunAzimuthToWindowNormalAngle = THSUN - SurfaceWindow(IWin)%Theta
@@ -3705,7 +3705,7 @@ namespace EnergyPlus::DaylightingManager {
 
                         // Position factor for sun (note that AZVIEW is wrt y-axis and THSUN is wrt
                         // x-axis of absolute coordinate system.
-                        XR = std::tan(std::abs(DataGlobalConstants::PiOvr2() - AZVIEW - state.dataDaylightingManager->THSUN) + 0.001);
+                        XR = std::tan(std::abs(DataGlobalConstants::PiOvr2 - AZVIEW - state.dataDaylightingManager->THSUN) + 0.001);
                         YR = std::tan(state.dataDaylightingManager->PHSUN + 0.001);
                         POSFAC = DayltgGlarePositionFactor(XR, YR);
 
@@ -3729,13 +3729,13 @@ namespace EnergyPlus::DaylightingManager {
                             XAVWL = 14700.0 * std::sqrt(0.000068 * POSFAC) * double(NWX * NWY) / std::pow(WindowSolidAngleDaylightPoint, 0.8);
                             state.dataDaylightingManager->AVWLSUdisk(iHour, 1) = XAVWL * TVISS * ObTransDisk; // Bare window
 
-                            if (ShType == WSC_ST_ExteriorBlind || ShType == WSC_ST_InteriorBlind || ShType == WSC_ST_BetweenGlassBlind) {
+                            if (ANY_BLIND(ShType)) {
                                 for (JB = 1; JB <= MaxSlatAngs; ++JB) {
                                     // IF (.NOT. SurfaceWindow(IWin)%MovableSlats .AND. JB > 1) EXIT
                                     state.dataDaylightingManager->AVWLSUdisk(iHour, JB + 1) = XAVWL * TVISS * TransBmBmMult(JB) * ObTransDisk;
                                     if (!SurfWinMovableSlats(IWin)) break;
                                 }
-                            } else if (ShType == WSC_ST_ExteriorScreen) {
+                            } else if (ShType == WinShadingType::ExtScreen) {
                                 state.dataDaylightingManager->AVWLSUdisk(iHour, 2) = XAVWL * TVISS * TransBmBmMult(1) * ObTransDisk;
                             }
                         } // Position Factor
@@ -3842,16 +3842,16 @@ namespace EnergyPlus::DaylightingManager {
                                 state.dataDaylightingManager->EDIRSUdisk(iHour, 1) += SunVecMir(3) * SpecReflectance * TVisRefl; // Bare window
 
                                 TransBmBmMultRefl = 0.0;
-                                if (ShType == WSC_ST_ExteriorBlind || ShType == WSC_ST_InteriorBlind || ShType == WSC_ST_BetweenGlassBlind) {
+                                if (ANY_BLIND(ShType)) {
                                     ProfileAngle(IWin, SunVecMir, Blind(BlNum).SlatOrientation, ProfAng);
                                     // Contribution of reflected beam passing through slats and reaching reference point
-                                    Real64 const Pi_SlatAng_fac(DataGlobalConstants::Pi() / (MaxSlatAngs - 1));
+                                    Real64 const Pi_SlatAng_fac(DataGlobalConstants::Pi / (MaxSlatAngs - 1));
                                     for (JB = 1; JB <= MaxSlatAngs; ++JB) {
                                         // IF (.NOT.SurfaceWindow(IWin)%MovableSlats .AND. JB > 1) EXIT
                                         if (SurfWinMovableSlats(IWin)) {
                                             SlatAng = double(JB - 1) * Pi_SlatAng_fac;
                                         } else {
-                                            SlatAng = Blind(BlNum).SlatAngle * DataGlobalConstants::DegToRadians();
+                                            SlatAng = Blind(BlNum).SlatAngle * DataGlobalConstants::DegToRadians;
                                         }
                                         TransBmBmMultRefl(JB) = BlindBeamBeamTrans(
                                             ProfAng, SlatAng, Blind(BlNum).SlatWidth, Blind(BlNum).SlatSeparation, Blind(BlNum).SlatThickness);
@@ -3859,7 +3859,7 @@ namespace EnergyPlus::DaylightingManager {
 
                                         if (!SurfWinMovableSlats(IWin)) break;
                                     }
-                                } else if (ShType == WSC_ST_ExteriorScreen) {
+                                } else if (ShType == WinShadingType::ExtScreen) {
                                     //                             pass angle from sun to window normal here using PHSUN and THSUN from above and
                                     //                             surface angles SunAltitudeToWindowNormalAngle = PHSUN - SurfaceWindow(IWin)%Phi
                                     //                             SunAzimuthToWindowNormalAngle = THSUN - SurfaceWindow(IWin)%Theta
@@ -3872,20 +3872,20 @@ namespace EnergyPlus::DaylightingManager {
 
                                 PHSUNrefl = SunVecMir(3);
                                 THSUNrefl = std::atan2(SunVecMir(2), SunVecMir(1));
-                                XR = std::tan(std::abs(DataGlobalConstants::PiOvr2() - AZVIEW - THSUNrefl) + 0.001);
+                                XR = std::tan(std::abs(DataGlobalConstants::PiOvr2 - AZVIEW - THSUNrefl) + 0.001);
                                 YR = std::tan(PHSUNrefl + 0.001);
                                 POSFAC = DayltgGlarePositionFactor(XR, YR);
                                 if (POSFAC != 0.0 && SurfaceWindow(IWin).SolidAngAtRefPtWtd(iRefPoint) > 0.000001) {
                                     XAVWL = 14700.0 * std::sqrt(0.000068 * POSFAC) * double(NWX * NWY) /
                                             std::pow(SurfaceWindow(IWin).SolidAngAtRefPtWtd(iRefPoint), 0.8);
                                     state.dataDaylightingManager->AVWLSUdisk(iHour, 1) += XAVWL * TVisRefl * SpecReflectance; // Bare window
-                                    if (ShType == WSC_ST_ExteriorBlind || ShType == WSC_ST_InteriorBlind || ShType == WSC_ST_BetweenGlassBlind) {
+                                    if (ANY_BLIND(ShType)) {
                                         for (JB = 1; JB <= MaxSlatAngs; ++JB) {
                                             // IF(.NOT. SurfaceWindow(IWin)%MovableSlats .AND. JB > 1) EXIT
                                             state.dataDaylightingManager->AVWLSUdisk(iHour, JB + 1) += XAVWL * TVisRefl * SpecReflectance * TransBmBmMultRefl(JB);
                                             if (!SurfWinMovableSlats(IWin)) break;
                                         }
-                                    } else if (ShType == WSC_ST_ExteriorScreen) {
+                                    } else if (ShType == WinShadingType::ExtScreen) {
                                         state.dataDaylightingManager->AVWLSUdisk(iHour, 2) += XAVWL * TVisRefl * SpecReflectance * TransBmBmMultRefl(1);
                                     }
                                 }
@@ -3898,10 +3898,7 @@ namespace EnergyPlus::DaylightingManager {
 
         } // Last pass
 
-        if ((ICtrl > 0 && (ShType == WSC_ST_InteriorShade || ShType == WSC_ST_ExteriorShade || ShType == WSC_ST_BetweenGlassShade ||
-                           ShType == WSC_ST_InteriorBlind || ShType == WSC_ST_ExteriorBlind || ShType == WSC_ST_BetweenGlassBlind ||
-                           ShType == WSC_ST_ExteriorScreen)) ||
-            SurfWinSolarDiffusing(IWin)) {
+        if ((ICtrl > 0 && (ANY_BLIND(ShType) || ANY_SHADE_SCREEN(ShType))) || SurfWinSolarDiffusing(IWin)) {
 
             // ----- CASE II -- WINDOW WITH SCREEN, SHADE, BLIND, OR DIFFUSING WINDOW
 
@@ -4013,7 +4010,7 @@ namespace EnergyPlus::DaylightingManager {
                     state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylSourceFacSky(iHour, JSH, ISky, iRefPoint, loopwin) =
                         state.dataDaylightingManager->AVWLSK(iHour, JSH, ISky) / (NWX * NWY * state.dataDaylightingManager->GILSK(iHour, ISky));
                     state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylBackFacSky(iHour, JSH, ISky, iRefPoint, loopwin) =
-                        state.dataDaylightingManager->EINTSK(iHour, JSH, ISky) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi() * state.dataDaylightingManager->GILSK(iHour, ISky));
+                        state.dataDaylightingManager->EINTSK(iHour, JSH, ISky) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi * state.dataDaylightingManager->GILSK(iHour, ISky));
                 } else {
                     state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylIllFacSky(iHour, JSH, ISky, iRefPoint, loopwin) = 0.0;
                     state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylSourceFacSky(iHour, JSH, ISky, iRefPoint, loopwin) = 0.0;
@@ -4033,9 +4030,9 @@ namespace EnergyPlus::DaylightingManager {
                             state.dataDaylightingManager->AVWLSUdisk(iHour, JSH) / (NWX * NWY * (state.dataDaylightingManager->GILSU(iHour) + 0.0001));
 
                         state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylBackFacSun(iHour, JSH, iRefPoint, loopwin) =
-                            state.dataDaylightingManager->EINTSU(iHour, JSH) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi() * (state.dataDaylightingManager->GILSU(iHour) + 0.0001));
+                            state.dataDaylightingManager->EINTSU(iHour, JSH) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi * (state.dataDaylightingManager->GILSU(iHour) + 0.0001));
                         state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylBackFacSunDisk(iHour, JSH, iRefPoint, loopwin) =
-                            state.dataDaylightingManager->EINTSUdisk(iHour, JSH) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi() * (state.dataDaylightingManager->GILSU(iHour) + 0.0001));
+                            state.dataDaylightingManager->EINTSUdisk(iHour, JSH) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi * (state.dataDaylightingManager->GILSU(iHour) + 0.0001));
                     } else {
                         state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylIllFacSun(iHour, JSH, iRefPoint, loopwin) = 0.0;
                         state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylIllFacSunDisk(iHour, JSH, iRefPoint, loopwin) = 0.0;
@@ -4051,7 +4048,7 @@ namespace EnergyPlus::DaylightingManager {
 
             // For switchable glazing put daylighting factors for switched (dark) state in IS=2 location
             if (ICtrl > 0) {
-                if (WindowShadingControl(ICtrl).ShadingType == WSC_ST_SwitchableGlazing) {
+                if (WindowShadingControl(ICtrl).ShadingType == WinShadingType::SwitchableGlazing) {
                     VTR = SurfWinVisTransRatio(IWin);
                     state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylIllFacSky(iHour, 2, ISky, iRefPoint, loopwin) =
                         state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylIllFacSky(iHour, 1, ISky, iRefPoint, loopwin) * VTR;
@@ -4159,7 +4156,7 @@ namespace EnergyPlus::DaylightingManager {
                     state.dataDaylightingData->IllumMapCalc(MapNum).DaylSourceFacSky(iHour, JSH, ISky, iMapPoint, loopwin) =
                         state.dataDaylightingManager->AVWLSK(iHour, JSH, ISky) / (NWX * NWY * state.dataDaylightingManager->GILSK(iHour, ISky));
                     state.dataDaylightingData->IllumMapCalc(MapNum).DaylBackFacSky(iHour, JSH, ISky, iMapPoint, loopwin) =
-                        state.dataDaylightingManager->EINTSK(iHour, JSH, ISky) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi() * state.dataDaylightingManager->GILSK(iHour, ISky));
+                        state.dataDaylightingManager->EINTSK(iHour, JSH, ISky) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi * state.dataDaylightingManager->GILSK(iHour, ISky));
                 } else {
                     state.dataDaylightingData->IllumMapCalc(MapNum).DaylIllFacSky(iHour, JSH, ISky, iMapPoint, loopwin) = 0.0;
                     state.dataDaylightingData->IllumMapCalc(MapNum).DaylSourceFacSky(iHour, JSH, ISky, iMapPoint, loopwin) = 0.0;
@@ -4179,9 +4176,9 @@ namespace EnergyPlus::DaylightingManager {
                             state.dataDaylightingManager->AVWLSUdisk(iHour, JSH) / (NWX * NWY * (state.dataDaylightingManager->GILSU(iHour) + 0.0001));
 
                         state.dataDaylightingData->IllumMapCalc(MapNum).DaylBackFacSun(iHour, JSH, iMapPoint, loopwin) =
-                            state.dataDaylightingManager->EINTSU(iHour, JSH) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi() * (state.dataDaylightingManager->GILSU(iHour) + 0.0001));
+                            state.dataDaylightingManager->EINTSU(iHour, JSH) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi * (state.dataDaylightingManager->GILSU(iHour) + 0.0001));
                         state.dataDaylightingData->IllumMapCalc(MapNum).DaylBackFacSunDisk(iHour, JSH, iMapPoint, loopwin) =
-                            state.dataDaylightingManager->EINTSUdisk(iHour, JSH) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi() * (state.dataDaylightingManager->GILSU(iHour) + 0.0001));
+                            state.dataDaylightingManager->EINTSUdisk(iHour, JSH) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / (DataGlobalConstants::Pi * (state.dataDaylightingManager->GILSU(iHour) + 0.0001));
                     } else {
                         state.dataDaylightingData->IllumMapCalc(MapNum).DaylIllFacSun(iHour, JSH, iMapPoint, loopwin) = 0.0;
                         state.dataDaylightingData->IllumMapCalc(MapNum).DaylIllFacSunDisk(iHour, JSH, iMapPoint, loopwin) = 0.0;
@@ -4197,7 +4194,7 @@ namespace EnergyPlus::DaylightingManager {
 
             // For switchable glazing put daylighting factors for switched (dark) state in IS=2 location
             if (ICtrl > 0) {
-                if (WindowShadingControl(ICtrl).ShadingType == WSC_ST_SwitchableGlazing) {
+                if (WindowShadingControl(ICtrl).ShadingType == WinShadingType::SwitchableGlazing) {
                     VTR = SurfWinVisTransRatio(IWin);
                     state.dataDaylightingData->IllumMapCalc(MapNum).DaylIllFacSky(iHour, 2, ISky, iMapPoint, loopwin) =
                         state.dataDaylightingData->IllumMapCalc(MapNum).DaylIllFacSky(iHour, 1, ISky, iMapPoint, loopwin) * VTR;
@@ -4360,7 +4357,7 @@ namespace EnergyPlus::DaylightingManager {
                         }
                     }
 
-                    if (WindowShadingControl(Surface(SurfNum).activeWindowShadingControl).ShadingControlType == WSCT_MeetDaylIlumSetp) {
+                    if (WindowShadingControl(Surface(SurfNum).activeWindowShadingControl).ShadingControlType == WindowShadingControlType::MeetDaylIlumSetp) {
                         // Error if window has ShadingControlType = MeetDaylightingIlluminanceSetpoint &
                         // but is not in a Daylighting:Detailed zone
                         if (thisSurfEnclosure.TotalEnclosureDaylRefPoints == 0) {
@@ -4391,7 +4388,7 @@ namespace EnergyPlus::DaylightingManager {
             }
         }
 
-        if (!DataHeatBalance::AnyAirBoundaryGroupedSolar) {
+        if (!DataHeatBalance::AnyAirBoundary) {
             for (int SurfLoop = 1; SurfLoop <= TotSurfaces; ++SurfLoop) {
                 if (Surface(SurfLoop).Class == SurfaceClass::Window && Surface(SurfLoop).ExtSolar) {
                     int const zoneOfSurf = Surface(SurfLoop).Zone;
@@ -4574,11 +4571,11 @@ namespace EnergyPlus::DaylightingManager {
         Real64 NewAspectRatio;
         Array1D_bool ZoneMsgDone;
 
-        CosBldgRelNorth = std::cos(-(BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians());
-        SinBldgRelNorth = std::sin(-(BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians());
+        CosBldgRelNorth = std::cos(-(BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians);
+        SinBldgRelNorth = std::sin(-(BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians);
         // these are only for Building Rotation for Appendix G when using world coordinate system
-        CosBldgRotAppGonly = std::cos(-BuildingRotationAppendixG * DataGlobalConstants::DegToRadians());
-        SinBldgRotAppGonly = std::sin(-BuildingRotationAppendixG * DataGlobalConstants::DegToRadians());
+        CosBldgRotAppGonly = std::cos(-BuildingRotationAppendixG * DataGlobalConstants::DegToRadians);
+        SinBldgRotAppGonly = std::sin(-BuildingRotationAppendixG * DataGlobalConstants::DegToRadians);
 
         doTransform = false;
         OldAspectRatio = 1.0;
@@ -4723,8 +4720,8 @@ namespace EnergyPlus::DaylightingManager {
             if (state.dataDaylightingData->IllumMap(MapNum).Zone > 0) {
                 auto &zone(Zone(state.dataDaylightingData->IllumMap(MapNum).Zone));
                 // Calc cos and sin of Zone Relative North values for later use in transforming Reference Point coordinates
-                CosZoneRelNorth = std::cos(-zone.RelNorth * DataGlobalConstants::DegToRadians());
-                SinZoneRelNorth = std::sin(-zone.RelNorth * DataGlobalConstants::DegToRadians());
+                CosZoneRelNorth = std::cos(-zone.RelNorth * DataGlobalConstants::DegToRadians);
+                SinZoneRelNorth = std::sin(-zone.RelNorth * DataGlobalConstants::DegToRadians);
                 if (state.dataDaylightingData->IllumMap(MapNum).Xnum * state.dataDaylightingData->IllumMap(MapNum).Ynum > 0) {
                     // Add additional daylighting reference points for map
                     AddMapPoints = state.dataDaylightingData->IllumMap(MapNum).Xnum * state.dataDaylightingData->IllumMap(MapNum).Ynum;
@@ -5007,10 +5004,10 @@ namespace EnergyPlus::DaylightingManager {
                     ShowWarningError(state, "Invalid " + cAlphaFieldNames(4) + " = " + cAlphaArgs(4) + ", occurs in " + cCurrentModuleObject +
                                      "object for " + cCurrentModuleObject + "=\"" + cAlphaArgs(1));
                     ShowContinueError(state, "Schedule was not found so controls will always be available, and the simulation continues.");
-                    zone_daylight.AvailSchedNum = DataGlobalConstants::ScheduleAlwaysOn();
+                    zone_daylight.AvailSchedNum = DataGlobalConstants::ScheduleAlwaysOn;
                 }
             } else {
-                zone_daylight.AvailSchedNum = DataGlobalConstants::ScheduleAlwaysOn();
+                zone_daylight.AvailSchedNum = DataGlobalConstants::ScheduleAlwaysOn;
             }
 
             if (UtilityRoutines::SameString(cAlphaArgs(5), "CONTINUOUS")) { // Field: Lighting Control Type
@@ -5211,11 +5208,11 @@ namespace EnergyPlus::DaylightingManager {
         Real64 rLightLevel;
 
         // Calc cos and sin of Building Relative North values for later use in transforming Reference Point coordinates
-        CosBldgRelNorth = std::cos(-(BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians());
-        SinBldgRelNorth = std::sin(-(BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians());
+        CosBldgRelNorth = std::cos(-(BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians);
+        SinBldgRelNorth = std::sin(-(BuildingAzimuth + BuildingRotationAppendixG) * DataGlobalConstants::DegToRadians);
         // these are only for Building Rotation for Appendix G when using world coordinate system
-        CosBldgRotAppGonly = std::cos(-BuildingRotationAppendixG * DataGlobalConstants::DegToRadians());
-        SinBldgRotAppGonly = std::sin(-BuildingRotationAppendixG * DataGlobalConstants::DegToRadians());
+        CosBldgRotAppGonly = std::cos(-BuildingRotationAppendixG * DataGlobalConstants::DegToRadians);
+        SinBldgRotAppGonly = std::sin(-BuildingRotationAppendixG * DataGlobalConstants::DegToRadians);
 
         doTransform = false;
         OldAspectRatio = 1.0;
@@ -5229,8 +5226,8 @@ namespace EnergyPlus::DaylightingManager {
                 auto &zone(Zone(zoneIndex));
 
                 // Calc cos and sin of Zone Relative North values for later use in transforming Reference Point coordinates
-                CosZoneRelNorth = std::cos(-zone.RelNorth * DataGlobalConstants::DegToRadians());
-                SinZoneRelNorth = std::sin(-zone.RelNorth * DataGlobalConstants::DegToRadians());
+                CosZoneRelNorth = std::cos(-zone.RelNorth * DataGlobalConstants::DegToRadians);
+                SinZoneRelNorth = std::sin(-zone.RelNorth * DataGlobalConstants::DegToRadians);
 
                 rLightLevel = GetDesignLightingLevelForZone(state, zoneIndex);
                 CheckLightsReplaceableMinMaxForZone(state, zoneIndex);
@@ -5267,24 +5264,24 @@ namespace EnergyPlus::DaylightingManager {
                         }
                     }
                     refName = curRefPt.Name;
-                    PreDefTableEntry(pdchDyLtZone, refName, daylCntrl.ZoneName);
-                    PreDefTableEntry(pdchDyLtCtrlName, refName, daylCntrl.Name);
+                    PreDefTableEntry(state, state.dataOutRptPredefined->pdchDyLtZone, refName, daylCntrl.ZoneName);
+                    PreDefTableEntry(state, state.dataOutRptPredefined->pdchDyLtCtrlName, refName, daylCntrl.Name);
                     if (daylCntrl.DaylightMethod == DataDaylighting::iDaylightingMethod::SplitFluxDaylighting) {
-                        PreDefTableEntry(pdchDyLtKind, refName, "SplitFlux");
+                        PreDefTableEntry(state, state.dataOutRptPredefined->pdchDyLtKind, refName, "SplitFlux");
                     } else {
-                        PreDefTableEntry(pdchDyLtKind, refName, "DElight");
+                        PreDefTableEntry(state, state.dataOutRptPredefined->pdchDyLtKind, refName, "DElight");
                     }
                     // ( 1=continuous, 2=stepped, 3=continuous/off )
                     if (daylCntrl.LightControlType == DataDaylighting::iLtgCtrlType::Continuous) {
-                        PreDefTableEntry(pdchDyLtCtrlType, refName, "Continuous");
+                        PreDefTableEntry(state, state.dataOutRptPredefined->pdchDyLtCtrlType, refName, "Continuous");
                     } else if (daylCntrl.LightControlType == DataDaylighting::iLtgCtrlType::Stepped) {
-                        PreDefTableEntry(pdchDyLtCtrlType, refName, "Stepped");
+                        PreDefTableEntry(state, state.dataOutRptPredefined->pdchDyLtCtrlType, refName, "Stepped");
                     } else if (daylCntrl.LightControlType == DataDaylighting::iLtgCtrlType::ContinuousOff) {
-                        PreDefTableEntry(pdchDyLtCtrlType, refName, "Continuous/Off");
+                        PreDefTableEntry(state, state.dataOutRptPredefined->pdchDyLtCtrlType, refName, "Continuous/Off");
                     }
-                    PreDefTableEntry(pdchDyLtFrac, refName, daylCntrl.FracZoneDaylit(refPtNum));
-                    PreDefTableEntry(pdchDyLtWInst, refName, rLightLevel);
-                    PreDefTableEntry(pdchDyLtWCtrl, refName, rLightLevel * daylCntrl.FracZoneDaylit(refPtNum));
+                    PreDefTableEntry(state, state.dataOutRptPredefined->pdchDyLtFrac, refName, daylCntrl.FracZoneDaylit(refPtNum));
+                    PreDefTableEntry(state, state.dataOutRptPredefined->pdchDyLtWInst, refName, rLightLevel);
+                    PreDefTableEntry(state, state.dataOutRptPredefined->pdchDyLtWCtrl, refName, rLightLevel * daylCntrl.FracZoneDaylit(refPtNum));
 
                     if (daylCntrl.DaylRefPtAbsCoord(1, refPtNum) < zone.MinimumX || daylCntrl.DaylRefPtAbsCoord(1, refPtNum) > zone.MaximumX) {
                         daylCntrl.DaylRefPtInBounds(refPtNum) = false;
@@ -5591,6 +5588,18 @@ namespace EnergyPlus::DaylightingManager {
         } // End of loop over light well objects
     }
 
+    inline int findWinShadingStatus(int const IWin) {
+        // Return the window shading status, 1=unshaded, 2=shaded
+        int WinShadingIndex = 1;
+        bool WinShadedNoGlareControl = IS_SHADED_NO_GLARE_CTRL(SurfWinShadingFlag(IWin));
+        if ((SurfWinWindowModelType(IWin) != WindowBSDFModel) &&
+            (WinShadedNoGlareControl || SurfWinSolarDiffusing(IWin))) {
+            WinShadingIndex = 2;
+        }
+        return WinShadingIndex;
+    }
+
+
     void DayltgGlare(EnergyPlusData &state,
                      int &IL,        // Reference point index: 1=first ref pt, 2=second ref pt
                      Real64 &BLUM,   // Window background (surround) luminance (cd/m2)
@@ -5636,30 +5645,18 @@ namespace EnergyPlus::DaylightingManager {
         // na
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        Real64 GTOT;  // Glare constant
-        Real64 GTOT1; // Portion of glare constant
-        Real64 GTOT2; // Portion of glare constant
-        int IWin;     // Window counter
-        int IS;       // Window shading index: 1=unshaded, 2=shaded
-        int loop;     // Loop index
-
-        // FLOW:
-        // Initialize glare constant
-        GTOT = 0.0;
+        Real64 GTOT  = 0.0;  // Glare constant
 
         // Loop over exterior windows associated with zone
-        for (loop = 1; loop <= state.dataDaylightingData->ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
-            IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
-            IS = 1;
-            if ((SurfWinWindowModelType(IWin) != WindowBSDFModel) &&
-                ((SurfWinShadingFlag(IWin) >= 1 && SurfWinShadingFlag(IWin) <= 9) || SurfWinSolarDiffusing(IWin)))
-                IS = 2;
+        for (int loop = 1; loop <= state.dataDaylightingData->ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
+            int IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
+            int WinShadingIndex = findWinShadingStatus(IWin);
             // Conversion from ft-L to cd/m2, with cd/m2 = 0.2936 ft-L, gives the 0.4794 factor
             // below, which is (0.2936)**0.6
-            GTOT1 = 0.4794 * (std::pow(state.dataDaylightingData->ZoneDaylight(ZoneNum).SourceLumFromWinAtRefPt(loop, IS, IL), 1.6)) *
+            Real64 GTOT1 = 0.4794 * (std::pow(state.dataDaylightingData->ZoneDaylight(ZoneNum).SourceLumFromWinAtRefPt(loop, WinShadingIndex, IL), 1.6)) *
                     std::pow(state.dataDaylightingData->ZoneDaylight(ZoneNum).SolidAngAtRefPtWtd(loop, IL), 0.8);
-            GTOT2 = BLUM +
-                    0.07 * (std::sqrt(state.dataDaylightingData->ZoneDaylight(ZoneNum).SolidAngAtRefPt(loop, IL))) * state.dataDaylightingData->ZoneDaylight(ZoneNum).SourceLumFromWinAtRefPt(loop, IS, IL);
+            Real64 GTOT2 = BLUM +
+                    0.07 * (std::sqrt(state.dataDaylightingData->ZoneDaylight(ZoneNum).SolidAngAtRefPt(loop, IL))) * state.dataDaylightingData->ZoneDaylight(ZoneNum).SourceLumFromWinAtRefPt(loop, WinShadingIndex, IL);
             GTOT += GTOT1 / (GTOT2 + 0.000001);
         }
 
@@ -5702,42 +5699,26 @@ namespace EnergyPlus::DaylightingManager {
         // INTERFACE BLOCK SPECIFICATIONS: na
         // DERIVED TYPE DEFINITIONS: na
 
-        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-        int IL;        // Reference point index: 1=first ref pt, 2=second ref pt
-        Real64 GTOT;   // Glare constant
-        Real64 GTOT1;  // Portion of glare constant
-        Real64 GTOT2;  // Portion of glare constant
-        int IWin;      // Window counter
-        int IS;        // Window shading index: 1=unshaded, 2=shaded
-        Real64 BacLum; // Background luminance (cd/m2)
-        int loop;      // Loop index
-        int RefPoints; // Number of daylighting reference points in zone
-        // FLOW:
-        // Initialize glare constant
-
-        GTOT = 0.0;
+        Real64 GTOT = 0.0;;   // Glare constant
 
         // Calculate background luminance including effect of inter-reflected illuminance from light
         // entering zone through its interior windows
 
-        RefPoints = state.dataDaylightingData->ZoneDaylight(ZoneNum).TotalDaylRefPoints;
-        for (IL = 1; IL <= RefPoints; ++IL) {
-            BacLum = state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL) + state.dataDaylightingData->ZoneDaylight(ZoneNum).InterReflIllFrIntWins * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi();
-            BacLum = max(state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumSetPoint(IL) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi(), BacLum);
+        int RefPoints = state.dataDaylightingData->ZoneDaylight(ZoneNum).TotalDaylRefPoints; // Number of daylighting reference points in zone
+        for (int IL = 1; IL <= RefPoints; ++IL) {
+            Real64 BackgroundLum = state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL) + state.dataDaylightingData->ZoneDaylight(ZoneNum).InterReflIllFrIntWins * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi;
+            BackgroundLum = max(state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumSetPoint(IL) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi, BackgroundLum);
 
             // Loop over exterior windows associated with zone
-            for (loop = 1; loop <= state.dataDaylightingData->ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
-                IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
-                IS = 1;
-                if ((SurfWinWindowModelType(IWin) != WindowBSDFModel) &&
-                    ((SurfWinShadingFlag(IWin) >= 1 && SurfWinShadingFlag(IWin) <= 9) || SurfWinSolarDiffusing(IWin)))
-                    IS = 2;
+            for (int loop = 1; loop <= state.dataDaylightingData->ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
+                int IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
+                int WinShadingIndex = findWinShadingStatus(IWin);
                 // Conversion from ft-L to cd/m2, with cd/m2 = 0.2936 ft-L, gives the 0.4794 factor
                 // below, which is (0.2936)**0.6
-                GTOT1 = 0.4794 * (std::pow(state.dataDaylightingData->ZoneDaylight(ZoneNum).SourceLumFromWinAtRefPt(loop, IS, IL), 1.6)) *
+                Real64 GTOT1 = 0.4794 * (std::pow(state.dataDaylightingData->ZoneDaylight(ZoneNum).SourceLumFromWinAtRefPt(loop, WinShadingIndex, IL), 1.6)) *
                         std::pow(state.dataDaylightingData->ZoneDaylight(ZoneNum).SolidAngAtRefPtWtd(loop, IL), 0.8);
-                GTOT2 = BacLum + 0.07 * (std::sqrt(state.dataDaylightingData->ZoneDaylight(ZoneNum).SolidAngAtRefPt(loop, IL))) *
-                                     state.dataDaylightingData->ZoneDaylight(ZoneNum).SourceLumFromWinAtRefPt(loop, IS, IL);
+                Real64 GTOT2 = BackgroundLum + 0.07 * (std::sqrt(state.dataDaylightingData->ZoneDaylight(ZoneNum).SolidAngAtRefPt(loop, IL))) *
+                                     state.dataDaylightingData->ZoneDaylight(ZoneNum).SourceLumFromWinAtRefPt(loop, WinShadingIndex, IL);
                 GTOT += GTOT1 / (GTOT2 + 0.000001);
             }
 
@@ -5785,8 +5766,8 @@ namespace EnergyPlus::DaylightingManager {
         // SUBROUTINE PARAMETER DEFINITIONS:
         int const NTH(18);                          // Number of azimuth steps for sky integration
         int const NPH(8);                           // Number of altitude steps for sky integration
-        Real64 const DTH((2.0 * DataGlobalConstants::Pi()) / double(NTH)); // Sky integration azimuth stepsize (radians)
-        Real64 const DPH(DataGlobalConstants::PiOvr2() / double(NPH));     // Sky integration altitude stepsize (radians)
+        Real64 const DTH((2.0 * DataGlobalConstants::Pi) / double(NTH)); // Sky integration azimuth stepsize (radians)
+        Real64 const DPH(DataGlobalConstants::PiOvr2 / double(NPH));     // Sky integration altitude stepsize (radians)
 
         // INTERFACE BLOCK SPECIFICATIONS
         // na
@@ -5802,7 +5783,7 @@ namespace EnergyPlus::DaylightingManager {
         int ISky;                           // Sky type index
         static Array1D<Real64> SPHCPH(NPH); // Sine times cosine of altitude of sky element
 
-        // FLOW:
+
         // Integrate to obtain illuminance from sky.
         // The contribution in lumens/m2 from a patch of sky at altitude PH and azimuth TH
         // is L(TH,PH)*SIN(PH)*COS(PH)*DTH*DPH, where L(TH,PH) is the luminance
@@ -6193,9 +6174,6 @@ namespace EnergyPlus::DaylightingManager {
         static Vector2<Real64> SFSUHR; // Sun source luminance factor for bare/shaded window
         static Array1D<Real64> GLRNDX; // Glare index at reference point
         static Array1D<Real64> GLRNEW; // New glare index at reference point
-        int IL;                        // Reference point index
-        int IWin;                      // Window index
-        int IS;                        // IS=1 for unshaded window, =2 for shaded window
         int ISWFLG;                    // Switchable glazing flag: =1 if one or more windows in a zone
         //  has switchable glazing that adjusts visible transmittance to just meet
         //  daylighting setpoint; =0 otherwise.
@@ -6259,10 +6237,10 @@ namespace EnergyPlus::DaylightingManager {
         tmpBackLumFromWinAtRefPt = 0.0;
         tmpSourceLumFromWinAtRefPt = 0.0;
 
-        // FLOW:
+
 
         // Initialize reference point illuminance and window background luminance
-        for (IL = 1; IL <= NREFPT; ++IL) {
+        for (int IL = 1; IL <= NREFPT; ++IL) {
             SetPnt(IL) = state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumSetPoint(IL);
             state.dataDaylightingManager->DaylIllum(IL) = 0.0;
             state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL) = 0.0;
@@ -6287,7 +6265,7 @@ namespace EnergyPlus::DaylightingManager {
         // Find contribution of each window to the daylight illum and to the glare numerator at each reference point.
         // Use shading flags set in WindowShadingManager.
         for (loop = 1; loop <= state.dataDaylightingData->ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
-            IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
+            int IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
 
             // Added TH 6/29/2009 for thermochromic windows
             VTRatio = 1.0;
@@ -6304,8 +6282,11 @@ namespace EnergyPlus::DaylightingManager {
                 }
             }
 
+            bool ShadedOrDiffusingGlassWin = SurfWinWindowModelType(IWin) != WindowBSDFModel &&
+                                             (IS_SHADED(SurfWinShadingFlag(IWin)) || SurfWinSolarDiffusing(IWin));
+
             // Loop over reference points
-            for (IL = 1; IL <= NREFPT; ++IL) {
+            for (int IL = 1; IL <= NREFPT; ++IL) {
 
                 // Daylight factors for current sun position
                 for (ISky = 1; ISky <= 4; ++ISky) {
@@ -6338,8 +6319,7 @@ namespace EnergyPlus::DaylightingManager {
                                                state.dataGlobal->WeightPreviousHour * (state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylSourceFacSun(state.dataGlobal->PreviousHour, 1, IL, loop) +
                                                                      state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylSourceFacSunDisk(state.dataGlobal->PreviousHour, 1, IL, loop)));
 
-                    if ((SurfWinWindowModelType(IWin) != WindowBSDFModel) &&
-                        (SurfWinShadingFlag(IWin) >= 1 || SurfWinSolarDiffusing(IWin))) {
+                    if (ShadedOrDiffusingGlassWin) {
 
                         // ===Shaded window or window with diffusing glass===
                         if (!SurfWinMovableSlats(IWin)) {
@@ -6509,9 +6489,8 @@ namespace EnergyPlus::DaylightingManager {
 
                 HorIllSkyFac = state.dataEnvrn->HISKF / ((1 - SkyWeight) * HorIllSky(ISky2) + SkyWeight * HorIllSky(ISky1));
 
-                for (IS = 1; IS <= 2; ++IS) {
-                    if (IS == 2 && (SurfWinWindowModelType(IWin) == WindowBSDFModel)) break;
-                    if (IS == 2 && SurfWinShadingFlag(IWin) <= 0 && !SurfWinSolarDiffusing(IWin)) break;
+                for (int IS = 1; IS <= 2; ++IS) {
+                    if (IS == 2 && !ShadedOrDiffusingGlassWin) break;
 
                     state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumFromWinAtRefPt(loop, IS, IL) =
                         DFSUHR(IS) * state.dataEnvrn->HISUNF +
@@ -6548,11 +6527,11 @@ namespace EnergyPlus::DaylightingManager {
         // entering the zone through interior windows (which is calculated in DayltgInterReflIllFrIntWins.
 
         for (loop = 1; loop <= state.dataDaylightingData->ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
-            IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
+            int IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
             ICtrl = Surface(IWin).activeWindowShadingControl;
             if (Surface(IWin).HasShadeControl && ISWFLG == 0) {
-                if (WindowShadingControl(ICtrl).ShadingControlType == WSCT_MeetDaylIlumSetp &&
-                    SurfWinShadingFlag(IWin) == GlassConditionallyLightened)
+                if (WindowShadingControl(ICtrl).ShadingControlType == WindowShadingControlType::MeetDaylIlumSetp &&
+                    SurfWinShadingFlag(IWin) == WinShadingType::GlassConditionallyLightened)
                     ISWFLG = 1;
             }
 
@@ -6561,12 +6540,9 @@ namespace EnergyPlus::DaylightingManager {
             //   the shading flag is initialized at GlassConditionallyLightened (20), and
             //   the window is initialized at clear state: IS = 1
             //  For other windows with glare control, the shading flag is initialized at >10, to be determined
-            IS = 1;
-            if ((SurfWinWindowModelType(IWin) != WindowBSDFModel) &&
-                ((SurfWinShadingFlag(IWin) >= 1 && SurfWinShadingFlag(IWin) <= 9) || SurfWinSolarDiffusing(IWin)))
-                IS = 2;
+            int IS = findWinShadingStatus(IWin);
 
-            for (IL = 1; IL <= NREFPT; ++IL) {
+            for (int IL = 1; IL <= NREFPT; ++IL) {
                 state.dataDaylightingManager->DaylIllum(IL) += state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumFromWinAtRefPt(loop, IS, IL);
                 state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL) += state.dataDaylightingData->ZoneDaylight(ZoneNum).BackLumFromWinAtRefPt(loop, IS, IL);
             }
@@ -6606,13 +6582,10 @@ namespace EnergyPlus::DaylightingManager {
                     loop = state.dataDaylightingData->ZoneDaylight(ZoneNum).MapShdOrdToLoopNum(count);
 
                     ICtrl = Surface(IWin).activeWindowShadingControl;
-                    IS = 1;
-                    if ((SurfWinWindowModelType(IWin) != WindowBSDFModel) &&
-                        ((SurfWinShadingFlag(IWin) >= 1 && SurfWinShadingFlag(IWin) <= 9) || SurfWinSolarDiffusing(IWin)))
-                        IS = 2;
+                    int IS = findWinShadingStatus(IWin);
                     if (Surface(IWin).HasShadeControl) {
-                        if (SurfWinShadingFlag(IWin) == GlassConditionallyLightened &&
-                            WindowShadingControl(ICtrl).ShadingControlType == WSCT_MeetDaylIlumSetp && !previously_shaded(loop)) {
+                        if (SurfWinShadingFlag(IWin) == WinShadingType::GlassConditionallyLightened &&
+                            WindowShadingControl(ICtrl).ShadingControlType == WindowShadingControlType::MeetDaylIlumSetp && !previously_shaded(loop)) {
                             DILLSW(igroup) += state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumFromWinAtRefPt(loop, IS, 1);
                             previously_shaded(loop) = true;
                         } else {
@@ -6656,8 +6629,8 @@ namespace EnergyPlus::DaylightingManager {
                             continueOuterLoop = true;
                             continue;
                         }
-                        if (SurfWinShadingFlag(IWin) != GlassConditionallyLightened ||
-                            WindowShadingControl(ICtrl).ShadingControlType != WSCT_MeetDaylIlumSetp) {
+                        if (SurfWinShadingFlag(IWin) != WinShadingType::GlassConditionallyLightened ||
+                            WindowShadingControl(ICtrl).ShadingControlType != WindowShadingControlType::MeetDaylIlumSetp) {
                             continueOuterLoop = true;
                             continue;
                         }
@@ -6672,7 +6645,7 @@ namespace EnergyPlus::DaylightingManager {
                         TVIS2(igroup) = POLYF(1.0, state.dataConstruction->Construct(IConstShaded).TransVisBeamCoef) * SurfWinGlazedFrac(IWin);
 
                         // Reset shading flag to indicate that window is shaded by being partially or fully switched
-                        SurfWinShadingFlag(IWin) = SwitchableGlazing;
+                        SurfWinShadingFlag(IWin) = WinShadingType::SwitchableGlazing;
 
                         // ASETIL < 0 means illuminance from non-daylight-switchable windows exceeds setpoint,
                         // so completely switch all daylight-switchable windows to minimize solar gain
@@ -6692,16 +6665,16 @@ namespace EnergyPlus::DaylightingManager {
                         }
 
                         // Adjust daylight quantities based on ratio between switched and unswitched visible transmittance
-                        for (IL = 1; IL <= NREFPT; ++IL) {
+                        for (int IL = 1; IL <= NREFPT; ++IL) {
                             // DaylIllum(IL) and BacLum(IL) were calculated at the clear state: IS = 1,
                             //  and need to adjusted for intermediate switched state at VisTransSelected: IS = 2
-                            IS = 1;
+                            int IS = 1;
                             VTRAT = SurfWinVisTransSelected(IWin) / (TVIS1(igroup) + 0.000001);
                             state.dataDaylightingManager->DaylIllum(IL) += (VTRAT - 1.0) * state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumFromWinAtRefPt(loop, IS, IL);
                             state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL) += (VTRAT - 1.0) * state.dataDaylightingData->ZoneDaylight(ZoneNum).BackLumFromWinAtRefPt(loop, IS, IL);
 
                             // Adjust illum, background illum and source luminance for this window in intermediate switched state
-                            //  for later use in the DayltgGlare calc because SurfaceWindow(IWin)%ShadingFlag = SwitchableGlazing = 2
+                            //  for later use in the DayltgGlare calc because SurfaceWindow(IWin)%ShadingFlag = WinShadingType::SwitchableGlazing = 2
                             IS = 2;
                             VTRAT = SurfWinVisTransSelected(IWin) / (TVIS2(igroup) + 0.000001);
                             state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumFromWinAtRefPt(loop, IS, IL) = VTRAT * tmpIllumFromWinAtRefPt(loop, IS, IL);
@@ -6723,8 +6696,8 @@ namespace EnergyPlus::DaylightingManager {
 
         // Calculate glare index at each reference point assuming the daylight illuminance setpoint is
         //  met at both reference points, either by daylight or electric lights
-        for (IL = 1; IL <= NREFPT; ++IL) {
-            BACL = max(SetPnt(IL) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi(), state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL));
+        for (int IL = 1; IL <= NREFPT; ++IL) {
+            BACL = max(SetPnt(IL) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi, state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL));
             // DayltgGlare uses ZoneDaylight(ZoneNum)%SourceLumFromWinAtRefPt(IL,1,loop) for unshaded windows, and
             //  ZoneDaylight(ZoneNum)%SourceLumFromWinAtRefPt(IL,2,loop) for shaded windows
             DayltgGlare(state, IL, BACL, GLRNDX(IL), ZoneNum);
@@ -6734,7 +6707,7 @@ namespace EnergyPlus::DaylightingManager {
         // is exceeded at either ref pt, attempt to reduce glare to acceptable level by closing
         // shading device on windows that have shades that have not already been closed.
         GlareFlag = false;
-        for (IL = 1; IL <= NREFPT; ++IL) {
+        for (int IL = 1; IL <= NREFPT; ++IL) {
             if (GLRNDX(IL) > state.dataDaylightingData->ZoneDaylight(ZoneNum).MaxGlareallowed) {
                 GlareFlag = true;
                 break;
@@ -6752,7 +6725,6 @@ namespace EnergyPlus::DaylightingManager {
         Array2D<Real64> RBACLU(
             NREFPT,
             state.dataDaylightingData->ZoneDaylight(ZoneNum).ShadeDeployOrderExtWins.size()); // Background illuminance from window at reference point after closing shade
-
         if (GlareFlag) {
             // Glare is too high at a ref pt.  Loop through windows.
             int count = 0;
@@ -6773,7 +6745,8 @@ namespace EnergyPlus::DaylightingManager {
                     // Check if window is eligible for glare control
                     // TH 1/21/2010. Switchable glazings already in partially switched state
                     //  should be allowed to further dim to control glare
-                    if (SurfWinShadingFlag(IWin) < 10 && SurfWinShadingFlag(IWin) != SwitchableGlazing) {
+                    // if (SurfWinShadingFlag(IWin) <= BGBlind && SurfWinShadingFlag(IWin) != SwitchableGlazing) {
+                    if (NOT_SHADED(SurfWinShadingFlag(IWin)) || ANY_SHADE_SCREEN(SurfWinShadingFlag(IWin)) || ANY_BLIND(SurfWinShadingFlag(IWin))) {
                         continueOuterLoop = false;
                         continue;
                     }
@@ -6788,8 +6761,8 @@ namespace EnergyPlus::DaylightingManager {
                         // Illuminance (WDAYIL) and background luminance (WBACLU) contribution from this
                         // window without shading (IS=1) and with shading (IS=2) for each ref pt
                         //  For switchable windows, this may be partially switched rather than fully dark
-                        for (IL = 1; IL <= NREFPT; ++IL) {
-                            for (IS = 1; IS <= 2; ++IS) {
+                        for (int IL = 1; IL <= NREFPT; ++IL) {
+                            for (int IS = 1; IS <= 2; ++IS) {
                                 WDAYIL(IS, IL, igroup) = state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumFromWinAtRefPt(loop, IS, IL);
                                 WBACLU(IS, IL, igroup) = state.dataDaylightingData->ZoneDaylight(ZoneNum).BackLumFromWinAtRefPt(loop, IS, IL);
                             }
@@ -6797,10 +6770,10 @@ namespace EnergyPlus::DaylightingManager {
 
                         // Recalculate illuminance and glare with shading on this window.
                         //  For switchable glazings, this is the fully switched (dark) state
-                        for (IL = 1; IL <= NREFPT; ++IL) {
-                            if (SurfWinShadingFlag(IWin) != SwitchableGlazing) {
+                        for (int IL = 1; IL <= NREFPT; ++IL) {
+                            if (SurfWinShadingFlag(IWin) != WinShadingType::SwitchableGlazing) {
                                 // for non switchable glazings or switchable glazings not switched yet (still in clear state)
-                                //  SurfaceWindow(IWin)%ShadingFlag = GlassConditionallyLightened
+                                //  SurfaceWindow(IWin)%ShadingFlag = WinShadingFlag::GlassConditionallyLightened
                                 RDAYIL(IL, igroup) = state.dataDaylightingManager->DaylIllum(IL) - WDAYIL(1, IL, igroup) + WDAYIL(2, IL, igroup);
                                 RBACLU(IL, igroup) = state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL) - WBACLU(1, IL, igroup) + WBACLU(2, IL, igroup);
                             } else {
@@ -6810,12 +6783,18 @@ namespace EnergyPlus::DaylightingManager {
                             }
                         }
 
-                        if (SurfWinShadingFlag(IWin) != SwitchableGlazing) SurfWinShadingFlag(IWin) /= 10;
+                        if (SurfWinShadingFlag(IWin) == WinShadingType::GlassConditionallyLightened) SurfWinShadingFlag(IWin) = WinShadingType::SwitchableGlazing;
+                        else if (SurfWinShadingFlag(IWin) == WinShadingType::IntShadeConditionallyOff) SurfWinShadingFlag(IWin) = WinShadingType::IntShade;
+                        else if (SurfWinShadingFlag(IWin) == WinShadingType::ExtShadeConditionallyOff) SurfWinShadingFlag(IWin) = WinShadingType::ExtShade;
+                        else if (SurfWinShadingFlag(IWin) == WinShadingType::IntBlindConditionallyOff) SurfWinShadingFlag(IWin) = WinShadingType::IntBlind;
+                        else if (SurfWinShadingFlag(IWin) == WinShadingType::ExtBlindConditionallyOff) SurfWinShadingFlag(IWin) = WinShadingType::ExtBlind;
+                        else if (SurfWinShadingFlag(IWin) == WinShadingType::BGShadeConditionallyOff) SurfWinShadingFlag(IWin) = WinShadingType::BGShade;
+                        else if (SurfWinShadingFlag(IWin) == WinShadingType::BGBlindConditionallyOff) SurfWinShadingFlag(IWin) = WinShadingType::BGBlind;
 
                         // For switchable glazings, it is switched to fully dark state,
                         // update ZoneDaylight(ZoneNum)%SourceLumFromWinAtRefPt(IL,2,loop) for use in DayltgGlare
-                        if (SurfWinShadingFlag(IWin) == SwitchableGlazing) {
-                            for (IL = 1; IL <= NREFPT; ++IL) {
+                        if (SurfWinShadingFlag(IWin) == WinShadingType::SwitchableGlazing) {
+                            for (int IL = 1; IL <= NREFPT; ++IL) {
                                 state.dataDaylightingData->ZoneDaylight(ZoneNum).SourceLumFromWinAtRefPt(loop, 2, IL) = tmpSourceLumFromWinAtRefPt(loop, 2, IL);
                                 state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumFromWinAtRefPt(loop, 2, IL) = tmpIllumFromWinAtRefPt(loop, 2, IL);
                                 state.dataDaylightingData->ZoneDaylight(ZoneNum).BackLumFromWinAtRefPt(loop, 2, IL) = tmpBackLumFromWinAtRefPt(loop, 2, IL);
@@ -6836,8 +6815,8 @@ namespace EnergyPlus::DaylightingManager {
                 if (atLeastOneGlareControlIsActive) {
 
                     // Re-calc daylight and glare at shaded state. For switchable glazings, it is the fully dark state.
-                    for (IL = 1; IL <= NREFPT; ++IL) {
-                        BACL = max(SetPnt(IL) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi(), RBACLU(IL, igroup));
+                    for (int IL = 1; IL <= NREFPT; ++IL) {
+                        BACL = max(SetPnt(IL) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi, RBACLU(IL, igroup));
                         // DayltgGlare uses ZoneDaylight(ZoneNum)%SourceLumFromWinAtRefPt(IL,2,loop) for shaded state
                         DayltgGlare(state, IL, BACL, GLRNEW(IL), ZoneNum);
                     }
@@ -6867,7 +6846,7 @@ namespace EnergyPlus::DaylightingManager {
                     // covers all the reference points.
                     int numRefPtOldAboveMaxNewBelowOld = 0;
                     int numRefPtOldBelowMaxNewBelowMax = 0;
-                    for (IL = 1; IL <= NREFPT; ++IL) {
+                    for (int IL = 1; IL <= NREFPT; ++IL) {
                         if (GLRNDX(IL) > state.dataDaylightingData->ZoneDaylight(ZoneNum).MaxGlareallowed && GLRNEW(IL) <= GLRNDX(IL)) ++numRefPtOldAboveMaxNewBelowOld;
                         if (GLRNDX(IL) <= state.dataDaylightingData->ZoneDaylight(ZoneNum).MaxGlareallowed && GLRNEW(IL) <= state.dataDaylightingData->ZoneDaylight(ZoneNum).MaxGlareallowed)
                             ++numRefPtOldBelowMaxNewBelowMax;
@@ -6884,7 +6863,8 @@ namespace EnergyPlus::DaylightingManager {
                     ++count;
                     // need to map back to the original order of the "loop" to not change all the other data structures
                     loop = state.dataDaylightingData->ZoneDaylight(ZoneNum).MapShdOrdToLoopNum(count);
-                    if (SurfWinShadingFlag(IWin) < 10 && SurfWinShadingFlag(IWin) != SwitchableGlazing) continue;
+                    // if (SurfWinShadingFlag(IWin) <= BGBlind && SurfWinShadingFlag(IWin) != SwitchableGlazing) {
+                    if (NOT_SHADED(SurfWinShadingFlag(IWin)) || ANY_SHADE_SCREEN(SurfWinShadingFlag(IWin)) || ANY_BLIND(SurfWinShadingFlag(IWin))) continue;
 
                     ICtrl = Surface(IWin).activeWindowShadingControl;
                     if (!Surface(IWin).HasShadeControl) continue;
@@ -6894,26 +6874,26 @@ namespace EnergyPlus::DaylightingManager {
                         // Reset shading flag to no shading condition, go to next window.
                         if (blnCycle) {
                             //  for switchable glazings, reset properties to clear state or partial switched state?
-                            if (SurfWinShadingFlag(IWin) == SwitchableGlazing) {
+                            if (SurfWinShadingFlag(IWin) == WinShadingType::SwitchableGlazing) {
                                 SurfWinSwitchingFactor(IWin) = 0.0;
                                 SurfWinVisTransSelected(IWin) = TVIS1(igroup);
 
                                 // RESET properties for fully dark state
-                                for (IL = 1; IL <= NREFPT; ++IL) {
+                                for (int IL = 1; IL <= NREFPT; ++IL) {
                                     state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumFromWinAtRefPt(loop, 2, IL) = tmpIllumFromWinAtRefPt(loop, 2, IL);
                                     state.dataDaylightingData->ZoneDaylight(ZoneNum).BackLumFromWinAtRefPt(loop, 2, IL) = tmpBackLumFromWinAtRefPt(loop, 2, IL);
                                     state.dataDaylightingData->ZoneDaylight(ZoneNum).SourceLumFromWinAtRefPt(loop, 2, IL) = tmpSourceLumFromWinAtRefPt(loop, 2, IL);
                                 }
                             }
 
-                            SurfWinShadingFlag(IWin) = ShadeOff;
+                            SurfWinShadingFlag(IWin) = WinShadingType::ShadeOff;
                             continue;
                         }
 
                         // Shading this window has improved the glare situation.
                         // Reset background luminance, glare index, and daylight illuminance at each ref pt.
                         // For switchable glazings, this is fully switched, dark state
-                        for (IL = 1; IL <= NREFPT; ++IL) {
+                        for (int IL = 1; IL <= NREFPT; ++IL) {
                             state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL) = RBACLU(IL, igroup);
                             GLRNDX(IL) = GLRNEW(IL);
                             state.dataDaylightingManager->DaylIllum(IL) = RDAYIL(IL, igroup);
@@ -6927,7 +6907,7 @@ namespace EnergyPlus::DaylightingManager {
                         //  This was addressed in CR 7984 for E+ 5.0. 1/19/2010
 
                         // If switchable glazing, set switching factor to 1: fully switched.
-                        if (SurfWinShadingFlag(IWin) == SwitchableGlazing) {
+                        if (SurfWinShadingFlag(IWin) == WinShadingType::SwitchableGlazing) {
                             // tmpSWFactor0 = SurfaceWindow( IWin ).SwitchingFactor; // save original
                             // switching  factor
                             ////Unused Set but never used
@@ -6935,7 +6915,7 @@ namespace EnergyPlus::DaylightingManager {
                             SurfWinVisTransSelected(IWin) = TVIS2(igroup);
 
                             // restore fully dark values
-                            for (IL = 1; IL <= NREFPT; ++IL) {
+                            for (int IL = 1; IL <= NREFPT; ++IL) {
                                 WDAYIL(2, IL, igroup) = tmpIllumFromWinAtRefPt(loop, 2, IL);
                                 WBACLU(2, IL, igroup) = tmpBackLumFromWinAtRefPt(loop, 2, IL);
                                 state.dataDaylightingData->ZoneDaylight(ZoneNum).IllumFromWinAtRefPt(loop, 2, IL) = tmpIllumFromWinAtRefPt(loop, 2, IL);
@@ -6954,8 +6934,8 @@ namespace EnergyPlus::DaylightingManager {
                         }
 
                         if (GlareOK) {
-                            if (SurfWinShadingFlag(IWin) == SwitchableGlazing &&
-                                WindowShadingControl(ICtrl).ShadingControlType == WSCT_MeetDaylIlumSetp) {
+                            if (SurfWinShadingFlag(IWin) == WinShadingType::SwitchableGlazing &&
+                                WindowShadingControl(ICtrl).ShadingControlType == WindowShadingControlType::MeetDaylIlumSetp) {
                                 // Added TH 1/14/2010
                                 // Only for switchable glazings with MeetDaylightIlluminanceSetpoint control
                                 // The glazing is in fully dark state, it might lighten a bit to provide more daylight
@@ -6970,11 +6950,11 @@ namespace EnergyPlus::DaylightingManager {
                                 tmpSWFactor = 1.0 - tmpSWIterStep;
                                 while (tmpSWFactor > 0) {
                                     // calc new glare at new switching state
-                                    for (IL = 1; IL <= NREFPT; ++IL) {
+                                    for (int IL = 1; IL <= NREFPT; ++IL) {
                                         RDAYIL(IL, igroup) = state.dataDaylightingManager->DaylIllum(IL) + (WDAYIL(1, IL, igroup) - WDAYIL(2, IL, igroup)) * (1.0 - tmpSWFactor);
                                         RBACLU(IL, igroup) =
                                             state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL) + (WBACLU(1, IL, igroup) - WBACLU(2, IL, igroup)) * (1.0 - tmpSWFactor);
-                                        BACL = max(SetPnt(IL) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi(), RBACLU(IL, igroup));
+                                        BACL = max(SetPnt(IL) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi, RBACLU(IL, igroup));
                                         // needs to update SourceLumFromWinAtRefPt(IL,2,loop) before re-calc DayltgGlare
                                         tmpMult = (TVIS1(igroup) - (TVIS1(igroup) - TVIS2(igroup)) * tmpSWFactor) / TVIS2(igroup);
                                         if (IL == 1) {
@@ -7016,11 +6996,11 @@ namespace EnergyPlus::DaylightingManager {
                                 // Final re-calculation if needed
                                 if (!GlareOK) {
                                     // Glare too high, use previous state and re-calc
-                                    for (IL = 1; IL <= NREFPT; ++IL) {
+                                    for (int IL = 1; IL <= NREFPT; ++IL) {
                                         RDAYIL(IL, igroup) = state.dataDaylightingManager->DaylIllum(IL) + (WDAYIL(1, IL, igroup) - WDAYIL(2, IL, igroup)) * (1.0 - tmpSWFactor);
                                         RBACLU(IL, igroup) =
                                             state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL) + (WBACLU(1, IL, igroup) - WBACLU(2, IL, igroup)) * (1.0 - tmpSWFactor);
-                                        BACL = max(SetPnt(IL) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi(), RBACLU(IL, igroup));
+                                        BACL = max(SetPnt(IL) * state.dataDaylightingData->ZoneDaylight(ZoneNum).AveVisDiffReflect / DataGlobalConstants::Pi, RBACLU(IL, igroup));
 
                                         // needs to update SourceLumFromWinAtRefPt(IL,2,IWin) before re-calc DayltgGlare
                                         tmpMult = (TVIS1(igroup) - (TVIS1(igroup) - TVIS2(igroup)) * tmpSWFactor) / TVIS2(igroup);
@@ -7034,7 +7014,7 @@ namespace EnergyPlus::DaylightingManager {
                                 }
 
                                 // Update final results
-                                for (IL = 1; IL <= NREFPT; ++IL) {
+                                for (int IL = 1; IL <= NREFPT; ++IL) {
                                     state.dataDaylightingData->ZoneDaylight(ZoneNum).BacLum(IL) = RBACLU(IL, igroup);
                                     GLRNDX(IL) = GLRNEW(IL);
                                     state.dataDaylightingManager->DaylIllum(IL) = RDAYIL(IL, igroup);
@@ -7059,18 +7039,22 @@ namespace EnergyPlus::DaylightingManager {
                 }     // end of for(auto IWin : listOfExtWin)
                 if (breakOuterLoop) break;
             } // for group
-        }     // GlareFlag
+        } // GlareFlag
 
         // Loop again over windows and reset remaining shading flags that
         // are 10 or higher (i.e., conditionally off) to off
-        for (IWin = Zone(ZoneNum).SurfaceFirst; IWin <= Zone(ZoneNum).SurfaceLast; ++IWin) {
+        for (int IWin = Zone(ZoneNum).SurfaceFirst; IWin <= Zone(ZoneNum).SurfaceLast; ++IWin) {
             if (Surface(IWin).Class != SurfaceClass::Window) continue;
             if (Surface(IWin).ExtBoundCond != ExternalEnvironment) continue;
-            if (SurfWinShadingFlag(IWin) >= 10) SurfWinShadingFlag(IWin) = ShadeOff;
+            bool anyGlareControl = BITF_TEST_ANY(BITF(SurfWinShadingFlag(IWin)), BITF(WinShadingType::IntShadeConditionallyOff) | BITF(WinShadingType::GlassConditionallyLightened) |\
+                                                 BITF(WinShadingType::ExtShadeConditionallyOff) | BITF(WinShadingType::IntBlindConditionallyOff) | BITF(WinShadingType::ExtBlindConditionallyOff));
+            if (anyGlareControl) {
+                SurfWinShadingFlag(IWin) = WinShadingType::ShadeOff;
+            }
         }
 
         // Variables for reporting
-        for (IL = 1; IL <= NREFPT; ++IL) {
+        for (int IL = 1; IL <= NREFPT; ++IL) {
             state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylIllumAtRefPt(IL) = state.dataDaylightingManager->DaylIllum(IL);
             state.dataDaylightingData->ZoneDaylight(ZoneNum).GlareIndexAtRefPt(IL) = GLRNDX(IL);
 
@@ -7092,9 +7076,9 @@ namespace EnergyPlus::DaylightingManager {
         // The following report variables are valid only for daylit zones without interior windows
         if (!Zone(ZoneNum).HasInterZoneWindow) {
             for (loop = 1; loop <= state.dataDaylightingData->ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
-                IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
-                IS = 1;
-                if (SurfWinShadingFlag(IWin) > 0 || SurfWinSolarDiffusing(IWin)) IS = 2;
+                int IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
+                int IS = 1;
+                if (SurfWinWindowModelType(IWin) != WindowBSDFModel && (IS_SHADED(SurfWinShadingFlag(IWin)) || SurfWinSolarDiffusing(IWin))) IS = 2;
                 if (state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylightMethod == DataDaylighting::iDaylightingMethod::SplitFluxDaylighting) {
                     int refPtCount = 0;
                     for (int const enclZoneNum : DataViewFactorInformation::ZoneSolarInfo(Zone(ZoneNum).SolarEnclosureNum).ZoneNums) {
@@ -7247,7 +7231,7 @@ namespace EnergyPlus::DaylightingManager {
         int ILM;
         bool ScheduledAvailable;
 
-        // FLOW:
+
 
         if (state.dataDaylightingData->ZoneDaylight(ZoneNum).DaylightMethod != DataDaylighting::iDaylightingMethod::SplitFluxDaylighting) return;
 
@@ -7415,7 +7399,7 @@ namespace EnergyPlus::DaylightingManager {
                                    0.008, 0.008, 0.006, 0.006, 0.0,   0.0,   0.003, 0.003, 0.003, 0.003, 0.003},
                                   {5, 7})); // Position factor array // Explicit reshape2 template args are work-around for VC++2013 bug
 
-        // FLOW:
+
         DayltgGlarePositionFactor = 0.0;
         if (X < 0.0 || X >= 3.0) return DayltgGlarePositionFactor;
         if (Y < 0.0 || Y >= 2.0) return DayltgGlarePositionFactor;
@@ -7562,7 +7546,6 @@ namespace EnergyPlus::DaylightingManager {
         //  (times light well efficiency, if appropriate)
         Real64 ZSU1; // Transmitted direct normal illuminance (lux)
         //  CHARACTER(len=32) :: ShType                    ! Window shading device type
-        int ShType;                  // Window shading device type
         bool ShadeOn;                // True if exterior or interior window shade present
         bool BlindOn;                // True if exterior or interior window blind present
         bool ScreenOn;               // True if exterior window screen present
@@ -7636,6 +7619,8 @@ namespace EnergyPlus::DaylightingManager {
         int IntWinNum;              // window index for interior windows associated with exterior windows
         Real64 COSBintWin;
 
+        WinShadingType ShType;
+
         ZoneNumThisWin = Surface(Surface(IWin).BaseSurf).Zone;
         // The inside surface area, ZoneDaylight(ZoneNum)%TotInsSurfArea was calculated in subr DayltgAveInteriorReflectance
 
@@ -7656,7 +7641,7 @@ namespace EnergyPlus::DaylightingManager {
             }
         }
 
-        // FLOW:
+
         // Initialize window luminance and fluxes for split-flux calculation
         state.dataDaylightingManager->WLUMSK(IHR, _, _) = 0.0;
         state.dataDaylightingManager->WLUMSU(IHR, _) = 0.0;
@@ -7692,8 +7677,8 @@ namespace EnergyPlus::DaylightingManager {
         // Azimuth ranges over a maximum of 2 Pi radians.
         // Altitude ranges over a maximum of Pi/2 radians between -Pi/2 < PH < +Pi/2, so that elements are not counted twice
         // PH = 0 at the horizon; PH = Pi/2 at the zenith
-        PHMIN = max(-DataGlobalConstants::PiOvr2(), SurfWinPhi(IWin) - DataGlobalConstants::PiOvr2());
-        PHMAX = min(DataGlobalConstants::PiOvr2(), SurfWinPhi(IWin) + DataGlobalConstants::PiOvr2());
+        PHMIN = max(-DataGlobalConstants::PiOvr2, SurfWinPhi(IWin) - DataGlobalConstants::PiOvr2);
+        PHMAX = min(DataGlobalConstants::PiOvr2, SurfWinPhi(IWin) + DataGlobalConstants::PiOvr2);
         DPH = (PHMAX - PHMIN) / double(NPHMAX);
 
         // Sky/ground element altitude integration
@@ -7710,9 +7695,9 @@ namespace EnergyPlus::DaylightingManager {
             PhWin = SurfWinPhi(IWin);
             ThWin = SurfWinTheta(IWin);
             if (PhWin >= 0.0) {
-                if (PH >= DataGlobalConstants::PiOvr2() - PhWin) {
-                    ThMin = -DataGlobalConstants::Pi();
-                    ThMax = DataGlobalConstants::Pi();
+                if (PH >= DataGlobalConstants::PiOvr2 - PhWin) {
+                    ThMin = -DataGlobalConstants::Pi;
+                    ThMax = DataGlobalConstants::Pi;
                 } else {
                     ACosTanTan = std::acos(-std::tan(PH) * std::tan(PhWin));
                     ThMin = ThWin - std::abs(ACosTanTan);
@@ -7720,9 +7705,9 @@ namespace EnergyPlus::DaylightingManager {
                 }
 
             } else { // PhiSurf < 0.0
-                if (PH <= -PhWin - DataGlobalConstants::PiOvr2()) {
-                    ThMin = -DataGlobalConstants::Pi();
-                    ThMax = DataGlobalConstants::Pi();
+                if (PH <= -PhWin - DataGlobalConstants::PiOvr2) {
+                    ThMin = -DataGlobalConstants::Pi;
+                    ThMax = DataGlobalConstants::Pi;
                 } else {
                     ACosTanTan = std::acos(-std::tan(PH) * std::tan(PhWin));
                     ThMin = ThWin - std::abs(ACosTanTan);
@@ -7787,7 +7772,7 @@ namespace EnergyPlus::DaylightingManager {
                     for (ISky = 1; ISky <= 4; ++ISky) {
                         // Below, luminance of ground in cd/m2 is illuminance on ground in lumens/m2
                         // times ground reflectance, divided by pi, times obstruction multiplier.
-                        ZSK(ISky) = (state.dataDaylightingManager->GILSK(IHR, ISky) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi()) * COSB * DA * ObTransM(IPH, ITH) * SkyObstructionMult(IPH, ITH);
+                        ZSK(ISky) = (state.dataDaylightingManager->GILSK(IHR, ISky) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi) * COSB * DA * ObTransM(IPH, ITH) * SkyObstructionMult(IPH, ITH);
                     }
                     // Determine if sun illuminates the point that ray hits the ground. If the solar reflection
                     // calculation has been requested (CalcSolRefl = .TRUE.) shading by obstructions, including
@@ -7804,7 +7789,7 @@ namespace EnergyPlus::DaylightingManager {
                         }
                         if (hitObs) SunObstructionMult = 0.0;
                     }
-                    ZSU = (state.dataDaylightingManager->GILSU(IHR) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi()) * COSB * DA * ObTransM(IPH, ITH) * SunObstructionMult;
+                    ZSU = (state.dataDaylightingManager->GILSU(IHR) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi) * COSB * DA * ObTransM(IPH, ITH) * SunObstructionMult;
                 }
 
                 // BEAM SOLAR AND SKY SOLAR REFLECTED FROM NEAREST OBSTRUCTION
@@ -7825,7 +7810,7 @@ namespace EnergyPlus::DaylightingManager {
                             // Exterior building surface is nearest hit
                             if (!state.dataConstruction->Construct(ObsConstrNum).TypeIsWindow) {
                                 // Obstruction is not a window, i.e., is an opaque surface
-                                ObsVisRefl = 1.0 - dataMaterial.Material(state.dataConstruction->Construct(ObsConstrNum).LayerPoint(1)).AbsorpVisible;
+                                ObsVisRefl = 1.0 - state.dataMaterial->Material(state.dataConstruction->Construct(ObsConstrNum).LayerPoint(1)).AbsorpVisible;
                             } else {
                                 // Obstruction is a window; assume it is bare
                                 if (SurfWinStormWinFlag(NearestHitSurfNum) == 1)
@@ -7853,10 +7838,10 @@ namespace EnergyPlus::DaylightingManager {
                             if (dot(U, Surface(NearestHitSurfNum).OutNormVec) > 0.0) NearestHitSurfNumX = NearestHitSurfNum + 1;
                         }
                         if (!DetailedSkyDiffuseAlgorithm || !ShadingTransmittanceVaries || SolarDistribution == MinimalShadowing) {
-                            SkyReflVisLum = ObsVisRefl * Surface(NearestHitSurfNumX).ViewFactorSky * DifShdgRatioIsoSky(NearestHitSurfNumX) / DataGlobalConstants::Pi();
+                            SkyReflVisLum = ObsVisRefl * Surface(NearestHitSurfNumX).ViewFactorSky * DifShdgRatioIsoSky(NearestHitSurfNumX) / DataGlobalConstants::Pi;
                         } else {
                             SkyReflVisLum =
-                                ObsVisRefl * Surface(NearestHitSurfNumX).ViewFactorSky * DifShdgRatioIsoSkyHRTS(1, IHR, NearestHitSurfNumX) / DataGlobalConstants::Pi();
+                                ObsVisRefl * Surface(NearestHitSurfNumX).ViewFactorSky * DifShdgRatioIsoSkyHRTS(1, IHR, NearestHitSurfNumX) / DataGlobalConstants::Pi;
                         }
                         dReflObsSky = SkyReflVisLum * COSB * DA;
                         for (ISky = 1; ISky <= 4; ++ISky) {
@@ -7877,7 +7862,7 @@ namespace EnergyPlus::DaylightingManager {
 
                     // Make all transmitted light diffuse for a TDD with a bare diffuser
                     for (ISky = 1; ISky <= 4; ++ISky) {
-                        state.dataDaylightingManager->WLUMSK(IHR, 1, ISky) += ZSK(ISky) * TVISBR / DataGlobalConstants::Pi();
+                        state.dataDaylightingManager->WLUMSK(IHR, 1, ISky) += ZSK(ISky) * TVISBR / DataGlobalConstants::Pi;
                         FLFWSK(1, ISky) += ZSK(ISky) * TVISBR * (1.0 - SurfWinFractionUpgoing(IWin));
                         FLCWSK(1, ISky) += ZSK(ISky) * TVISBR * SurfWinFractionUpgoing(IWin);
 
@@ -7886,7 +7871,7 @@ namespace EnergyPlus::DaylightingManager {
                         state.dataDaylightingManager->TDDFluxTrans(IHR, ISky, PipeNum) += ZSK(ISky) * TVISBR;
 
                         if (ISky == 1) {
-                            state.dataDaylightingManager->WLUMSU(IHR, 1) += ZSU * TVISBR / DataGlobalConstants::Pi();
+                            state.dataDaylightingManager->WLUMSU(IHR, 1) += ZSU * TVISBR / DataGlobalConstants::Pi;
                             FLFWSU(1) += ZSU * TVISBR * (1.0 - SurfWinFractionUpgoing(IWin));
                             FLCWSU(1) += ZSU * TVISBR * SurfWinFractionUpgoing(IWin);
 
@@ -7957,9 +7942,9 @@ namespace EnergyPlus::DaylightingManager {
                     BlNum = SurfWinBlindNumber(IWin);
                     //					ScNum = SurfaceWindow( IWin ).ScreenNumber; //Unused Set but never used
 
-                    ShadeOn = (ShType == WSC_ST_InteriorShade || ShType == WSC_ST_ExteriorShade || ShType == WSC_ST_BetweenGlassShade);
-                    BlindOn = (ShType == WSC_ST_InteriorBlind || ShType == WSC_ST_ExteriorBlind || ShType == WSC_ST_BetweenGlassBlind);
-                    ScreenOn = (ShType == WSC_ST_ExteriorScreen);
+                    ShadeOn = ANY_SHADE(ShType);
+                    BlindOn = ANY_BLIND(ShType);
+                    ScreenOn = (ShType == WinShadingType::ExtScreen);
                 }
 
                 if (ShadeOn || BlindOn || ScreenOn || SurfWinSolarDiffusing(IWin)) {
@@ -8021,7 +8006,7 @@ namespace EnergyPlus::DaylightingManager {
 
                             TransBlBmDiffFront = InterpProfAng(ProfAng, Blind(BlNum).VisFrontBeamDiffTrans(JB, {1, 37}));
 
-                            if (ShType == WSC_ST_InteriorBlind) { // Interior blind
+                            if (ShType == WinShadingType::IntBlind) { // Interior blind
                                 ReflGlDiffDiffBack = state.dataConstruction->Construct(IConst).ReflectVisDiffBack;
                                 ReflBlBmDiffFront = InterpProfAng(ProfAng, Blind(BlNum).VisFrontBeamDiffRefl(JB, {1, 37}));
                                 ReflBlDiffDiffFront = Blind(BlNum).VisFrontDiffDiffRefl(JB);
@@ -8029,7 +8014,7 @@ namespace EnergyPlus::DaylightingManager {
                                 TransMult(JB) = TVISBR * (TransBlBmDiffFront + ReflBlBmDiffFront * ReflGlDiffDiffBack * TransBlDiffDiffFront /
                                                                                    (1.0 - ReflBlDiffDiffFront * ReflGlDiffDiffBack));
 
-                            } else if (ShType == WSC_ST_ExteriorBlind) { // Exterior blind
+                            } else if (ShType == WinShadingType::ExtBlind) { // Exterior blind
                                 ReflGlDiffDiffFront = state.dataConstruction->Construct(IConst).ReflectVisDiffFront;
                                 ReflBlDiffDiffBack = Blind(BlNum).VisBackDiffDiffRefl(JB);
                                 TransMult(JB) = TransBlBmDiffFront * SurfWinGlazedFrac(IWin) * state.dataConstruction->Construct(IConst).TransDiffVis /
@@ -8058,9 +8043,9 @@ namespace EnergyPlus::DaylightingManager {
                             }
 
                             if (SurfWinMovableSlats(IWin)) {
-                                SlatAng = (JB - 1) * DataGlobalConstants::Pi() / (MaxSlatAngs - 1);
+                                SlatAng = (JB - 1) * DataGlobalConstants::Pi / (MaxSlatAngs - 1);
                             } else {
-                                SlatAng = Blind(BlNum).SlatAngle * DataGlobalConstants::DegToRadians();
+                                SlatAng = Blind(BlNum).SlatAngle * DataGlobalConstants::DegToRadians;
                             }
                             TransBmBmMult(JB) =
                                 TVISBR *
@@ -8090,13 +8075,13 @@ namespace EnergyPlus::DaylightingManager {
                             // EXIT after first pass if not movable slats or exterior window screen
                             if (!SurfWinMovableSlats(IWin) && JB > 1) break;
 
-                            state.dataDaylightingManager->WLUMSK(IHR, JB + 1, ISky) += ZSK(ISky) * TransMult(JB) / DataGlobalConstants::Pi();
+                            state.dataDaylightingManager->WLUMSK(IHR, JB + 1, ISky) += ZSK(ISky) * TransMult(JB) / DataGlobalConstants::Pi;
                             FLFWSK(JB + 1, ISky) += ZSK(ISky) * TransMult(JB) * (1.0 - SurfWinFractionUpgoing(IWin));
                             if (PH > 0.0 && (BlindOn || ScreenOn)) FLFWSK(JB + 1, ISky) += ZSK(ISky) * TransBmBmMult(JB);
                             FLCWSK(JB + 1, ISky) += ZSK(ISky) * TransMult(JB) * SurfWinFractionUpgoing(IWin);
                             if (PH <= 0.0 && (BlindOn || ScreenOn)) FLCWSK(JB + 1, ISky) += ZSK(ISky) * TransBmBmMult(JB);
                             if (ISky == 1) {
-                                state.dataDaylightingManager->WLUMSU(IHR, JB + 1) += ZSU * TransMult(JB) / DataGlobalConstants::Pi();
+                                state.dataDaylightingManager->WLUMSU(IHR, JB + 1) += ZSU * TransMult(JB) / DataGlobalConstants::Pi;
                                 FLFWSU(JB + 1) += ZSU * TransMult(JB) * (1.0 - SurfWinFractionUpgoing(IWin));
                                 if (PH > 0.0 && (BlindOn || ScreenOn)) FLFWSU(JB + 1) += ZSU * TransBmBmMult(JB);
                                 FLCWSU(JB + 1) += ZSU * TransMult(JB) * SurfWinFractionUpgoing(IWin);
@@ -8173,7 +8158,7 @@ namespace EnergyPlus::DaylightingManager {
 
                     FLFWSUdisk(1) = 0.0; // Diffuse light only
 
-                    state.dataDaylightingManager->WLUMSU(IHR, 1) += ZSU1 * TVISBSun / DataGlobalConstants::Pi();
+                    state.dataDaylightingManager->WLUMSU(IHR, 1) += ZSU1 * TVISBSun / DataGlobalConstants::Pi;
                     FLFWSU(1) += ZSU1 * TVISBSun * (1.0 - SurfWinFractionUpgoing(IWin));
                     FLCWSU(1) += ZSU1 * TVISBSun * SurfWinFractionUpgoing(IWin);
 
@@ -8220,15 +8205,12 @@ namespace EnergyPlus::DaylightingManager {
 
                         } else { // Blind on
 
-                            // PETER:  As long as only interior blinds are allowed for TDDs, no need to change TransMult calculation
-                            //         for TDDs because it is based on TVISBSun which is correctly calculated for TDDs above.
-
-                            // TH 7/7/2010: This call is moved outside the loop - DO JB = 1,MaxSlatAngs
-                            // CALL ProfileAngle(IWin,SUNCOSHR(1:3,IHR),Blind(BlNum)%SlatOrientation,ProfAng)
+                            // As long as only interior blinds are allowed for TDDs, no need to change TransMult calculation
+                            // for TDDs because it is based on TVISBSun which is correctly calculated for TDDs above.
 
                             TransBlBmDiffFront = InterpProfAng(ProfAng, Blind(BlNum).VisFrontBeamDiffTrans(JB, {1, 37}));
 
-                            if (ShType == WSC_ST_InteriorBlind) { // Interior blind
+                            if (ShType == WinShadingType::IntBlind) { // Interior blind
                                 // TH CR 8121, 7/7/2010
                                 // ReflBlBmDiffFront = InterpProfAng(ProfAng,Blind(BlNum)%VisFrontBeamDiffRefl)
                                 ReflBlBmDiffFront = InterpProfAng(ProfAng, Blind(BlNum).VisFrontBeamDiffRefl(JB, {1, 37}));
@@ -8240,7 +8222,7 @@ namespace EnergyPlus::DaylightingManager {
                                 TransMult(JB) = TVISBSun * (TransBlBmDiffFront + ReflBlBmDiffFront * ReflGlDiffDiffBack * TransBlDiffDiffFront /
                                                                                      (1.0 - ReflBlDiffDiffFront * ReflGlDiffDiffBack));
 
-                            } else if (ShType == WSC_ST_ExteriorBlind) { // Exterior blind
+                            } else if (ShType == WinShadingType::ExtBlind) { // Exterior blind
                                 TransMult(JB) =
                                     TransBlBmDiffFront *
                                     (state.dataConstruction->Construct(IConst).TransDiffVis / (1.0 - ReflGlDiffDiffFront * Blind(BlNum).VisBackDiffDiffRefl(JB))) *
@@ -8260,9 +8242,9 @@ namespace EnergyPlus::DaylightingManager {
                                 }
                             }
                             if (SurfWinMovableSlats(IWin)) {
-                                SlatAng = (JB - 1) * DataGlobalConstants::Pi() / (MaxSlatAngs - 1);
+                                SlatAng = (JB - 1) * DataGlobalConstants::Pi / (MaxSlatAngs - 1);
                             } else {
-                                SlatAng = Blind(BlNum).SlatAngle * DataGlobalConstants::DegToRadians();
+                                SlatAng = Blind(BlNum).SlatAngle * DataGlobalConstants::DegToRadians;
                             }
                             TransBmBmMult(JB) =
                                 TVISBSun *
@@ -8279,8 +8261,8 @@ namespace EnergyPlus::DaylightingManager {
                                                  // SurfaceWindow(IWin)%FractionUpgoing is already set to 1.0 earlier
                         }
 
-                        state.dataDaylightingManager->WLUMSU(IHR, JB + 1) += ZSU1 * TransMult(JB) / DataGlobalConstants::Pi();
-                        state.dataDaylightingManager->WLUMSUdisk(IHR, JB + 1) = ZSU1 * TransBmBmMult(JB) / DataGlobalConstants::Pi();
+                        state.dataDaylightingManager->WLUMSU(IHR, JB + 1) += ZSU1 * TransMult(JB) / DataGlobalConstants::Pi;
+                        state.dataDaylightingManager->WLUMSUdisk(IHR, JB + 1) = ZSU1 * TransBmBmMult(JB) / DataGlobalConstants::Pi;
                         FLFWSU(JB + 1) += ZSU1 * TransMult(JB) * (1.0 - SurfWinFractionUpgoing(IWin));
                         FLFWSUdisk(JB + 1) = ZSU1 * TransBmBmMult(JB);
                         FLCWSU(JB + 1) += ZSU1 * TransMult(JB) * SurfWinFractionUpgoing(IWin);
@@ -8330,13 +8312,13 @@ namespace EnergyPlus::DaylightingManager {
 
                         } else { // Blind on
                             TransBlDiffDiffFront = Blind(BlNum).VisFrontDiffDiffTrans(JB);
-                            if (ShType == WSC_ST_InteriorBlind) { // Interior blind
+                            if (ShType == WinShadingType::IntBlind) { // Interior blind
                                 ReflBlDiffDiffFront = Blind(BlNum).VisFrontDiffDiffRefl(JB);
                                 TransMult(JB) =
                                     TVisSunRefl * (TransBlDiffDiffFront + ReflBlDiffDiffFront * ReflGlDiffDiffBack * TransBlDiffDiffFront /
                                                                               (1.0 - ReflBlDiffDiffFront * ReflGlDiffDiffBack));
 
-                            } else if (ShType == WSC_ST_ExteriorBlind) { // Exterior blind
+                            } else if (ShType == WinShadingType::ExtBlind) { // Exterior blind
                                 TransMult(JB) =
                                     TransBlDiffDiffFront *
                                     (state.dataConstruction->Construct(IConst).TransDiffVis / (1.0 - ReflGlDiffDiffFront * Blind(BlNum).VisBackDiffDiffRefl(JB))) *
@@ -8357,7 +8339,7 @@ namespace EnergyPlus::DaylightingManager {
                             } // End of check of interior/exterior/between-glass blind
                         }     // ShadeOn/BlindOn
 
-                        state.dataDaylightingManager->WLUMSU(IHR, JB + 1) += ZSU1refl * TransMult(JB) / DataGlobalConstants::Pi();
+                        state.dataDaylightingManager->WLUMSU(IHR, JB + 1) += ZSU1refl * TransMult(JB) / DataGlobalConstants::Pi;
                         FLFWSU(JB + 1) += ZSU1refl * TransMult(JB) * (1.0 - SurfWinFractionUpgoing(IWin));
                         FLCWSU(JB + 1) += ZSU1refl * TransMult(JB) * SurfWinFractionUpgoing(IWin);
                     } // End of loop over slat angles
@@ -8459,17 +8441,17 @@ namespace EnergyPlus::DaylightingManager {
                 // Ray from ground element
                 // BeamObstrMultiplier = ComplexWind(IWin)%DaylghtGeom(CurCplxFenState)%GndObstrMultiplier(WinEl, iIncElem)
                 for (iSky = 1; iSky <= 4; ++iSky) {
-                    ElementLuminanceSky(iSky, iIncElem) = state.dataDaylightingManager->GILSK(IHR, iSky) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi() * LambdaInc;
+                    ElementLuminanceSky(iSky, iIncElem) = state.dataDaylightingManager->GILSK(IHR, iSky) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi * LambdaInc;
                 }
-                ElementLuminanceSun(iIncElem) = state.dataDaylightingManager->GILSU(IHR) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi() * LambdaInc;
+                ElementLuminanceSun(iIncElem) = state.dataDaylightingManager->GILSU(IHR) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi * LambdaInc;
             } else {
                 // Ray from the element which is half sky and half ground
                 for (iSky = 1; iSky <= 4; ++iSky) {
                     // in this case half of the pach is coming from the sky and half from the ground
                     ElementLuminanceSky(iSky, iIncElem) = 0.5 * DayltgSkyLuminance(state, iSky, Azimuth, Altitude) * LambdaInc;
-                    ElementLuminanceSky(iSky, iIncElem) += 0.5 * state.dataDaylightingManager->GILSK(IHR, iSky) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi() * LambdaInc;
+                    ElementLuminanceSky(iSky, iIncElem) += 0.5 * state.dataDaylightingManager->GILSK(IHR, iSky) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi * LambdaInc;
                 }
-                ElementLuminanceSun(iIncElem) = 0.5 * state.dataDaylightingManager->GILSU(IHR) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi() * LambdaInc;
+                ElementLuminanceSun(iIncElem) = 0.5 * state.dataDaylightingManager->GILSU(IHR) * state.dataEnvrn->GndReflectanceForDayltg / DataGlobalConstants::Pi * LambdaInc;
             }
             // Sun beam calculations
             if ((SolBmIndex == iIncElem) && (SunlitFracHR(IHR, IWin) > 0.0)) {
@@ -8923,7 +8905,7 @@ namespace EnergyPlus::DaylightingManager {
                 // Need to recalculate position factor for dominant direction in case of specular bsdf.  Otherwise this will produce
                 // very inaccurate results because of position factor of the sun and bsdf pach can vary by lot
                 if (iTrnElem == SolBmIndex) {
-                    XR = std::tan(std::abs(DataGlobalConstants::PiOvr2() - AZVIEW - state.dataDaylightingManager->THSUN) + 0.001);
+                    XR = std::tan(std::abs(DataGlobalConstants::PiOvr2 - AZVIEW - state.dataDaylightingManager->THSUN) + 0.001);
                     YR = std::tan(state.dataDaylightingManager->PHSUN + 0.001);
                     PosFac = DayltgGlarePositionFactor(XR, YR);
                     RayZ = state.dataDaylightingManager->SPHSUN;
@@ -9024,9 +9006,9 @@ namespace EnergyPlus::DaylightingManager {
 
         // Autodesk:Return ISky in {1,2,3,4} should be checked or asserted or a default case should be added to SELECT block to set return value
 
-        // FLOW:
+
         SPHSKY = max(std::sin(PHSKY), 0.01); // Prevent floating point underflows
-        Z = DataGlobalConstants::PiOvr2() - state.dataDaylightingManager->PHSUN;
+        Z = DataGlobalConstants::PiOvr2 - state.dataDaylightingManager->PHSUN;
         if (ISky >= 1 && ISky <= 3) { // Following not needed for overcast sky
             COSG = SPHSKY * state.dataDaylightingManager->SPHSUN + std::cos(PHSKY) * state.dataDaylightingManager->CPHSUN * std::cos(THSKY - state.dataDaylightingManager->THSUN);
             COSG = max(DataPrecisionGlobals::constant_minusone, min(COSG, 1.0)); // Prevent out of range due to roundoff
@@ -9110,22 +9092,22 @@ namespace EnergyPlus::DaylightingManager {
         static Vector3<Real64> WinNormCrossBase; // Cross product of WinNorm and vector along window baseline
         //  INTEGER            :: IComp             ! Vector component index
 
-        // FLOW:
+
         if (HorOrVert == Horizontal) { // Profile angle for horizontal structures
-            ElevWin = DataGlobalConstants::PiOvr2() - Surface(SurfNum).Tilt * DataGlobalConstants::DegToRadians();
-            AzimWin = (90.0 - Surface(SurfNum).Azimuth) * DataGlobalConstants::DegToRadians();
+            ElevWin = DataGlobalConstants::PiOvr2 - Surface(SurfNum).Tilt * DataGlobalConstants::DegToRadians;
+            AzimWin = (90.0 - Surface(SurfNum).Azimuth) * DataGlobalConstants::DegToRadians;
             ElevSun = std::asin(CosDirSun(3));
             AzimSun = std::atan2(CosDirSun(2), CosDirSun(1));
             ProfileAng = std::atan(std::sin(ElevSun) / std::abs(std::cos(ElevSun) * std::cos(AzimWin - AzimSun))) - ElevWin;
         } else { // Profile angle for vertical structures
-            ElevWin = DataGlobalConstants::PiOvr2() - Surface(SurfNum).Tilt * DataGlobalConstants::DegToRadians();
-            AzimWin = Surface(SurfNum).Azimuth * DataGlobalConstants::DegToRadians(); // 7952
+            ElevWin = DataGlobalConstants::PiOvr2 - Surface(SurfNum).Tilt * DataGlobalConstants::DegToRadians;
+            AzimWin = Surface(SurfNum).Azimuth * DataGlobalConstants::DegToRadians; // 7952
             AzimSun = std::atan2(CosDirSun(1), CosDirSun(2));  // 7952
             if (std::abs(ElevWin) < 0.1) {                     // Near-vertical window
                 ProfileAng = AzimWin - AzimSun;                // CR7952 allow sign changes.
             } else {
                 WinNorm = Surface(SurfNum).OutNormVec;
-                ThWin = AzimWin - DataGlobalConstants::PiOvr2();
+                ThWin = AzimWin - DataGlobalConstants::PiOvr2;
                 Real64 const sin_ElevWin(std::sin(ElevWin));
                 WinNormCrossBase(1) = -sin_ElevWin * std::cos(ThWin);
                 WinNormCrossBase(2) = sin_ElevWin * std::sin(ThWin);
@@ -9136,7 +9118,7 @@ namespace EnergyPlus::DaylightingManager {
                 if ((AzimWin - AzimSun) < 0.0) ProfileAng = -1.0 * ProfileAng;
             }
             // Constrain to 0 to pi
-            if (ProfileAng > DataGlobalConstants::Pi()) ProfileAng = 2.0 * DataGlobalConstants::Pi() - ProfileAng;
+            if (ProfileAng > DataGlobalConstants::Pi) ProfileAng = 2.0 * DataGlobalConstants::Pi - ProfileAng;
         }
     }
 
@@ -9181,7 +9163,7 @@ namespace EnergyPlus::DaylightingManager {
         static Vector3<Real64> HitPt; // Hit point on an obstruction (m)
         bool hit;                     // True iff obstruction is hit
 
-        // FLOW:
+
 
         NearestHitSurfNum = 0;
         Real64 NearestHitDistance_sq(
@@ -9300,7 +9282,7 @@ namespace EnergyPlus::DaylightingManager {
         Real64 CosIncAngAtHitPt;         // Cosine of angle of incidence of sun at HitPt
         Real64 DiffVisRefl;              // Diffuse visible reflectance of ReflSurfNum
 
-        // FLOW:
+
 
         LumAtReflHitPtFrSun = 0.0;
         // Skip daylighting shelves since reflection from these is separately calculated
@@ -9342,7 +9324,7 @@ namespace EnergyPlus::DaylightingManager {
                 DiffVisRefl = 0.0;
             }
         }
-        LumAtReflHitPtFrSun = CosIncAngAtHitPt * DiffVisRefl / DataGlobalConstants::Pi();
+        LumAtReflHitPtFrSun = CosIncAngAtHitPt * DiffVisRefl / DataGlobalConstants::Pi;
     }
 
     void DayltgInteriorMapIllum(EnergyPlusData &state, int &ZoneNum) // Zone number
@@ -9536,7 +9518,7 @@ namespace EnergyPlus::DaylightingManager {
                         }
 
                         if ((SurfWinWindowModelType(IWin) != WindowBSDFModel) &&
-                            (SurfWinShadingFlag(IWin) >= 1 || SurfWinSolarDiffusing(IWin))) {
+                            (IS_SHADED(SurfWinShadingFlag(IWin)) || SurfWinSolarDiffusing(IWin))) {
 
                             //                                 ===Shaded window===
                             if (!SurfWinMovableSlats(IWin)) {
@@ -9717,7 +9699,8 @@ namespace EnergyPlus::DaylightingManager {
                     HorIllSkyFac = state.dataEnvrn->HISKF / ((1.0 - SkyWeight) * HorIllSky(ISky2) + SkyWeight * HorIllSky(ISky1));
 
                     for (IS = 1; IS <= 2; ++IS) {
-                        if (IS == 2 && SurfWinShadingFlag(IWin) <= 0 && !SurfWinSolarDiffusing(IWin)) break;
+                        if (IS == 2 && SurfWinWindowModelType(IWin) == WindowBSDFModel) break;
+                        if (IS == 2 && NOT_SHADED(SurfWinShadingFlag(IWin)) && !SurfWinSolarDiffusing(IWin)) break;
 
                         state.dataDaylightingData->IllumMapCalc(MapNum).IllumFromWinAtMapPt(loop, IS, ILB) =
                             DFSUHR(IS) * state.dataEnvrn->HISUNF + HorIllSkyFac * (DFSKHR(IS, ISky1) * SkyWeight * HorIllSky(ISky1) +
@@ -9744,10 +9727,7 @@ namespace EnergyPlus::DaylightingManager {
             for (loop = 1; loop <= state.dataDaylightingData->ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
                 IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
 
-                IS = 1;
-                if ((SurfWinWindowModelType(IWin) != WindowBSDFModel) &&
-                    ((SurfWinShadingFlag(IWin) >= 1 && SurfWinShadingFlag(IWin) <= 9) || SurfWinSolarDiffusing(IWin)))
-                    IS = 2;
+                IS = findWinShadingStatus(IWin);
 
                 // CR 8057. 3/17/2010.
                 // Switchable windows may be in partially switched state rather than fully dark state
@@ -9755,8 +9735,8 @@ namespace EnergyPlus::DaylightingManager {
 
                 ICtrl = Surface(IWin).activeWindowShadingControl;
                 if (Surface(IWin).HasShadeControl) {
-                    if (WindowShadingControl(ICtrl).ShadingControlType == WSCT_MeetDaylIlumSetp &&
-                        SurfWinShadingFlag(IWin) == SwitchableGlazing) {
+                    if (WindowShadingControl(ICtrl).ShadingControlType == WindowShadingControlType::MeetDaylIlumSetp &&
+                        SurfWinShadingFlag(IWin) == WinShadingType::SwitchableGlazing) {
                         // switchable windows in partial or fully switched state,
                         //  get its intermediate VT calculated in DayltgInteriorIllum
                         IConstShaded = Surface(IWin).activeShadedConstruction;
@@ -9782,18 +9762,15 @@ namespace EnergyPlus::DaylightingManager {
                 // Loop over exterior windows associated with zone
                 for (loop = 1; loop <= state.dataDaylightingData->ZoneDaylight(ZoneNum).NumOfDayltgExtWins; ++loop) {
                     IWin = state.dataDaylightingData->ZoneDaylight(ZoneNum).DayltgExtWinSurfNums(loop);
-                    IS = 1;
-                    if ((SurfWinWindowModelType(IWin) != WindowBSDFModel) &&
-                        ((SurfWinShadingFlag(IWin) >= 1 && SurfWinShadingFlag(IWin) <= 9) || SurfWinSolarDiffusing(IWin)))
-                        IS = 2;
+                    IS = findWinShadingStatus(IWin);
 
                     // CR 8057. 3/17/2010
                     VTMULT = 1.0;
 
                     ICtrl = Surface(IWin).activeWindowShadingControl;
                     if (Surface(IWin).HasShadeControl) {
-                        if (WindowShadingControl(ICtrl).ShadingControlType == WSCT_MeetDaylIlumSetp &&
-                            SurfWinShadingFlag(IWin) == SwitchableGlazing) {
+                        if (WindowShadingControl(ICtrl).ShadingControlType == WindowShadingControlType::MeetDaylIlumSetp &&
+                            SurfWinShadingFlag(IWin) == WinShadingType::SwitchableGlazing) {
                             // switchable windows in partial or fully switched state,
                             //  get its intermediate VT calculated in DayltgInteriorIllum
                             IConstShaded = Surface(IWin).activeShadedConstruction;
@@ -9887,7 +9864,7 @@ namespace EnergyPlus::DaylightingManager {
         //		static bool CommaDelimited( true ); //Unused Set but never used
         // BSLLC Finish
 
-        // FLOW:
+
         if (state.dataDaylightingManager->ReportIllumMap_firstTime) {
             state.dataDaylightingManager->ReportIllumMap_firstTime = false;
             FirstTimeMaps.dimension(state.dataDaylightingData->TotIllumMaps, true);
@@ -10054,7 +10031,6 @@ namespace EnergyPlus::DaylightingManager {
         // na
 
         // Using/Aliasing
-        using DataErrorTracking::AbortProcessing;
         using DataStringGlobals::CharComma;
         using DataStringGlobals::CharSpace;
         using DataStringGlobals::CharTab;
@@ -10098,7 +10074,7 @@ namespace EnergyPlus::DaylightingManager {
                 state.dataDaylightingData->IllumMap(MapNum).mapFile->del();
             }
 
-            if (!state.dataDaylightingData->mapResultsReported && !AbortProcessing) {
+            if (!state.dataDaylightingData->mapResultsReported && !state.dataErrTracking->AbortProcessing) {
                 const auto message =
                     "CloseReportIllumMaps: Illuminance maps requested but no data ever reported. Likely cause is no solar.";
                 ShowSevereError(state, message);
@@ -10663,10 +10639,10 @@ namespace EnergyPlus::DaylightingManager {
         Real64 COSB;                  // Cosine of angle between ray from ref pt to center of window
         //  and window outward normal
 
-        // FLOW:
+
 
         for (ZoneNum = 1; ZoneNum <= state.dataGlobal->NumOfZones; ++ZoneNum) {
-            state.dataDaylightingData->ZoneDaylight(ZoneNum).MinIntWinSolidAng = 2.0 * DataGlobalConstants::Pi();
+            state.dataDaylightingData->ZoneDaylight(ZoneNum).MinIntWinSolidAng = 2.0 * DataGlobalConstants::Pi;
             if (state.dataDaylightingData->ZoneDaylight(ZoneNum).TotalDaylRefPoints == 0) continue;
             if (state.dataDaylightingData->ZoneDaylight(ZoneNum).NumOfIntWinAdjZones == 0) continue;
             for (IWin = Zone(ZoneNum).SurfaceFirst; IWin <= Zone(ZoneNum).SurfaceLast; ++IWin) {
