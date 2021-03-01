@@ -7169,18 +7169,6 @@ namespace UnitarySystems {
                 {
                     auto const SELECT_CASE_var(state.dataUnitarySystems->unitarySys[sysNum].m_CoolingCoilType_Num);
                     if (SELECT_CASE_var == DataHVACGlobals::CoilDX_CoolingTwoSpeed) {
-                        //SetupOutputVariable("Unitary System Cycling Ratio",
-                        //                    OutputProcessor::Unit::None,
-                        //                    unitarySys[sysNum].m_CycRatio,
-                        //                    "System",
-                        //                    "Average",
-                        //                    unitarySys[sysNum].Name);
-                        //SetupOutputVariable("Unitary System Compressor Speed Ratio",
-                        //                    OutputProcessor::Unit::None,
-                        //                    unitarySys[sysNum].m_SpeedRatio,
-                        //                    "System",
-                        //                    "Average",
-                        //                    unitarySys[sysNum].Name);
                     } else if (SELECT_CASE_var == DataHVACGlobals::CoilDX_MultiSpeedCooling || (SELECT_CASE_var == DataHVACGlobals::CoilDX_Cooling)) {
                         if (state.dataUnitarySystems->unitarySys[sysNum].m_HeatRecActive) {
                             SetupOutputVariable(state, "Unitary System Heat Recovery Rate",
