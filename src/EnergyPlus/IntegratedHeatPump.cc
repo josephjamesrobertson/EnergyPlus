@@ -51,6 +51,8 @@
 
 // EnergyPlus Headers
 #include <EnergyPlus/BranchNodeConnections.hh>
+#include <EnergyPlus/Coils/CoilCoolingDX.hh>
+#include <EnergyPlus/DXCoils.hh>
 #include <EnergyPlus/Data/EnergyPlusData.hh>
 #include <EnergyPlus/DataEnvironment.hh>
 #include <EnergyPlus/DataHVACGlobals.hh>
@@ -1246,6 +1248,11 @@ void GetIHPInput(EnergyPlusData &state)
         // AlphArray( 2 ) is the water sensor node
 
         state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilType = "COIL:COOLING:DX:VARIABLESPEED";
+        // Coil Hackathon 1: maybe a new input field needs to be added for the SCCoilType, and give two choices:
+        // Coil:Cooling:DX and Coil:Cooling:DX:VariableSpeed
+        // Temporarily, for the initial developlment, just manually make the type to "Coil:Cooling:DX".
+        state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilType = "COIL:COOLING:DX";
+
         state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilName = AlphArray(3);
         Coiltype = state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilType;
         CoilName = state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilName;
@@ -1256,7 +1263,22 @@ void GetIHPInput(EnergyPlusData &state)
             ErrorsFound = true;
         } else {
             errFlag = false;
-            state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilIndex = GetCoilIndexVariableSpeed(state, Coiltype, CoilName, errFlag);
+            if (Coiltype == "COIL:COOLING:DX:VARIABLESPEED") {
+                state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilIndex = GetCoilIndexVariableSpeed(state, Coiltype, CoilName, errFlag);
+            } else { // if (Coiltype == "COIL:COOLING:DX")
+                // Add code to get the index for COIL:COOLING:DX coil
+                // state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilIndex = something;
+                DXCoils::GetDXCoilIndex(state,
+                                        Coiltype,
+                                        state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilIndex,
+                                        errFlag,
+                                        ObjexxFCL::Optional_string_const(),
+                                        ObjexxFCL::Optional_bool_const());
+                if (errFlag) {
+                    ShowContinueError(state, "Occurs in " + CurrentModuleObject + " = " + AlphArray(1) + "\".");
+                    ErrorsFound = true;
+                }
+            }
             if (errFlag) {
                 ShowContinueError(state, "...specified in " + CurrentModuleObject + "=\"" + AlphArray(1) + "\".");
                 ErrorsFound = true;
@@ -1318,6 +1340,11 @@ void GetIHPInput(EnergyPlusData &state)
         }
 
         state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilType = "COIL:COOLING:DX:VARIABLESPEED";
+        // Coil Hackathon 1: maybe a new input field needs to be added for the SCCoilType, and give two choices:
+        // Coil:Cooling:DX and Coil:Cooling:DX:VariableSpeed
+        // Temporarily, for the initial developlment, just manually make the type to "Coil:Cooling:DX".
+        state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilType = "COIL:COOLING:DX";
+
         state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilName = AlphArray(7);
         Coiltype = state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilType;
         CoilName = state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilName;
@@ -1328,7 +1355,22 @@ void GetIHPInput(EnergyPlusData &state)
             ErrorsFound = true;
         } else {
             errFlag = false;
-            state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex = GetCoilIndexVariableSpeed(state, Coiltype, CoilName, errFlag);
+            if (Coiltype == "COIL:COOLING:DX") {
+                // Add code to get the index for COIL:COOLING:DX coil
+                // state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex = something;
+                DXCoils::GetDXCoilIndex(state, Coiltype,
+                                        state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex,
+                                        errFlag,
+                                        ObjexxFCL::Optional_string_const(),
+                                        ObjexxFCL::Optional_bool_const());
+                if (errFlag) {
+                    ShowContinueError(state, "Occurs in " + CurrentModuleObject + " = " + AlphArray(1) + "\".");
+                    ErrorsFound = true;
+                }
+            } else {
+                state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex =
+                    GetCoilIndexVariableSpeed(state, Coiltype, CoilName, errFlag);
+            }
             if (errFlag) {
                 ShowContinueError(state, "...specified in " + CurrentModuleObject + "=\"" + AlphArray(1) + "\".");
                 ErrorsFound = true;
