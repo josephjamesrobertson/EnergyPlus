@@ -357,7 +357,8 @@ TEST_F(CoilCoolingDXTest, CoilCoolingDXAlternateModePerformanceHitsSaturation)
     }
 }
 
-TEST_F(CoilCoolingDXTest, CoilLooksLikeType) {
+TEST_F(CoilCoolingDXTest, CoilLooksLikeType)
+{
     // this unit test is admittedly a bit invasive into the guts of the coil, but I don't see a nice way around it
     // the big one here is whether it is a two speed or multi speed, can't really tell...
 

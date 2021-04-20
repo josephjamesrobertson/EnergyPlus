@@ -48,7 +48,6 @@
 #ifndef ENERGYPLUS_COILS_COILCOOLINGDX
 #define ENERGYPLUS_COILS_COILCOOLINGDX
 
-#include <array>
 #include <string>
 #include <vector>
 
