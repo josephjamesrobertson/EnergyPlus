@@ -469,6 +469,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                 CoolingCoilType = InArgs(15)
                 IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(15) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               CASE('AIRLOOPHVAC:UNITARYSYSTEM')
@@ -483,6 +484,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                   ! do nothing
                 ELSE IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(15) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               CASE('AIRLOOPHVAC:UNITARY:FURNACE:HEATCOOL')
@@ -495,6 +497,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                   ! do nothing
                 ELSE IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(16) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               CASE('AIRLOOPHVAC:UNITARYHEATCOOL')
@@ -507,6 +510,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                   ! do nothing
                 ELSE IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(16) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               CASE('AIRLOOPHVAC:UNITARYHEATPUMP:AIRTOAIR')
@@ -521,6 +525,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                   ! do nothing
                 ELSE IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(14) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               CASE('AIRLOOPHVAC:UNITARYHEATPUMP:AIRTOAIR:MULTISPEED')
@@ -531,6 +536,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                 CoolingCoilType = InArgs(13)
                 IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(13) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               ! If your original object starts with C, insert the rules here
@@ -543,6 +549,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                 CoolingCoilType = InArgs(6)
                 IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(6) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               CASE('COIL:WATERHEATING:DESUPERHEATER')
@@ -553,6 +560,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                 CoolingCoilType = InArgs(14)
                 IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(14) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               CASE('COILSYSTEM:COOLING:DX')
@@ -567,6 +575,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                   ! do nothing
                 ELSE IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(6) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
              CASE('COILSYSTEM:COOLING:DX:HEATEXCHANGERASSISTED')
@@ -576,7 +585,8 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                 ! replace cooling coil object type name
                 CoolingCoilType = InArgs(4)
                 IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
-                    OutArgs(4) = "Coil:Cooling:DX"
+                  OutArgs(4) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
              ! CASE('COILSYSTEM:INTEGRATEDHEATPUMP:AIRSOURCE')
@@ -1657,6 +1667,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                 CoolingCoilType = InArgs(3)
                 IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(3) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               ! If your original object starts with D, insert the rules here
@@ -1700,11 +1711,12 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                 OutArgs(1:CurArgs)=InArgs(1:CurArgs)
                 nodiff=.true.
                 ! replace cooling coil object type name
-                CoolingCoilType = InArgs(18)
+                CoolingCoilType = InArgs(17)
                 IF ( SameString( CoolingCoilType, "Coil:Cooling:DX:HeatExchangerAssisted" ) ) THEN
                   ! do nothing
                 ELSE IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
-                  OutArgs(18) = "Coil:Cooling:DX"
+                  OutArgs(17) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               CASE('ZONEHVAC:PACKAGEDTERMINALHEATPUMP')
@@ -1712,11 +1724,12 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                 OutArgs(1:CurArgs)=InArgs(1:CurArgs)
                 nodiff=.true.
                 ! replace cooling coil object type name
-                CoolingCoilType = InArgs(17)
+                CoolingCoilType = InArgs(18)
                 IF ( SameString( CoolingCoilType, "Coil:Cooling:DX:HeatExchangerAssisted" ) ) THEN
                   ! do nothing
                 ELSE IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
-                  OutArgs(17) = "Coil:Cooling:DX"
+                  OutArgs(18) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
               CASE('ZONEHVAC:WINDOWAIRCONDITIONER')
@@ -1729,6 +1742,7 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                   ! do nothing
                 ELSE IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
                   OutArgs(11) = "Coil:Cooling:DX"
+                  nodiff=.false.
                 END IF
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
