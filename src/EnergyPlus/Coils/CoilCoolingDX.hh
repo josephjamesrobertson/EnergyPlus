@@ -48,6 +48,7 @@
 #ifndef ENERGYPLUS_COILS_COILCOOLINGDX
 #define ENERGYPLUS_COILS_COILCOOLINGDX
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -74,12 +75,20 @@ struct CoilCoolingDXInputSpecification
     std::string evaporative_condenser_supply_water_storage_tank_name;
 };
 
+enum class CoilLooksLike
+{
+    SingleSpeed = 0,
+    TwoSpeed = 1,
+    MultiSpeed = 2,
+    VariableSpeed = 3,
+    MultiMode = 4
+};
+
 struct CoilCoolingDX
 {
     CoilCoolingDX() = default;
     static int factory(EnergyPlusData &state, std::string const &coilName);
     static void getInput(EnergyPlusData &state);
-    static void clear_state();
     static void reportAllStandardRatings(EnergyPlusData &state);
     void instantiateFromInputSpec(EnergyPlusData &state, const CoilCoolingDXInputSpecification &input_data);
     void oneTimeInit(EnergyPlusData &state);
@@ -88,8 +97,8 @@ struct CoilCoolingDX
                   Real64 PLR,
                   int speedNum,
                   Real64 speedRatio,
-                  int const fanOpMode,
-                  bool const singleMode,
+                  int fanOpMode,
+                  bool singleMode,
                   Real64 LoadSHR = -1.0);
     void setData(int fanIndex, int fanType, std::string const &fanName, int airLoopNum);
     void getFixedData(int &evapInletNodeIndex,
@@ -105,7 +114,8 @@ struct CoilCoolingDX
     static void inline passThroughNodeData(DataLoopNode::NodeData &in, DataLoopNode::NodeData &out);
     void size(EnergyPlusData &state);
 
-    int getNumModes();
+    CoilLooksLike looksLike() const;
+    int getNumModes() const;
     int getOpModeCapFTIndex(bool useAlternateMode = false);
     Real64 condMassFlowRate(bool useAlternateMode);
 

@@ -505,7 +505,28 @@ void CoilCoolingDX::oneTimeInit(EnergyPlus::EnergyPlusData &state)
     }
 }
 
-int CoilCoolingDX::getNumModes()
+CoilLooksLike CoilCoolingDX::looksLike() const
+{
+    if (this->performance.hasAlternateMode) {
+        return CoilLooksLike::MultiMode;
+    } else {
+        unsigned int const numSpeeds = this->performance.normalMode.speeds.size();
+        if (numSpeeds == 1) {
+            return CoilLooksLike::SingleSpeed;
+        } else if (this->performance.capControlMethod == CoilCoolingDXCurveFitPerformance::CapControlMethod::CONTINUOUS) {
+            return CoilLooksLike::VariableSpeed;
+        } else {
+            // is this multi mode or two speed?
+            if (numSpeeds == 2) {
+                return CoilLooksLike::TwoSpeed;
+            } else {
+                return CoilLooksLike::MultiSpeed;
+            }
+        }
+    }
+}
+
+int CoilCoolingDX::getNumModes() const
 {
     int numModes = 1;
     if (this->performance.hasAlternateMode) {

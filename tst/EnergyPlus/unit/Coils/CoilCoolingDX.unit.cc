@@ -357,6 +357,36 @@ TEST_F(CoilCoolingDXTest, CoilCoolingDXAlternateModePerformanceHitsSaturation)
     }
 }
 
+TEST_F(CoilCoolingDXTest, CoilLooksLikeType) {
+    // this unit test is admittedly a bit invasive into the guts of the coil, but I don't see a nice way around it
+    // the big one here is whether it is a two speed or multi speed, can't really tell...
+
+    CoilCoolingDX c;
+    // if it has an enhanced dehumidification mode, then it must be a multi mode no doubt, right?
+    c.performance.hasAlternateMode = 2; // something greater than 1
+    EXPECT_EQ(CoilLooksLike::MultiMode, c.looksLike());
+    // back to a single mode coil for all the rest of the tests, and add a single speed initially too
+    c.performance.hasAlternateMode = 0;
+    c.performance.normalMode.speeds.emplace_back();
+    // now if it just has a single speed then we know it must behave like a single speed coil
+    EXPECT_EQ(CoilLooksLike::SingleSpeed, c.looksLike());
+    // but if it has more then one speed then it depends
+    c.performance.normalMode.speeds.emplace_back();
+    // a variable speed mode two speed coil should look like a variable speed coil
+    c.performance.capControlMethod = CoilCoolingDXCurveFitPerformance::CapControlMethod::CONTINUOUS;
+    EXPECT_EQ(CoilLooksLike::VariableSpeed, c.looksLike());
+    // but a discrete two speed coil should look like a two speed coil
+    c.performance.capControlMethod = CoilCoolingDXCurveFitPerformance::CapControlMethod::DISCRETE;
+    EXPECT_EQ(CoilLooksLike::TwoSpeed, c.looksLike());
+    // ok, so let's go to a higher number of speeds
+    c.performance.normalMode.speeds.emplace_back();
+    // the type of coil should be deterministic based on the capacity control mode
+    c.performance.capControlMethod = CoilCoolingDXCurveFitPerformance::CapControlMethod::CONTINUOUS;
+    EXPECT_EQ(CoilLooksLike::VariableSpeed, c.looksLike());
+    c.performance.capControlMethod = CoilCoolingDXCurveFitPerformance::CapControlMethod::DISCRETE;
+    EXPECT_EQ(CoilLooksLike::MultiSpeed, c.looksLike());
+}
+
 TEST_F(EnergyPlusFixture, DISABLED_CoilDXCoolingVsMultiSpeed_CycFanCycCoil)
 {
 
