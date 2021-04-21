@@ -1369,36 +1369,37 @@ void GetIHPInput(EnergyPlusData &state)
             ErrorsFound = true;
         } else {
             errFlag = false;
-            if (Coiltype == "COIL:COOLING:DX") {
-                // Add code to get the index for COIL:COOLING:DX coil
-                // state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex = something;
-                
-                // DXCoils::GetDXCoilIndex(state, Coiltype,
-                //                        state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex,
-                //                        errFlag,
-                //                        ObjexxFCL::Optional_string_const(),
-                //                        ObjexxFCL::Optional_bool_const());
+            state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex = GetCoilIndexVariableSpeed(state, Coiltype, CoilName, errFlag);
+            //if (Coiltype == "COIL:COOLING:DX") {
+            //    // Add code to get the index for COIL:COOLING:DX coil
+            //    // state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex = something;
+            //    
+            //    // DXCoils::GetDXCoilIndex(state, Coiltype,
+            //    //                        state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex,
+            //    //                        errFlag,
+            //    //                        ObjexxFCL::Optional_string_const(),
+            //    //                        ObjexxFCL::Optional_bool_const());
 
-                // try using the Coil:Cooling:DX factory method to do this: 
-                state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex = CoilCoolingDX::factory(state, CoilName);
-                if (state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex == -1) {
-                    ShowContinueError(state, "Occurs in " + CurrentModuleObject + "=\"" + AlphArray(1) + "\".");
-                    ErrorsFound = true;
-                } else {
-                    // mine data from coil object if needed: this is similar to what's used in unitarysystem.cc
-                    // TODO: Need to check for autosize on these I guess (this was the ori notes from unitarysystem.cc)
-                    auto &newCoil = state.dataCoilCooingDX->coilCoolingDXs[state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex];
-                    
-                    //Maybe some extra treatment should be done here for the newCoil if needed. 
-                }
-                // if (errFlag) {
-                //    ShowContinueError(state, "Occurs in " + CurrentModuleObject + " = " + AlphArray(1) + "\".");
-                //    ErrorsFound = true;
-                // }
-            } else {
-                state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex =
-                    GetCoilIndexVariableSpeed(state, Coiltype, CoilName, errFlag);
-            }
+            //    // try using the Coil:Cooling:DX factory method to do this: 
+            //    state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex = CoilCoolingDX::factory(state, CoilName);
+            //    if (state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex == -1) {
+            //        ShowContinueError(state, "Occurs in " + CurrentModuleObject + "=\"" + AlphArray(1) + "\".");
+            //        ErrorsFound = true;
+            //    } else {
+            //        // mine data from coil object if needed: this is similar to what's used in unitarysystem.cc
+            //        // TODO: Need to check for autosize on these I guess (this was the ori notes from unitarysystem.cc)
+            //        auto &newCoil = state.dataCoilCooingDX->coilCoolingDXs[state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex];
+            //        
+            //        //Maybe some extra treatment should be done here for the newCoil if needed. 
+            //    }
+            //    // if (errFlag) {
+            //    //    ShowContinueError(state, "Occurs in " + CurrentModuleObject + " = " + AlphArray(1) + "\".");
+            //    //    ErrorsFound = true;
+            //    // }
+            //} else {
+            //    state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex =
+            //        GetCoilIndexVariableSpeed(state, Coiltype, CoilName, errFlag);
+            //}
             if (errFlag) {
                 ShowContinueError(state, "...specified in " + CurrentModuleObject + "=\"" + AlphArray(1) + "\".");
                 ErrorsFound = true;
