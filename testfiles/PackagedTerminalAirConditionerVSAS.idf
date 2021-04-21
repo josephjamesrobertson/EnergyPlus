@@ -205,7 +205,7 @@
     Zone1PTACDXCoolCoilOutletNode,  !- Evaporator Outlet Node Name
     ,                        !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    Zone1PTACDXCoolCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     Zone1PTACDXCoolCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     Zone1PTACDXCoolCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -217,13 +217,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Continuous,              !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    Zone1PTACDXCoolCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    Zone1PTACDXCoolCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Zone1PTACDXCoolCoil Operating Mode,  !- Name
@@ -237,18 +236,17 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     AirCooled,               !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    VariableSpeed,           !- Nominal Speed Number
-    10.0,                    !- Speed 1 Name
-    Zone1PTACDXCoolCoil Speed 1 Performance,  !- Speed 2 Name
-    Zone1PTACDXCoolCoil Speed 2 Performance,  !- Speed 3 Name
-    Zone1PTACDXCoolCoil Speed 3 Performance,  !- Speed 4 Name
-    Zone1PTACDXCoolCoil Speed 4 Performance,  !- Speed 5 Name
-    Zone1PTACDXCoolCoil Speed 5 Performance,  !- Speed 6 Name
-    Zone1PTACDXCoolCoil Speed 6 Performance,  !- Speed 7 Name
-    Zone1PTACDXCoolCoil Speed 7 Performance,  !- Speed 8 Name
-    Zone1PTACDXCoolCoil Speed 8 Performance,  !- Speed 9 Name
-    Zone1PTACDXCoolCoil Speed 9 Performance,  !- Speed 10 Name
-    Zone1PTACDXCoolCoil Speed 10 Performance;  !- Extended Field
+    10.0,                    !- Nominal Speed Number
+    Zone1PTACDXCoolCoil Speed 1 Performance,  !- Speed 1 Name
+    Zone1PTACDXCoolCoil Speed 2 Performance,  !- Speed 2 Name
+    Zone1PTACDXCoolCoil Speed 3 Performance,  !- Speed 3 Name
+    Zone1PTACDXCoolCoil Speed 4 Performance,  !- Speed 4 Name
+    Zone1PTACDXCoolCoil Speed 5 Performance,  !- Speed 5 Name
+    Zone1PTACDXCoolCoil Speed 6 Performance,  !- Speed 6 Name
+    Zone1PTACDXCoolCoil Speed 7 Performance,  !- Speed 7 Name
+    Zone1PTACDXCoolCoil Speed 8 Performance,  !- Speed 8 Name
+    Zone1PTACDXCoolCoil Speed 9 Performance,  !- Speed 9 Name
+    Zone1PTACDXCoolCoil Speed 10 Performance;  !- Speed 10 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Zone1PTACDXCoolCoil Speed 1 Performance,  !- Name
@@ -466,7 +464,7 @@
     Zone2PTACCoolCoilOutletNode,  !- Evaporator Outlet Node Name
     ,                        !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    Zone2PTACDXCoolCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     Zone2PTACDXCoolCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     Zone2PTACDXCoolCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -478,13 +476,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Continuous,              !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    Zone2PTACDXCoolCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    Zone2PTACDXCoolCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Zone2PTACDXCoolCoil Operating Mode,  !- Name
@@ -498,18 +495,17 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     AirCooled,               !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    VariableSpeed,           !- Nominal Speed Number
-    10.0,                    !- Speed 1 Name
-    Zone2PTACDXCoolCoil Speed 1 Performance,  !- Speed 2 Name
-    Zone2PTACDXCoolCoil Speed 2 Performance,  !- Speed 3 Name
-    Zone2PTACDXCoolCoil Speed 3 Performance,  !- Speed 4 Name
-    Zone2PTACDXCoolCoil Speed 4 Performance,  !- Speed 5 Name
-    Zone2PTACDXCoolCoil Speed 5 Performance,  !- Speed 6 Name
-    Zone2PTACDXCoolCoil Speed 6 Performance,  !- Speed 7 Name
-    Zone2PTACDXCoolCoil Speed 7 Performance,  !- Speed 8 Name
-    Zone2PTACDXCoolCoil Speed 8 Performance,  !- Speed 9 Name
-    Zone2PTACDXCoolCoil Speed 9 Performance,  !- Speed 10 Name
-    Zone2PTACDXCoolCoil Speed 10 Performance;  !- Extended Field
+    10.0,                    !- Nominal Speed Number
+    Zone2PTACDXCoolCoil Speed 1 Performance,  !- Speed 1 Name
+    Zone2PTACDXCoolCoil Speed 2 Performance,  !- Speed 2 Name
+    Zone2PTACDXCoolCoil Speed 3 Performance,  !- Speed 3 Name
+    Zone2PTACDXCoolCoil Speed 4 Performance,  !- Speed 4 Name
+    Zone2PTACDXCoolCoil Speed 5 Performance,  !- Speed 5 Name
+    Zone2PTACDXCoolCoil Speed 6 Performance,  !- Speed 6 Name
+    Zone2PTACDXCoolCoil Speed 7 Performance,  !- Speed 7 Name
+    Zone2PTACDXCoolCoil Speed 8 Performance,  !- Speed 8 Name
+    Zone2PTACDXCoolCoil Speed 9 Performance,  !- Speed 9 Name
+    Zone2PTACDXCoolCoil Speed 10 Performance;  !- Speed 10 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Zone2PTACDXCoolCoil Speed 1 Performance,  !- Name
@@ -727,7 +723,7 @@
     Zone3PTACCoolCoilOutletNode,  !- Evaporator Outlet Node Name
     ,                        !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    Zone3PTACDXCoolCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     Zone3PTACDXCoolCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     Zone3PTACDXCoolCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -739,13 +735,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Continuous,              !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    Zone3PTACDXCoolCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    Zone3PTACDXCoolCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Zone3PTACDXCoolCoil Operating Mode,  !- Name
@@ -759,18 +754,17 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     AirCooled,               !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    VariableSpeed,           !- Nominal Speed Number
-    10.0,                    !- Speed 1 Name
-    Zone3PTACDXCoolCoil Speed 1 Performance,  !- Speed 2 Name
-    Zone3PTACDXCoolCoil Speed 2 Performance,  !- Speed 3 Name
-    Zone3PTACDXCoolCoil Speed 3 Performance,  !- Speed 4 Name
-    Zone3PTACDXCoolCoil Speed 4 Performance,  !- Speed 5 Name
-    Zone3PTACDXCoolCoil Speed 5 Performance,  !- Speed 6 Name
-    Zone3PTACDXCoolCoil Speed 6 Performance,  !- Speed 7 Name
-    Zone3PTACDXCoolCoil Speed 7 Performance,  !- Speed 8 Name
-    Zone3PTACDXCoolCoil Speed 8 Performance,  !- Speed 9 Name
-    Zone3PTACDXCoolCoil Speed 9 Performance,  !- Speed 10 Name
-    Zone3PTACDXCoolCoil Speed 10 Performance;  !- Extended Field
+    10.0,                    !- Nominal Speed Number
+    Zone3PTACDXCoolCoil Speed 1 Performance,  !- Speed 1 Name
+    Zone3PTACDXCoolCoil Speed 2 Performance,  !- Speed 2 Name
+    Zone3PTACDXCoolCoil Speed 3 Performance,  !- Speed 3 Name
+    Zone3PTACDXCoolCoil Speed 4 Performance,  !- Speed 4 Name
+    Zone3PTACDXCoolCoil Speed 5 Performance,  !- Speed 5 Name
+    Zone3PTACDXCoolCoil Speed 6 Performance,  !- Speed 6 Name
+    Zone3PTACDXCoolCoil Speed 7 Performance,  !- Speed 7 Name
+    Zone3PTACDXCoolCoil Speed 8 Performance,  !- Speed 8 Name
+    Zone3PTACDXCoolCoil Speed 9 Performance,  !- Speed 9 Name
+    Zone3PTACDXCoolCoil Speed 10 Performance;  !- Speed 10 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Zone3PTACDXCoolCoil Speed 1 Performance,  !- Name

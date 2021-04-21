@@ -1647,7 +1647,7 @@
     Zone1PTACDXCoolCoilOutletNode,  !- Evaporator Outlet Node Name
     CoolingCoilAvailSched,   !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    Zone1PTACDXCoolCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     Zone1PTACDXCoolCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     Zone1PTACDXCoolCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1659,13 +1659,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    Zone1PTACDXCoolCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    Zone1PTACDXCoolCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Zone1PTACDXCoolCoil Operating Mode,  !- Name
@@ -1679,9 +1678,8 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    ,                        !- Nominal Speed Number
-    1,                       !- Speed 1 Name
-    Zone1PTACDXCoolCoil Speed 1 Performance;  !- Speed 2 Name
+    1,                       !- Nominal Speed Number
+    Zone1PTACDXCoolCoil Speed 1 Performance;  !- Speed 1 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Zone1PTACDXCoolCoil Speed 1 Performance,  !- Name
@@ -1710,7 +1708,7 @@
     Zone2PTACCoolCoilOutletNode,  !- Evaporator Outlet Node Name
     CoolingCoilAvailSched,   !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    Zone2PTACDXCoolCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     Zone2PTACDXCoolCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     Zone2PTACDXCoolCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1722,13 +1720,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    Zone2PTACDXCoolCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    Zone2PTACDXCoolCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Zone2PTACDXCoolCoil Operating Mode,  !- Name
@@ -1742,9 +1739,8 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    ,                        !- Nominal Speed Number
-    1,                       !- Speed 1 Name
-    Zone2PTACDXCoolCoil Speed 1 Performance;  !- Speed 2 Name
+    1,                       !- Nominal Speed Number
+    Zone2PTACDXCoolCoil Speed 1 Performance;  !- Speed 1 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Zone2PTACDXCoolCoil Speed 1 Performance,  !- Name
@@ -1773,7 +1769,7 @@
     Zone3PTACCoolCoilOutletNode,  !- Evaporator Outlet Node Name
     CoolingCoilAvailSched,   !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    Zone3PTACDXCoolCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     Zone3PTACDXCoolCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     Zone3PTACDXCoolCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1785,13 +1781,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    Zone3PTACDXCoolCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    Zone3PTACDXCoolCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Zone3PTACDXCoolCoil Operating Mode,  !- Name
@@ -1805,9 +1800,8 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    ,                        !- Nominal Speed Number
-    1,                       !- Speed 1 Name
-    Zone3PTACDXCoolCoil Speed 1 Performance;  !- Speed 2 Name
+    1,                       !- Nominal Speed Number
+    Zone3PTACDXCoolCoil Speed 1 Performance;  !- Speed 1 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Zone3PTACDXCoolCoil Speed 1 Performance,  !- Name

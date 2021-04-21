@@ -1131,7 +1131,7 @@
     Heating Coil Air Inlet Node,  !- Evaporator Outlet Node Name
     ,                        !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    Heat Pump ACDXCoil 1 Condenser Inlet Node,  !- Condenser Inlet Node Name
     Heat Pump ACDXCoil 1 Condenser Outlet Node,  !- Condenser Outlet Node Name
     Heat Pump ACDXCoil 1 Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1143,13 +1143,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Continuous,              !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    Heat Pump ACDXCoil 1 Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    Heat Pump ACDXCoil 1 Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Heat Pump ACDXCoil 1 Operating Mode,  !- Name
@@ -1163,18 +1162,17 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     AirCooled,               !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    VariableSpeed,           !- Nominal Speed Number
-    10.0,                    !- Speed 1 Name
-    Heat Pump ACDXCoil 1 Speed 1 Performance,  !- Speed 2 Name
-    Heat Pump ACDXCoil 1 Speed 2 Performance,  !- Speed 3 Name
-    Heat Pump ACDXCoil 1 Speed 3 Performance,  !- Speed 4 Name
-    Heat Pump ACDXCoil 1 Speed 4 Performance,  !- Speed 5 Name
-    Heat Pump ACDXCoil 1 Speed 5 Performance,  !- Speed 6 Name
-    Heat Pump ACDXCoil 1 Speed 6 Performance,  !- Speed 7 Name
-    Heat Pump ACDXCoil 1 Speed 7 Performance,  !- Speed 8 Name
-    Heat Pump ACDXCoil 1 Speed 8 Performance,  !- Speed 9 Name
-    Heat Pump ACDXCoil 1 Speed 9 Performance,  !- Speed 10 Name
-    Heat Pump ACDXCoil 1 Speed 10 Performance;  !- Extended Field
+    10.0,                    !- Nominal Speed Number
+    Heat Pump ACDXCoil 1 Speed 1 Performance,  !- Speed 1 Name
+    Heat Pump ACDXCoil 1 Speed 2 Performance,  !- Speed 2 Name
+    Heat Pump ACDXCoil 1 Speed 3 Performance,  !- Speed 3 Name
+    Heat Pump ACDXCoil 1 Speed 4 Performance,  !- Speed 4 Name
+    Heat Pump ACDXCoil 1 Speed 5 Performance,  !- Speed 5 Name
+    Heat Pump ACDXCoil 1 Speed 6 Performance,  !- Speed 6 Name
+    Heat Pump ACDXCoil 1 Speed 7 Performance,  !- Speed 7 Name
+    Heat Pump ACDXCoil 1 Speed 8 Performance,  !- Speed 8 Name
+    Heat Pump ACDXCoil 1 Speed 9 Performance,  !- Speed 9 Name
+    Heat Pump ACDXCoil 1 Speed 10 Performance;  !- Speed 10 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Heat Pump ACDXCoil 1 Speed 1 Performance,  !- Name
@@ -1392,7 +1390,7 @@
     Heating Coil Air Inlet Node,  !- Evaporator Outlet Node Name
     ,                        !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    SCDWHCoolCoil1 Condenser Inlet Node,  !- Condenser Inlet Node Name
     SCDWHCoolCoil1 Condenser Outlet Node,  !- Condenser Outlet Node Name
     SCDWHCoolCoil1 Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1404,13 +1402,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Continuous,              !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    SCDWHCoolCoil1 Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    SCDWHCoolCoil1 Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     SCDWHCoolCoil1 Operating Mode,  !- Name
@@ -1424,18 +1421,17 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     AirCooled,               !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    VariableSpeed,           !- Nominal Speed Number
-    10.0,                    !- Speed 1 Name
-    SCDWHCoolCoil1 Speed 1 Performance,  !- Speed 2 Name
-    SCDWHCoolCoil1 Speed 2 Performance,  !- Speed 3 Name
-    SCDWHCoolCoil1 Speed 3 Performance,  !- Speed 4 Name
-    SCDWHCoolCoil1 Speed 4 Performance,  !- Speed 5 Name
-    SCDWHCoolCoil1 Speed 5 Performance,  !- Speed 6 Name
-    SCDWHCoolCoil1 Speed 6 Performance,  !- Speed 7 Name
-    SCDWHCoolCoil1 Speed 7 Performance,  !- Speed 8 Name
-    SCDWHCoolCoil1 Speed 8 Performance,  !- Speed 9 Name
-    SCDWHCoolCoil1 Speed 9 Performance,  !- Speed 10 Name
-    SCDWHCoolCoil1 Speed 10 Performance;  !- Extended Field
+    10.0,                    !- Nominal Speed Number
+    SCDWHCoolCoil1 Speed 1 Performance,  !- Speed 1 Name
+    SCDWHCoolCoil1 Speed 2 Performance,  !- Speed 2 Name
+    SCDWHCoolCoil1 Speed 3 Performance,  !- Speed 3 Name
+    SCDWHCoolCoil1 Speed 4 Performance,  !- Speed 4 Name
+    SCDWHCoolCoil1 Speed 5 Performance,  !- Speed 5 Name
+    SCDWHCoolCoil1 Speed 6 Performance,  !- Speed 6 Name
+    SCDWHCoolCoil1 Speed 7 Performance,  !- Speed 7 Name
+    SCDWHCoolCoil1 Speed 8 Performance,  !- Speed 8 Name
+    SCDWHCoolCoil1 Speed 9 Performance,  !- Speed 9 Name
+    SCDWHCoolCoil1 Speed 10 Performance;  !- Speed 10 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     SCDWHCoolCoil1 Speed 1 Performance,  !- Name

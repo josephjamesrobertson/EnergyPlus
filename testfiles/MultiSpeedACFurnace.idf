@@ -1689,13 +1689,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     10.0,                    !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    NaturalGas,              !- Base Operating Mode
-    Heat Pump ACDXCoil 1 Operating Mode;  !- Alternative Operating Mode 1
+    NaturalGas,              !- Compressor Fuel Type
+    Heat Pump ACDXCoil 1 Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Heat Pump ACDXCoil 1 Operating Mode,  !- Name
@@ -1709,12 +1708,11 @@
     No,                      !- Apply Latent Degradation to Speeds Greater than 1
     AirCooled,               !- Condenser Type
     100,                     !- Nominal Evaporative Condenser Pump Power {W}
-    MultiSpeed,              !- Nominal Speed Number
-    4,                       !- Speed 1 Name
-    Heat Pump ACDXCoil 1 Speed 1 Performance,  !- Speed 2 Name
-    Heat Pump ACDXCoil 1 Speed 2 Performance,  !- Speed 3 Name
-    Heat Pump ACDXCoil 1 Speed 3 Performance,  !- Speed 4 Name
-    Heat Pump ACDXCoil 1 Speed 4 Performance;  !- Speed 5 Name
+    4,                       !- Nominal Speed Number
+    Heat Pump ACDXCoil 1 Speed 1 Performance,  !- Speed 1 Name
+    Heat Pump ACDXCoil 1 Speed 2 Performance,  !- Speed 2 Name
+    Heat Pump ACDXCoil 1 Speed 3 Performance,  !- Speed 3 Name
+    Heat Pump ACDXCoil 1 Speed 4 Performance;  !- Speed 4 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Heat Pump ACDXCoil 1 Speed 1 Performance,  !- Name

@@ -1576,7 +1576,7 @@
     FURNACE_PACU_CAV_1:1_Unitary_PackageHeatCoil air inlet,  !- Evaporator Outlet Node Name
     ALWAYS_ON,               !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    FURNACE_PACU_CAV_1:1_Unitary_Package_CoolCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     FURNACE_PACU_CAV_1:1_Unitary_Package_CoolCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     FURNACE_PACU_CAV_1:1_Unitary_Package_CoolCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1588,13 +1588,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    FURNACE_PACU_CAV_1:1_Unitary_Package_CoolCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    FURNACE_PACU_CAV_1:1_Unitary_Package_CoolCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     FURNACE_PACU_CAV_1:1_Unitary_Package_CoolCoil Operating Mode,  !- Name
@@ -1608,9 +1607,8 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    ,                        !- Nominal Speed Number
-    1,                       !- Speed 1 Name
-    FURNACE_PACU_CAV_1:1_Unitary_Package_CoolCoil Speed 1 Performance;  !- Speed 2 Name
+    1,                       !- Nominal Speed Number
+    FURNACE_PACU_CAV_1:1_Unitary_Package_CoolCoil Speed 1 Performance;  !- Speed 1 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     FURNACE_PACU_CAV_1:1_Unitary_Package_CoolCoil Speed 1 Performance,  !- Name
@@ -1639,7 +1637,7 @@
     FURNACE_PACU_CAV_2:2_Unitary_PackageHeatCoil air inlet,  !- Evaporator Outlet Node Name
     ALWAYS_ON,               !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    FURNACE_PACU_CAV_2:2_Unitary_Package_CoolCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     FURNACE_PACU_CAV_2:2_Unitary_Package_CoolCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     FURNACE_PACU_CAV_2:2_Unitary_Package_CoolCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1651,13 +1649,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    FURNACE_PACU_CAV_2:2_Unitary_Package_CoolCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    FURNACE_PACU_CAV_2:2_Unitary_Package_CoolCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     FURNACE_PACU_CAV_2:2_Unitary_Package_CoolCoil Operating Mode,  !- Name
@@ -1671,9 +1668,8 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    ,                        !- Nominal Speed Number
-    1,                       !- Speed 1 Name
-    FURNACE_PACU_CAV_2:2_Unitary_Package_CoolCoil Speed 1 Performance;  !- Speed 2 Name
+    1,                       !- Nominal Speed Number
+    FURNACE_PACU_CAV_2:2_Unitary_Package_CoolCoil Speed 1 Performance;  !- Speed 1 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     FURNACE_PACU_CAV_2:2_Unitary_Package_CoolCoil Speed 1 Performance,  !- Name

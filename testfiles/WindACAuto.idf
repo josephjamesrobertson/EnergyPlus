@@ -1633,7 +1633,7 @@
     Zone1WindACAirOutletNode,!- Evaporator Outlet Node Name
     CoolingCoilAvailSched,   !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    Zone1WindACDXCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     Zone1WindACDXCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     Zone1WindACDXCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1645,13 +1645,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    Zone1WindACDXCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    Zone1WindACDXCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Zone1WindACDXCoil Operating Mode,  !- Name
@@ -1665,9 +1664,8 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    ,                        !- Nominal Speed Number
-    1,                       !- Speed 1 Name
-    Zone1WindACDXCoil Speed 1 Performance;  !- Speed 2 Name
+    1,                       !- Nominal Speed Number
+    Zone1WindACDXCoil Speed 1 Performance;  !- Speed 1 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Zone1WindACDXCoil Speed 1 Performance,  !- Name
@@ -1776,7 +1774,7 @@
     Zone2WindACAirOutletNode,!- Evaporator Outlet Node Name
     CoolingCoilAvailSched,   !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    Zone2WindACDXCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     Zone2WindACDXCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     Zone2WindACDXCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1788,13 +1786,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    Zone2WindACDXCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    Zone2WindACDXCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Zone2WindACDXCoil Operating Mode,  !- Name
@@ -1808,9 +1805,8 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    ,                        !- Nominal Speed Number
-    1,                       !- Speed 1 Name
-    Zone2WindACDXCoil Speed 1 Performance;  !- Speed 2 Name
+    1,                       !- Nominal Speed Number
+    Zone2WindACDXCoil Speed 1 Performance;  !- Speed 1 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Zone2WindACDXCoil Speed 1 Performance,  !- Name
@@ -1919,7 +1915,7 @@
     Zone3WindACDXOutletNode, !- Evaporator Outlet Node Name
     CoolingCoilAvailSched,   !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    Zone3WindACDXCoil Condenser Inlet Node,  !- Condenser Inlet Node Name
     Zone3WindACDXCoil Condenser Outlet Node,  !- Condenser Outlet Node Name
     Zone3WindACDXCoil Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1931,13 +1927,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    Zone3WindACDXCoil Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    Zone3WindACDXCoil Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     Zone3WindACDXCoil Operating Mode,  !- Name
@@ -1951,9 +1946,8 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    ,                        !- Nominal Speed Number
-    1,                       !- Speed 1 Name
-    Zone3WindACDXCoil Speed 1 Performance;  !- Speed 2 Name
+    1,                       !- Nominal Speed Number
+    Zone3WindACDXCoil Speed 1 Performance;  !- Speed 1 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     Zone3WindACDXCoil Speed 1 Performance,  !- Name

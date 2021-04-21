@@ -2433,7 +2433,7 @@
     DX Cooling Coil 1 Outlet Node,  !- Evaporator Outlet Node Name
     FAN-SCHED,               !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    ACDXCoil 1 Condenser Inlet Node,  !- Condenser Inlet Node Name
     ACDXCoil 1 Condenser Outlet Node,  !- Condenser Outlet Node Name
     ACDXCoil 1 Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -2445,13 +2445,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    HumidityControl,         !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    ACDXCoil 1 Normal Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    ACDXCoil 1 Normal Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     ACDXCoil 1 Normal Operating Mode,  !- Name
@@ -2465,10 +2464,9 @@
     Yes,                     !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    MultiSpeed,              !- Nominal Speed Number
-    2,                       !- Speed 1 Name
-    ACDXCoil 1 Normal Mode Stage 1 Performance,  !- Speed 2 Name
-    ACDXCoil 1 Normal Mode Stage 2 Performance;  !- Speed 3 Name
+    2,                       !- Nominal Speed Number
+    ACDXCoil 1 Normal Mode Stage 1 Performance,  !- Speed 1 Name
+    ACDXCoil 1 Normal Mode Stage 2 Performance;  !- Speed 2 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     ACDXCoil 1 Normal Mode Stage 1 Performance,  !- Name
@@ -2526,7 +2524,7 @@
     DX Cooling Coil 2 Outlet Node,  !- Evaporator Outlet Node Name
     FAN-SCHED,               !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    ACDXCoil 2 Condenser Inlet Node,  !- Condenser Inlet Node Name
     ACDXCoil 2 Condenser Outlet Node,  !- Condenser Outlet Node Name
     ACDXCoil 2 Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -2538,13 +2536,13 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    HumidityControl,         !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    ACDXCoil 2 Normal Operating Mode,  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    ACDXCoil 2 Normal Operating Mode,  !- Base Operating Mode
+    ,                        !- Alternative Operating Mode 1
     ACDXCoil 2 Dehumidification Operating Mode;  !- Alternative Operating Mode 2
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
@@ -2559,10 +2557,9 @@
     Yes,                     !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    MultiSpeed,              !- Nominal Speed Number
-    2,                       !- Speed 1 Name
-    ACDXCoil 2 Normal Mode Stage 1 Performance,  !- Speed 2 Name
-    ACDXCoil 2 Normal Mode Stage 2 Performance;  !- Speed 3 Name
+    2,                       !- Nominal Speed Number
+    ACDXCoil 2 Normal Mode Stage 1 Performance,  !- Speed 1 Name
+    ACDXCoil 2 Normal Mode Stage 2 Performance;  !- Speed 2 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     ACDXCoil 2 Normal Mode Stage 1 Performance,  !- Name
@@ -2618,10 +2615,9 @@
     Yes,                     !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    MultiSpeed,              !- Nominal Speed Number
-    2,                       !- Speed 1 Name
-    ACDXCoil 2 Dehumidification Mode Stage 1 Performance,  !- Speed 2 Name
-    ACDXCoil 2 Dehumidification Mode Stage 2 Performance;  !- Speed 3 Name
+    2,                       !- Nominal Speed Number
+    ACDXCoil 2 Dehumidification Mode Stage 1 Performance,  !- Speed 1 Name
+    ACDXCoil 2 Dehumidification Mode Stage 2 Performance;  !- Speed 2 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     ACDXCoil 2 Dehumidification Mode Stage 1 Performance,  !- Name
@@ -2770,7 +2766,7 @@
     DX Cooling Coil 3 Outlet Node,  !- Evaporator Outlet Node Name
     FAN-SCHED,               !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    ACDXCoil 3 Condenser Inlet Node,  !- Condenser Inlet Node Name
     ACDXCoil 3 Condenser Outlet Node,  !- Condenser Outlet Node Name
     ACDXCoil 3 Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -2782,13 +2778,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    HumidityControl,         !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    ACDXCoil 3 Normal Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    ACDXCoil 3 Normal Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     ACDXCoil 3 Normal Operating Mode,  !- Name
@@ -2802,9 +2797,8 @@
     Yes,                     !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    MultiSpeed,              !- Nominal Speed Number
-    1,                       !- Speed 1 Name
-    ACDXCoil 3 Normal Mode Stage 1 Performance;  !- Speed 2 Name
+    1,                       !- Nominal Speed Number
+    ACDXCoil 3 Normal Mode Stage 1 Performance;  !- Speed 1 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     ACDXCoil 3 Normal Mode Stage 1 Performance,  !- Name
@@ -2839,7 +2833,7 @@
     DX Cooling Coil 4 Outlet Node,  !- Evaporator Outlet Node Name
     FAN-SCHED,               !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    ACDXCoil 4 Condenser Inlet Node,  !- Condenser Inlet Node Name
     ACDXCoil 4 Condenser Outlet Node,  !- Condenser Outlet Node Name
     ACDXCoil 4 Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -2851,13 +2845,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    ,                        !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    ACDXCoil 4 Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    ACDXCoil 4 Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     ACDXCoil 4 Operating Mode,  !- Name
@@ -2871,9 +2864,8 @@
     ,                        !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    ,                        !- Nominal Speed Number
-    1,                       !- Speed 1 Name
-    ACDXCoil 4 Speed 1 Performance;  !- Speed 2 Name
+    1,                       !- Nominal Speed Number
+    ACDXCoil 4 Speed 1 Performance;  !- Speed 1 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     ACDXCoil 4 Speed 1 Performance,  !- Name

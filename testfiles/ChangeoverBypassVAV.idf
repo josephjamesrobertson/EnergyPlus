@@ -1398,7 +1398,7 @@
     Heating Coil Air Inlet Node,  !- Evaporator Outlet Node Name
     FanAndCoilAvailSched,    !- Availability Schedule Name
     ,                        !- Condenser Zone Name
-    ,                        !- Condenser Inlet Node Name
+    ACDXCoil 2 Condenser Inlet Node,  !- Condenser Inlet Node Name
     ACDXCoil 2 Condenser Outlet Node,  !- Condenser Outlet Node Name
     ACDXCoil 2 Performance,  !- Performance Object Name
     ,                        !- Condensate Collection Water Storage Tank Name
@@ -1410,13 +1410,12 @@
     ,                        !- Minimum Outdoor Dry-Bulb Temperature for Compressor Operation {C}
     ,                        !- Maximum Outdoor Dry-Bulb Temperature for Crankcase Heater Operation {C}
     ,                        !- Unit Internal Static Air Pressure {Pa}
-    HumidityControl,         !- Capacity Control Method
+    Discrete,                !- Capacity Control Method
     ,                        !- Evaporative Condenser Basin Heater Capacity {W/K}
     ,                        !- Evaporative Condenser Basin Heater Setpoint Temperature {C}
     ,                        !- Evaporative Condenser Basin Heater Operating Schedule Name
-    ,                        !- Compressor Fuel Type
-    Electricity,             !- Base Operating Mode
-    ACDXCoil 2 Normal Operating Mode;  !- Alternative Operating Mode 1
+    Electricity,             !- Compressor Fuel Type
+    ACDXCoil 2 Normal Operating Mode;  !- Base Operating Mode
 
   Coil:Cooling:DX:CurveFit:OperatingMode,
     ACDXCoil 2 Normal Operating Mode,  !- Name
@@ -1430,10 +1429,9 @@
     Yes,                     !- Apply Latent Degradation to Speeds Greater than 1
     ,                        !- Condenser Type
     ,                        !- Nominal Evaporative Condenser Pump Power {W}
-    MultiSpeed,              !- Nominal Speed Number
-    2,                       !- Speed 1 Name
-    ACDXCoil 2 Normal Mode Stage 1 Performance,  !- Speed 2 Name
-    ACDXCoil 2 Normal Mode Stage 2 Performance;  !- Speed 3 Name
+    2,                       !- Nominal Speed Number
+    ACDXCoil 2 Normal Mode Stage 1 Performance,  !- Speed 1 Name
+    ACDXCoil 2 Normal Mode Stage 2 Performance;  !- Speed 2 Name
 
   Coil:Cooling:DX:CurveFit:Speed,
     ACDXCoil 2 Normal Mode Stage 1 Performance,  !- Name
