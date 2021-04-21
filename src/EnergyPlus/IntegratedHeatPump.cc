@@ -1357,7 +1357,7 @@ void GetIHPInput(EnergyPlusData &state)
         // Coil Hackathon 1: maybe a new input field needs to be added for the SCCoilType, and give two choices:
         // Coil:Cooling:DX and Coil:Cooling:DX:VariableSpeed
         // Temporarily, for the initial developlment, just manually make the type to "Coil:Cooling:DX".
-        state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilType = "COIL:COOLING:DX";
+        // state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilType = "COIL:COOLING:DX";
 
         state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilName = AlphArray(7);
         Coiltype = state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilType;
