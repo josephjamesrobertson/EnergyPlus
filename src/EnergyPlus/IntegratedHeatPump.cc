@@ -1283,7 +1283,7 @@ void GetIHPInput(EnergyPlusData &state)
                 } else {
                     // mine data from coil object if needed: this is similar to what's used in unitarysystem.cc
                     // TODO: Need to check for autosize on these I guess (this was the ori notes from unitarysystem.cc)
-                    auto &newCoil = state.dataCoilCooingDX->coilCoolingDXs[state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCDWHCoolCoilIndex];
+                    auto &newSCCoil = state.dataCoilCooingDX->coilCoolingDXs[state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilIndex];
 
                     // Maybe some extra treatment should be done here for the newCoil if needed.
                 }
@@ -1492,6 +1492,7 @@ void GetIHPInput(EnergyPlusData &state)
         // cooling coil air node connections
         ChildCoilIndex = state.dataIntegratedHP->IntegratedHeatPumps(DXCoilNum).SCCoilIndex;
         InNode = state.dataVariableSpeedCoils->VarSpeedCoil(ChildCoilIndex).AirInletNodeNum;
+
         OutNode = state.dataVariableSpeedCoils->VarSpeedCoil(ChildCoilIndex).AirOutletNodeNum;
         InNodeName = state.dataLoopNodes->NodeID(InNode);
         OutNodeName = state.dataLoopNodes->NodeID(OutNode);
