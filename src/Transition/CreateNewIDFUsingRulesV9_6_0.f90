@@ -513,18 +513,31 @@ SUBROUTINE CreateNewIDFUsingRules(EndOfFile,DiffOnly,InLfn,AskForInput,InputFile
                   nodiff=.false.
                 END IF
 
+              CASE('AIRLOOPHVAC:UNITARYHEATCOOL:VAVCHANGEOVERBYPASS')
+                CALL GetNewObjectDefInIDD(ObjectName,NwNumArgs,NwAorN,NwReqFld,NwObjMinFlds,NwFldNames,NwFldDefaults,NwFldUnits)
+                OutArgs(1:CurArgs)=InArgs(1:CurArgs)
+                nodiff=.true.
+                ! replace cooling coil object type name
+                CoolingCoilType = InArgs(20)
+                IF ( SameString( CoolingCoilType, "Coil:Cooling:DX:HeatExchangerAssisted" ) ) THEN
+                  ! do nothing
+                ELSE IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
+                  OutArgs(20) = "Coil:Cooling:DX"
+                  nodiff=.false.
+                END IF
+
               CASE('AIRLOOPHVAC:UNITARYHEATPUMP:AIRTOAIR')
                 CALL GetNewObjectDefInIDD(ObjectName,NwNumArgs,NwAorN,NwReqFld,NwObjMinFlds,NwFldNames,NwFldDefaults,NwFldUnits)
                 OutArgs(1:CurArgs)=InArgs(1:CurArgs)
                 nodiff=.true.
                 ! replace cooling coil object type name
-                CoolingCoilType = InArgs(14)
+                CoolingCoilType = InArgs(13)
                 IF ( SameString( CoolingCoilType, "Coil:Cooling:DX:HeatExchangerAssisted" ) ) THEN
                   ! do nothing
                 ELSE IF ( SameString( CoolingCoilType, "CoilSystem:IntegratedHeatPump:AirSource" ) ) THEN
                   ! do nothing
                 ELSE IF ( SameString( CoolingCoilType(1:16), "Coil:Cooling:DX:" ) ) THEN
-                  OutArgs(14) = "Coil:Cooling:DX"
+                  OutArgs(13) = "Coil:Cooling:DX"
                   nodiff=.false.
                 END IF
 
