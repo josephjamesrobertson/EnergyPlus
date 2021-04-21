@@ -3066,10 +3066,13 @@ namespace UnitarySystems {
                 int sysNum = state.dataUnitarySystems->numUnitarySystems;
                 UnitarySys thisSys;
                 thisSys.Name = thisObjectName;
+                thisSys.UnitType = cCurrentModuleObject; // issue with Fault Model sim in UnitarySystem?
 
                 // CoilSystem:Cooling:DX is set point control with constant fan mode
                 thisSys.m_ControlType = ControlType::Setpoint;
                 thisSys.m_FanOpMode = DataHVACGlobals::ContFanCycCoil;
+                thisSys.m_LastMode = state.dataUnitarySystems->CoolingMode;
+                thisSys.m_OKToPrintSizing = true;
 
                 thisSys.m_SysAvailSchedPtr = ScheduleManager::GetScheduleIndex(state, loc_sysAvailSched);
                 thisSys.AirInNode = NodeInputManager::GetOnlySingleNode(state,
@@ -3101,6 +3104,10 @@ namespace UnitarySystems {
                                                                                          DataLoopNode::NodeConnectionType::Sensor,
                                                                                          1,
                                                                                          DataLoopNode::ObjectIsParent);
+                BranchNodeConnections::TestCompSet(state, cCurrentModuleObject, thisObjectName, loc_AirInNodeName, loc_AirOutNodeName, "Air Nodes");
+                BranchNodeConnections::SetUpCompSets(
+                    state, cCurrentModuleObject, thisObjectName, loc_coolingCoilType, loc_m_CoolingCoilName, loc_AirInNodeName, loc_AirOutNodeName);
+
                 if (!SetPointManager::NodeHasSPMCtrlVarType(state, thisSys.m_SystemCoolControlNodeNum, SetPointManager::iCtrlVarType::Temp)) {
                     ShowWarningError(state, "Missing set point at control node");
                 }
@@ -4064,8 +4071,11 @@ namespace UnitarySystems {
                 thisSys.CoolCoilOutletNodeNum = CoolingCoilOutletNode;
                 thisSys.m_CoolingCoilName = loc_m_CoolingCoilName;
                 thisSys.m_CoolCoilExists = true;
+                thisSys.DesignMaxOutletTemp = 80.0;
+
                 thisSys.m_ThisSysInputShouldBeGotten = false;
                 thisSys.m_CoolingSAFMethod = state.dataUnitarySystems->SupplyAirFlowRate;
+                thisSys.m_FanOpModeSchedPtr = thisSys.m_SysAvailSchedPtr;
 
                 state.dataUnitarySystems->unitarySys.push_back(thisSys);
                 break;
