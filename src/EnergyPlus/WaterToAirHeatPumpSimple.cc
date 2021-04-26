@@ -2456,13 +2456,13 @@ namespace WaterToAirHeatPumpSimple {
             state.dataWaterToAirHeatPumpSimple->LoadSideInletEnth_Init = PsyHFnTdbW(state.dataWaterToAirHeatPumpSimple->LoadSideInletDBTemp_Init,
                                                                                     state.dataWaterToAirHeatPumpSimple->LoadSideInletHumRat_Init);
             state.dataWaterToAirHeatPumpSimple->CpAir_Init = PsyCpAirFnW(state.dataWaterToAirHeatPumpSimple->LoadSideInletHumRat_Init);
+            state.dataWaterToAirHeatPumpSimple->LoadSideInletWBTemp_Init = PsyTwbFnTdbWPb(state,
+                                                                                          state.dataWaterToAirHeatPumpSimple->LoadSideInletDBTemp_Init,
+                                                                                          state.dataWaterToAirHeatPumpSimple->LoadSideInletHumRat_Init,
+                                                                                          state.dataEnvrn->OutBaroPress,
+                                                                                          RoutineName);
             state.dataWaterToAirHeatPumpSimple->firstTime = false;
         }
-        state.dataWaterToAirHeatPumpSimple->LoadSideInletWBTemp_Init = PsyTwbFnTdbWPb(state,
-                                                                                      state.dataWaterToAirHeatPumpSimple->LoadSideInletDBTemp_Init,
-                                                                                      state.dataWaterToAirHeatPumpSimple->LoadSideInletHumRat_Init,
-                                                                                      state.dataEnvrn->OutBaroPress,
-                                                                                      RoutineName);
 
         //  LOAD LOCAL VARIABLES FROM DATA STRUCTURE (for code readability)
 
@@ -2518,15 +2518,26 @@ namespace WaterToAirHeatPumpSimple {
             PsyTwbFnTdbWPb(state, LoadSideInletDBTemp_Unit, LoadSideInletHumRat_Unit, state.dataEnvrn->OutBaroPress, RoutineName);
         LoadSideInletEnth_Unit = state.dataWaterToAirHeatPumpSimple->SimpleWatertoAirHP(HPNum).InletAirEnthalpy;
         CpAir_Unit = PsyCpAirFnW(LoadSideInletHumRat_Unit);
-
+        Real64 rhoAirInit = PsyRhoAirFnPbTdbW(state,
+                                   state.dataEnvrn->StdBaroPress,
+                                   state.dataWaterToAirHeatPumpSimple->LoadSideInletDBTemp_Init,
+                                   state.dataWaterToAirHeatPumpSimple->LoadSideInletHumRat_Init,
+                                   RoutineName);
+        Real64 rhoAirUnit = PsyRhoAirFnPbTdbW(state,
+                                              state.dataEnvrn->StdBaroPress,
+                                              LoadSideInletDBTemp_Unit,
+                                              LoadSideInletHumRat_Unit,
+                                              RoutineName);
         while (true) {
             ++NumIteration;
+            Real64 rhoAir;
             if (NumIteration == 1) {
                 // Set indoor air conditions to the rated conditions
                 state.dataWaterToAirHeatPumpSimple->LoadSideInletDBTemp = state.dataWaterToAirHeatPumpSimple->LoadSideInletDBTemp_Init;
                 state.dataWaterToAirHeatPumpSimple->LoadSideInletHumRat = state.dataWaterToAirHeatPumpSimple->LoadSideInletHumRat_Init;
                 state.dataWaterToAirHeatPumpSimple->LoadSideInletWBTemp = state.dataWaterToAirHeatPumpSimple->LoadSideInletWBTemp_Init;
                 state.dataWaterToAirHeatPumpSimple->LoadSideInletEnth = state.dataWaterToAirHeatPumpSimple->LoadSideInletEnth_Init;
+                rhoAir = rhoAirInit;
                 CpAir = state.dataWaterToAirHeatPumpSimple->CpAir_Init;
             } else {
                 // Set indoor air conditions to the actual condition
@@ -2534,6 +2545,7 @@ namespace WaterToAirHeatPumpSimple {
                 state.dataWaterToAirHeatPumpSimple->LoadSideInletHumRat = LoadSideInletHumRat_Unit;
                 state.dataWaterToAirHeatPumpSimple->LoadSideInletWBTemp = LoadSideInletWBTemp_Unit;
                 state.dataWaterToAirHeatPumpSimple->LoadSideInletEnth = LoadSideInletEnth_Unit;
+                rhoAir = rhoAirUnit;
                 CpAir = CpAir_Unit;
             }
 
@@ -2541,11 +2553,7 @@ namespace WaterToAirHeatPumpSimple {
             ratioTWB = ((state.dataWaterToAirHeatPumpSimple->LoadSideInletWBTemp + state.dataWaterToAirHeatPumpSimple->CelsiustoKelvin) / Tref);
             ratioTS = ((state.dataWaterToAirHeatPumpSimple->SourceSideInletTemp + state.dataWaterToAirHeatPumpSimple->CelsiustoKelvin) / Tref);
             ratioVL = (state.dataWaterToAirHeatPumpSimple->LoadSideMassFlowRate /
-                       (AirVolFlowRateRated * PsyRhoAirFnPbTdbW(state,
-                                                                state.dataEnvrn->StdBaroPress,
-                                                                state.dataWaterToAirHeatPumpSimple->LoadSideInletDBTemp,
-                                                                state.dataWaterToAirHeatPumpSimple->LoadSideInletHumRat,
-                                                                RoutineName)));
+                       (AirVolFlowRateRated * rhoAir));
 
             if (state.dataWaterToAirHeatPumpSimple->SimpleWatertoAirHP(HPNum).DesignWaterMassFlowRate > 0.0) {
                 ratioVS = (state.dataWaterToAirHeatPumpSimple->SourceSideMassFlowRate) /
