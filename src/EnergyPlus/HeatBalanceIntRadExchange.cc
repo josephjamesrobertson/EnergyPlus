@@ -48,6 +48,7 @@
 // C++ Headers
 #include <cassert>
 #include <cmath>
+#include "/usr/local/opt/libomp/include/omp.h"
 
 // ObjexxFCL Headers
 #include <ObjexxFCL/Array.functions.hh>
@@ -138,7 +139,7 @@ namespace HeatBalanceIntRadExchange {
 
         // Types
         typedef Array1D<Real64>::size_type size_type;
-
+        using namespace std::chrono;
         // Using/Aliasing
         using WindowEquivalentLayer::EQLWindowInsideEffectiveEmiss;
 
@@ -146,25 +147,23 @@ namespace HeatBalanceIntRadExchange {
 
         bool IntShadeOrBlindStatusChanged; // True if status of interior shade or blind on at least
         // one window in a zone has changed from previous time step
-        WinShadingType ShadeFlag;     // Window shading status current time step
-        WinShadingType ShadeFlagPrev; // Window shading status previous time step
 
-        auto &SurfaceTempRad(state.dataHeatBalIntRadExchg->SurfaceTempRad);
-        auto &SurfaceTempInKto4th(state.dataHeatBalIntRadExchg->SurfaceTempInKto4th);
-        auto &SurfaceEmiss(state.dataHeatBalIntRadExchg->SurfaceEmiss);
+//        auto &SurfaceTempRad(state.dataHeatBalIntRadExchg->SurfaceTempRad);
+//        auto &SurfaceTempInKto4th(state.dataHeatBalIntRadExchg->SurfaceTempInKto4th);
+//        auto &SurfaceEmiss(state.dataHeatBalIntRadExchg->SurfaceEmiss);
 
 #ifdef EP_Detailed_Timings
         epStartTime("CalcInteriorRadExchange=");
 #endif
-        if (state.dataHeatBalIntRadExchg->CalcInteriorRadExchangefirstTime) {
-            SurfaceTempRad.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-            SurfaceTempInKto4th.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-            SurfaceEmiss.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-            state.dataHeatBalIntRadExchg->CalcInteriorRadExchangefirstTime = false;
-            if (state.dataSysVars->DeveloperFlag) {
-                DisplayString(state, " OMP turned off, HBIRE loop executed in serial");
-            }
-        }
+//        if (state.dataHeatBalIntRadExchg->CalcInteriorRadExchangefirstTime) {
+//            SurfaceTempRad.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+//            SurfaceTempInKto4th.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+//            SurfaceEmiss.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+//            state.dataHeatBalIntRadExchg->CalcInteriorRadExchangefirstTime = false;
+//            if (state.dataSysVars->DeveloperFlag) {
+//                DisplayString(state, " OMP turned off, HBIRE loop executed in serial");
+//            }
+//        }
 
         if (state.dataGlobal->KickOffSimulation || state.dataGlobal->KickOffSizing) return;
 
@@ -201,14 +200,30 @@ namespace HeatBalanceIntRadExchange {
             for (int SurfNum = 1; SurfNum <= state.dataSurface->TotSurfaces; SurfNum++)
                 state.dataSurface->SurfWinIRfromParentZone(SurfNum) = 0.0;
         }
+        
+        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+#pragma omp parallel
+{
+        int p = omp_get_num_threads();
+        int tid = omp_get_thread_num();
+        int zone_start = (endEnclosure  * tid) / p + startEnclosure;
+        int zone_end = min((endEnclosure * (tid + 1)) / p + startEnclosure - 1, endEnclosure);
 
-        for (int enclosureNum = startEnclosure; enclosureNum <= endEnclosure; ++enclosureNum) {
+        for (int enclosureNum = zone_start; enclosureNum <= zone_end; ++enclosureNum) {
 
             auto &zone_info(state.dataViewFactor->ZoneRadiantInfo(enclosureNum));
             auto &zone_ScriptF(zone_info.ScriptF); // Tuned Transposed
             auto &zone_SurfacePtr(zone_info.SurfacePtr);
             int const n_zone_Surfaces(zone_info.NumOfSurfaces);
             size_type const s_zone_Surfaces(n_zone_Surfaces);
+            WinShadingType ShadeFlag;     // Window shading status current time step
+            WinShadingType ShadeFlagPrev; // Window shading status previous time step
+            Array1D<Real64> SurfaceTempRad(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+            Array1D<Real64> SurfaceTempInKto4th(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+            Array1D<Real64> SurfaceEmiss(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+//            SurfaceTempRad.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+//            SurfaceTempInKto4th.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+//            SurfaceEmiss.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
 
             // Calculate ScriptF if first time step in environment and surface heat-balance iterations not yet started;
             // recalculate ScriptF if status of window interior shades or blinds has changed from
@@ -416,7 +431,10 @@ namespace HeatBalanceIntRadExchange {
                 }
             }
         }
-
+}
+        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+        DataSurfaces::timer_rad += time_span.count();
 #ifdef EP_Detailed_Timings
         epStopTime("CalcInteriorRadExchange=");
 #endif

@@ -86,6 +86,8 @@ using namespace Psychrometrics;
 using namespace DataEnvironment;
 using namespace WindowManager;
 
+double timer_rad;
+
 Array1D_string const cExtBoundCondition({-6, 0}, {"KivaFoundation", "FCGround", "OSCM", "OSC", "OSC", "Ground", "ExternalEnvironment"});
 
 // Parameters to indicate surface classes

@@ -17,6 +17,10 @@ endif()
 
 cmake_policy(SET CMP0012 NEW) # if() recognizes boolean constants
 
+include_directories("/usr/local/include" "/usr/local/opt/llvm/include")
+link_directories("/usr/local/lib" "/usr/local/opt/llvm/lib")
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp" )
+
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
