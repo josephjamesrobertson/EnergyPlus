@@ -176,9 +176,9 @@ struct HeatBalanceIntRadExchgData : BaseGlobalStruct
     bool CalcInteriorRadExchangefirstTime = true; // Logical flag for one-time initializations
 
     // variables added as part of strategy to reduce calculation time - Glazer 2011-04-22
-    Array1D<Real64> SurfaceTempRad;
-    Array1D<Real64> SurfaceTempInKto4th;
-    Array1D<Real64> SurfaceEmiss;
+    Array1D<Array1D<Real64>> SurfaceTempRad;
+    Array1D<Array1D<Real64>> SurfaceTempInKto4th;
+    Array1D<Array1D<Real64>> SurfaceEmiss;
     bool ViewFactorReport = false; // Flag to output view factor report in eio file
     int LargestSurf = 0;
 

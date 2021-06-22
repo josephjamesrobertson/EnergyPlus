@@ -148,22 +148,28 @@ namespace HeatBalanceIntRadExchange {
         bool IntShadeOrBlindStatusChanged; // True if status of interior shade or blind on at least
         // one window in a zone has changed from previous time step
 
-//        auto &SurfaceTempRad(state.dataHeatBalIntRadExchg->SurfaceTempRad);
-//        auto &SurfaceTempInKto4th(state.dataHeatBalIntRadExchg->SurfaceTempInKto4th);
-//        auto &SurfaceEmiss(state.dataHeatBalIntRadExchg->SurfaceEmiss);
+        auto &ZoneSurfaceTempRad(state.dataHeatBalIntRadExchg->SurfaceTempRad);
+        auto &ZoneSurfaceTempInKto4th(state.dataHeatBalIntRadExchg->SurfaceTempInKto4th);
+        auto &ZoneSurfaceEmiss(state.dataHeatBalIntRadExchg->SurfaceEmiss);
 
 #ifdef EP_Detailed_Timings
         epStartTime("CalcInteriorRadExchange=");
 #endif
-//        if (state.dataHeatBalIntRadExchg->CalcInteriorRadExchangefirstTime) {
-//            SurfaceTempRad.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-//            SurfaceTempInKto4th.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-//            SurfaceEmiss.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-//            state.dataHeatBalIntRadExchg->CalcInteriorRadExchangefirstTime = false;
-//            if (state.dataSysVars->DeveloperFlag) {
-//                DisplayString(state, " OMP turned off, HBIRE loop executed in serial");
-//            }
-//        }
+        if (state.dataHeatBalIntRadExchg->CalcInteriorRadExchangefirstTime) {
+            ZoneSurfaceTempRad.allocate(state.dataViewFactor->NumOfRadiantEnclosures);
+            ZoneSurfaceTempInKto4th.allocate(state.dataViewFactor->NumOfRadiantEnclosures);
+            ZoneSurfaceEmiss.allocate(state.dataViewFactor->NumOfRadiantEnclosures);
+
+            for (int enclosureNum = 1; enclosureNum <= state.dataViewFactor->NumOfRadiantEnclosures; ++enclosureNum) {
+                ZoneSurfaceTempRad(enclosureNum).allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+                ZoneSurfaceTempInKto4th(enclosureNum).allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+                ZoneSurfaceEmiss(enclosureNum).allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
+            }
+            state.dataHeatBalIntRadExchg->CalcInteriorRadExchangefirstTime = false;
+            if (state.dataSysVars->DeveloperFlag) {
+                DisplayString(state, " OMP turned off, HBIRE loop executed in serial");
+            }
+        }
 
         if (state.dataGlobal->KickOffSimulation || state.dataGlobal->KickOffSizing) return;
 
@@ -201,16 +207,19 @@ namespace HeatBalanceIntRadExchange {
                 state.dataSurface->SurfWinIRfromParentZone(SurfNum) = 0.0;
         }
         
-        high_resolution_clock::time_point t1 = high_resolution_clock::now();
-#pragma omp parallel
-{
-        int p = omp_get_num_threads();
-        int tid = omp_get_thread_num();
-        int zone_start = (endEnclosure  * tid) / p + startEnclosure;
-        int zone_end = min((endEnclosure * (tid + 1)) / p + startEnclosure - 1, endEnclosure);
+//        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//        duration<double> time_span_1 = duration_cast<duration<double>>(t2 - t1);
+//        t1 = high_resolution_clock::now();
+//#pragma omp parallel
+//{
+//        int p = omp_get_num_threads();
+//        int tid = omp_get_thread_num();
+//        int zone_start = (endEnclosure  * tid) / p + startEnclosure;
+//        int zone_end = min((endEnclosure * (tid + 1)) / p + startEnclosure - 1, endEnclosure);
 
-        for (int enclosureNum = zone_start; enclosureNum <= zone_end; ++enclosureNum) {
-
+//        for (int enclosureNum = zone_start; enclosureNum <= zone_end; ++enclosureNum) {
+        for (int enclosureNum = startEnclosure; enclosureNum <= endEnclosure; ++enclosureNum) {
             auto &zone_info(state.dataViewFactor->ZoneRadiantInfo(enclosureNum));
             auto &zone_ScriptF(zone_info.ScriptF); // Tuned Transposed
             auto &zone_SurfacePtr(zone_info.SurfacePtr);
@@ -218,12 +227,6 @@ namespace HeatBalanceIntRadExchange {
             size_type const s_zone_Surfaces(n_zone_Surfaces);
             WinShadingType ShadeFlag;     // Window shading status current time step
             WinShadingType ShadeFlagPrev; // Window shading status previous time step
-            Array1D<Real64> SurfaceTempRad(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-            Array1D<Real64> SurfaceTempInKto4th(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-            Array1D<Real64> SurfaceEmiss(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-//            SurfaceTempRad.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-//            SurfaceTempInKto4th.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
-//            SurfaceEmiss.allocate(state.dataHeatBalIntRadExchg->MaxNumOfRadEnclosureSurfs);
 
             // Calculate ScriptF if first time step in environment and surface heat-balance iterations not yet started;
             // recalculate ScriptF if status of window interior shades or blinds has changed from
@@ -294,7 +297,9 @@ namespace HeatBalanceIntRadExchange {
                 }
 
             } // End of check if SurfIterations = 0
-
+            auto &SurfaceTempRad(ZoneSurfaceTempRad(enclosureNum));
+            auto &SurfaceTempInKto4th(ZoneSurfaceTempInKto4th(enclosureNum));
+            auto &SurfaceEmiss(ZoneSurfaceEmiss(enclosureNum));
             // Set surface emissivities and temperatures
             // Also, for Carroll method, calculate numerators and denominators of radiant temperature
             Real64 CarrollMRTNumerator(0.0);
@@ -351,7 +356,7 @@ namespace HeatBalanceIntRadExchange {
             }
 
             // These are the money loops
-            size_type lSR(0u);
+
             if (state.dataHeatBalIntRadExchg->CarrollMethod) {
                 for (size_type RecZoneSurfNum = 0; RecZoneSurfNum < s_zone_Surfaces; ++RecZoneSurfNum) {
                     int const RecSurfNum = zone_SurfacePtr[RecZoneSurfNum];
@@ -392,34 +397,44 @@ namespace HeatBalanceIntRadExchange {
                         Real64 scriptF_acc(0.0);           // Local accumulator
                         Real64 netLWRadToRecSurf_cor(0.0); // Correction
                         Real64 IRfromParentZone_acc(0.0);  // Local accumulator
-                        for (size_type SendZoneSurfNum = 0; SendZoneSurfNum < s_zone_Surfaces; ++SendZoneSurfNum, ++lSR) {
+                        for (size_type SendZoneSurfNum = 0; SendZoneSurfNum < s_zone_Surfaces; ++SendZoneSurfNum) {
+                            size_type lSR = RecZoneSurfNum * s_zone_Surfaces + SendZoneSurfNum;
                             Real64 const scriptF(zone_ScriptF[lSR]); // [ lSR ] == ( SendZoneSurfNum+1, RecZoneSurfNum+1 )
                             Real64 const scriptF_temp_ink_4th(scriptF * SurfaceTempInKto4th[SendZoneSurfNum]);
                             // Calculate interior LW incident on window rather than net LW for use in window layer heat balance calculation.
                             IRfromParentZone_acc += scriptF_temp_ink_4th;
-
+                        }
+                        for (size_type SendZoneSurfNum = 0; SendZoneSurfNum < s_zone_Surfaces; ++SendZoneSurfNum) {
+                            size_type lSR = RecZoneSurfNum * s_zone_Surfaces + SendZoneSurfNum;
+                            Real64 const scriptF(zone_ScriptF[lSR]); // [ lSR ] == ( SendZoneSurfNum+1, RecZoneSurfNum+1 )
+//                            Real64 const scriptF_temp_ink_4th(scriptF * SurfaceTempInKto4th[SendZoneSurfNum]);
                             if (RecZoneSurfNum != SendZoneSurfNum) {
                                 scriptF_acc += scriptF;
-                            } else {
-                                netLWRadToRecSurf_cor = scriptF_temp_ink_4th;
                             }
+//                            else {
+//                                netLWRadToRecSurf_cor = scriptF_temp_ink_4th;
+//                            }
+//                            netLWRadToRecSurf_cor = zone_ScriptF[RecZoneSurfNum * s_zone_Surfaces + RecZoneSurfNum] * SurfaceTempInKto4th[RecZoneSurfNum];
 
                             // Per BG -- this should never happened.  (CR6346,CR6550 caused this to be put in.  Now removed. LKL 1/2013)
                             //          IF (SurfaceWindow(RecSurfNum)%IRfromParentZone < 0.0) THEN
                             //            CALL ShowRecurringWarningErrorAtEnd(state, 'CalcInteriorRadExchange: Window_IRFromParentZone negative,
                             //            Window="'// &
                             //                TRIM(Surface(RecSurfNum)%Name)//'"',  &
-                            //                SurfaceWindow(RecSurfNum)%IRErrCount)
+                            //                S0urfaceWindow(RecSurfNum)%IRErrCount)
                             //            CALL ShowRecurringContinueErrorAtEnd(state, '..occurs in Zone="'//TRIM(Surface(RecSurfNum)%ZoneName)//  &
                             //                '", reset to 0.0 for remaining calculations.',SurfaceWindow(RecSurfNum)%IRErrCountC)
                             //            SurfaceWindow(RecSurfNum)%IRfromParentZone=0.0
                             //          ENDIF
                         }
+                        netLWRadToRecSurf_cor = zone_ScriptF[RecZoneSurfNum * s_zone_Surfaces + RecZoneSurfNum] * SurfaceTempInKto4th[RecZoneSurfNum];
+
                         netLWRadToRecSurf += IRfromParentZone_acc - netLWRadToRecSurf_cor - (scriptF_acc * SurfaceTempInKto4th[RecZoneSurfNum]);
                         state.dataSurface->SurfWinIRfromParentZone(RecSurfNum) += IRfromParentZone_acc / SurfaceEmiss[RecZoneSurfNum];
                     } else {
                         Real64 netLWRadToRecSurf_acc(0.0); // Local accumulator
-                        for (size_type SendZoneSurfNum = 0; SendZoneSurfNum < s_zone_Surfaces; ++SendZoneSurfNum, ++lSR) {
+                        for (size_type SendZoneSurfNum = 0; SendZoneSurfNum < s_zone_Surfaces; ++SendZoneSurfNum) {
+                            size_type lSR = RecZoneSurfNum * s_zone_Surfaces + SendZoneSurfNum;
                             if (RecZoneSurfNum != SendZoneSurfNum) {
                                 netLWRadToRecSurf_acc +=
                                     zone_ScriptF[lSR] * (SurfaceTempInKto4th[SendZoneSurfNum] -
@@ -431,10 +446,11 @@ namespace HeatBalanceIntRadExchange {
                 }
             }
         }
-}
-        high_resolution_clock::time_point t2 = high_resolution_clock::now();
-        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-        DataSurfaces::timer_rad += time_span.count();
+//}
+
+//        t2 = high_resolution_clock::now();
+//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//        DataSurfaces::timer_rad += time_span.count() - time_span_1.count();
 #ifdef EP_Detailed_Timings
         epStopTime("CalcInteriorRadExchange=");
 #endif
